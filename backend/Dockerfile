@@ -4,12 +4,18 @@ RUN apt-get update \
 	&& apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core \
 	&& rm -rf /var/lib/apt/lists/*
 
-WORKDIR /app
+WORKDIR /repo
 
 COPY package.json package-lock.json ./
-RUN npm ci
+COPY packages/contracts packages/contracts
+COPY backend/package.json backend/package.json
+COPY frontend/package.json frontend/package.json
 
-COPY . .
+RUN npm ci -w backend --include-workspace-root
+
+COPY backend backend
+
+WORKDIR /repo/backend
 
 EXPOSE 3001
 

@@ -1,4 +1,4 @@
-import type { TeacherEmotionMessage } from "@/entities/speaking-session";
+import type { TeacherEmotionMessage } from "@llp/contracts";
 
 import {
 	type RemoteParticipant,

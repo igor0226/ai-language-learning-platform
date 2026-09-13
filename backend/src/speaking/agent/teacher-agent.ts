@@ -6,31 +6,15 @@ import {
 	buildGreetingInstructions,
 	buildTeacherInstructions,
 } from "../utils/teacher-instructions";
-import {
-	EmotionIntensity,
-	publishEmotion,
-	requireEmotionPublisher,
-} from "./emotion";
+import { emotionIntensitySchema, teacherEmotionSchema } from "@llp/contracts";
+
+import { publishEmotion, requireEmotionPublisher } from "./emotion";
 import { parseTeacherJobMetadata } from "./parse-job-metadata";
 import { ReactionController } from "./reaction-controller";
 
 const emotionToolSchema = z.object({
-	emotion: z.enum([
-		"neutral",
-		"smile",
-		"laugh",
-		"upset",
-		"surprised",
-		"angry",
-		"thoughtful",
-	]),
-	intensity: z
-		.union([
-			z.literal(EmotionIntensity.Low),
-			z.literal(EmotionIntensity.Medium),
-			z.literal(EmotionIntensity.High),
-		])
-		.optional(),
+	emotion: teacherEmotionSchema,
+	intensity: emotionIntensitySchema.optional(),
 });
 
 export default defineAgent({

@@ -1,5 +1,4 @@
 export type {
-	LanguageLevel,
 	PlaybackPhrase,
 	PlaybackPhrasesResponse,
 	ProcessingEventStatus,

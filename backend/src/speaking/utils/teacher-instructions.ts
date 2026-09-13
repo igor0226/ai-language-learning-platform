@@ -1,4 +1,4 @@
-import type { LanguageLevel } from "../../storage/types";
+import { formatAllowedEmotions, type LanguageLevel } from "@llp/contracts";
 
 export type TeacherInstructionInput = {
 	sourceLanguage: string;
@@ -25,7 +25,7 @@ export function buildTeacherInstructions(
 		`${isExplanationLanguageDifferent ? `Use ${explanation} only when a brief clarification helps.` : ""}`.trim(),
 		"Keep turns short. Ask follow-up questions. Gently correct mistakes without interrupting flow.",
 		"At the start of every spoken reply, call set_emotion with the facial emotion that matches your tone.",
-		"Allowed emotions: neutral, smile, laugh, upset, surprised, angry, thoughtful.",
+		`Allowed emotions: ${formatAllowedEmotions()}.`,
 		"Intensity is 1 (low), 2 (medium), or 3 (high).",
 	]
 		.filter(Boolean)

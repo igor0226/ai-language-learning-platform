@@ -1,3 +1,4 @@
+import { parseLanguageLevel } from "@llp/contracts";
 import {
 	Body,
 	Controller,
@@ -12,7 +13,6 @@ import {
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
 import { memoryStorage } from "multer";
-import { parseLanguageLevel } from "./utils/parse-language-level";
 import { VideosService } from "./videos.service";
 
 @Controller("videos")

@@ -1,4 +1,5 @@
-import { TEACHER_EMOTION_TOPIC } from "@/entities/speaking-session";
+import { TEACHER_EMOTION_TOPIC } from "@llp/contracts";
+
 import {
 	dispatchTeacherEmotion,
 	resolveDataTopic,

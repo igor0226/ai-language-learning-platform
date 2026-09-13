@@ -33,11 +33,14 @@ A learner uses the platform to practice all four skills. Today, only the Listeni
 
 ## Architecture
 
-- `frontend/` — Next.js UI (own `package.json`)
-- `backend/` — Nest.js API + processing worker (own `package.json`)
+- `frontend/` — Next.js UI (workspace package)
+- `backend/` — Nest.js API + processing worker (workspace package)
+- `packages/contracts` — shared Zod schemas/types (`@llp/contracts`)
 - `videos/` — legacy on-disk data (optional one-time migration source into MinIO)
 - `compose.yaml` — Docker Compose dev stack (frontend + backend, hot reload)
-- Root `package.json` — husky/commitlint and `npm run dev` (`docker compose up`)
+- Root `package.json` — npm workspaces, husky/commitlint, and `npm run dev` (`docker compose up`)
+
+**Hard rule:** Shared wire types, enums, and Zod schemas live only in [`packages/contracts`](packages/contracts). Frontend and backend import them from `@llp/contracts`. Do not redeclare or re-export those contracts in app modules. If a new consumer needs the same values, extend that package.
 
 ### Skills
 
@@ -80,7 +83,7 @@ The browser calls Nest directly (no Next.js API proxy).
 
 ## Tech stack
 
-- npm as package manager (separate installs in `frontend/` and `backend/`)
+- npm workspaces (`frontend/`, `backend/`, `packages/contracts`); install from the repo root (`npm install` / `npm ci`)
 - Frontend: Next.js under `frontend/`
 - Backend: Nest.js under `backend/`
 - Local dev: Docker Compose (`compose.yaml`)
@@ -109,4 +112,4 @@ cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
 docker compose up --build              # frontend :3000, backend :3001
 ```
 
-Host Node (lint/test/hooks) still uses `nvm use`. Package validation steps live in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md).
+Host Node (lint/test/hooks) still uses `nvm use`, then `npm install` at the repo root. Package validation steps live in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md). Compose builds from the repo root so `@llp/contracts` resolves inside the images. After contract or lockfile changes, rebuild (`docker compose up --build`). If container `node_modules` volumes go stale, `docker compose down -v`.

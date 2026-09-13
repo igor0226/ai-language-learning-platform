@@ -1,5 +1,6 @@
 .next/
 node_modules/
 tsconfig.tsbuildinfo
+tsconfig.repro.tsbuildinfo
 .env.local
 .env*.local

@@ -4,7 +4,9 @@ Next.js frontend for the **Language Learning Platform**. Today's routes implemen
 
 Make sure to read the AGENTS.md file in the parent direction.
 
-Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md).
+Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md). Host installs are `npm install` from the repo root (npm workspaces).
+
+**Hard rule:** Import shared types, enums, and Zod schemas from `@llp/contracts`. Do not redeclare or re-export them in frontend modules.
 
 ## Architecture
 

@@ -1,8 +1,6 @@
-import type { LanguageLevel } from "@/shared/config";
+import type { LanguageLevel } from "@llp/contracts";
 
 export type VideoStatus = "pending" | "processing" | "ready" | "failed";
-
-export type { LanguageLevel };
 
 export type ProcessingStep =
 	| "queued"

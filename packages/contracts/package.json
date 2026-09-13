@@ -1,0 +1,22 @@
+{
+	"name": "@llp/contracts",
+	"version": "0.0.1",
+	"private": true,
+	"description": "Shared CEFR and teacher-emotion contracts",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"files": ["dist"],
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"prepare": "npm run build",
+		"typecheck": "tsc -p tsconfig.json --noEmit",
+		"test": "vitest run"
+	},
+	"dependencies": {
+		"zod": "^4.4.3"
+	},
+	"devDependencies": {
+		"typescript": "^5.7.3",
+		"vitest": "^3.2.4"
+	}
+}

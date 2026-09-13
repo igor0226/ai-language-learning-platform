@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { parseLanguageLevel } from "./parse-language-level";
+import { parseLanguageLevel } from "./language-level";
 
 describe("parseLanguageLevel", () => {
 	it("accepts valid CEFR levels case-insensitively", () => {

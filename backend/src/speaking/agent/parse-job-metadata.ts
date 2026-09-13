@@ -1,11 +1,10 @@
+import { languageLevelSchema, type LanguageLevel } from "@llp/contracts";
 import { z } from "zod";
-
-import type { LanguageLevel } from "../../storage/types";
 
 const JobMetadataSchema = z.object({
 	callId: z.string(),
 	sourceLanguage: z.string(),
-	languageLevel: z.enum(["A1", "A2", "B1", "B2", "C1", "C2"]),
+	languageLevel: languageLevelSchema,
 	explanationLanguage: z.string().nullable().optional(),
 	topic: z.string().optional(),
 });
@@ -22,19 +21,19 @@ export function parseTeacherJobMetadata(
 	raw: string | undefined,
 ): TeacherJobMetadata {
 	if (!raw?.trim()) {
-		return {
-			callId: "unknown",
-			sourceLanguage: "English",
-			languageLevel: "B1",
-		};
+		return fallbackMetadata();
 	}
 	const parsed = JobMetadataSchema.safeParse(JSON.parse(raw));
 	if (!parsed.success) {
-		return {
-			callId: "unknown",
-			sourceLanguage: "English",
-			languageLevel: "B1",
-		};
+		return fallbackMetadata();
 	}
 	return parsed.data;
+}
+
+function fallbackMetadata(): TeacherJobMetadata {
+	return {
+		callId: "unknown",
+		sourceLanguage: "English",
+		languageLevel: "B1",
+	};
 }

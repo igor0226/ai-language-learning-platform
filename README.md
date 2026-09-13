@@ -161,11 +161,16 @@ nvm use
 ffmpeg -version
 ```
 
+From the repository root:
+
+```bash
+npm install
+```
+
 Terminal 1 (backend):
 
 ```bash
 cd backend
-npm install
 cp .env.example .env   # then set OPENAI_API_KEY
 npm run start:dev
 ```
@@ -174,7 +179,6 @@ Terminal 2 (frontend):
 
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
@@ -237,7 +241,7 @@ When prompted, install the recommended **Biome** extension (`biomejs.biome`). Th
 - format on save
 - safe Biome fixes on save
 
-Each package uses its own local Biome binary (`./node_modules/.bin/biome`) and `biome.json`. Run `npm install` in the package you are editing before opening it in the editor.
+Each package uses its own Biome config (`biome.json`). Run `npm install` at the repo root before opening a package in the editor (workspaces hoist binaries).
 
 CLI equivalents:
 

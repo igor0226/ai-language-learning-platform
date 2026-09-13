@@ -1,8 +1,7 @@
 "use client";
 
-import type { LanguageLevel } from "@/shared/config";
+import { LANGUAGE_LEVELS, type LanguageLevel } from "@llp/contracts";
 
-import { LANGUAGE_LEVELS } from "@/shared/config";
 import { Input } from "@/shared/ui/input";
 import { Label } from "@/shared/ui/label";
 import {

@@ -1,5 +1,1 @@
-export {
-	LANGUAGE_LEVELS,
-	LANGUAGE_OPTIONS,
-	type LanguageLevel,
-} from "./languages";
+export { LANGUAGE_OPTIONS } from "./languages";
