@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { TeacherCallRecord } from "../../storage/types";
+import type { TeacherCallRecord } from "@/storage/types";
 import { serializeCallDispatchMetadata } from "./dispatch-metadata";
 
 const call: TeacherCallRecord = {

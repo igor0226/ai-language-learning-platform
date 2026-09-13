@@ -2,7 +2,7 @@ import type { INestApplication } from "@nestjs/common";
 import type { TestingModule } from "@nestjs/testing";
 import { afterAll, beforeAll } from "vitest";
 
-import { BlobStorageService } from "../../../src/storage";
+import { BlobStorageService } from "@/storage";
 import { createTestApp } from "../../create-test-app";
 import { resetPostgresTables } from "../../postgres-test-setup";
 import { setupE2eStorage, teardownE2eStorage } from "../../setup-e2e";

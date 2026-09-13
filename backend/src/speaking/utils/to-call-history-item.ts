@@ -2,7 +2,7 @@ import type {
 	LanguageLevel,
 	TeacherCallRecord,
 	TeacherCallStatus,
-} from "../../storage/types";
+} from "@/storage/types";
 
 export type TeacherCallHistoryItem = {
 	id: string;

@@ -8,7 +8,8 @@
 		"prepare": "husky",
 		"dev": "docker compose up",
 		"dev:rebuild": "docker compose up --build",
-		"dev:clean": "docker compose down --remove-orphans"
+		"dev:clean": "docker compose down --remove-orphans",
+		"dev:reset-packages": "./scripts/reset-compose-package-volumes.sh"
 	},
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.1",

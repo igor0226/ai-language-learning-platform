@@ -4,7 +4,7 @@ Nest.js backend for the **Language Learning Platform**. Today's modules implemen
 
 Make sure to read the AGENTS.md file in the parent direction.
 
-Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md). Compose starts **postgres**, **minio**, **backend**, and **frontend**. FFmpeg is in the backend image when using Compose. The backend runs migrations on boot (`npm run migration:run`) before `start:dev`.
+Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md). Compose starts **postgres**, **minio**, **backend**, and **frontend**. FFmpeg is in the backend image when using Compose. The backend runs migrations on boot (`npm run migration:run`) before `start:dev`. Never run `docker compose down -v` (it wipes `postgres_data` and `minio_data`). For stale container `node_modules`, run `npm run dev:reset-packages` from the repo root (see [`scripts/reset-compose-package-volumes.sh`](../scripts/reset-compose-package-volumes.sh)).
 
 ## Architecture
 
@@ -23,6 +23,8 @@ Nest.js app under `src/` with feature modules:
 Speaking JSON/query fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
 
 Store module-bound utility functions under each module's `utils/` directory (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`). Do not blend helpers into service files.
+
+`@/` maps to `src/` (see [`tsconfig.json`](tsconfig.json) `paths`). Prefer `@/` over `../../` and deeper when importing from another module under `src/`; keep `./` and one-level `../` within the same module.
 
 ## Tech stack
 

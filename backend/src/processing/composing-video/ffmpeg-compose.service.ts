@@ -4,7 +4,7 @@ import path from "node:path";
 import { Injectable } from "@nestjs/common";
 import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
-import { BlobStorageService, type VideoRecord } from "../../storage";
+import { BlobStorageService, type VideoRecord } from "@/storage";
 import type { DetectedPhrase } from "../detecting-phrases/phrase-detection.service";
 import type { ExplanationClipsManifest } from "../generating-clips/explanation-clip.service";
 import {

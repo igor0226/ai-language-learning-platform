@@ -1,4 +1,4 @@
-import type { Video } from "../../models";
+import type { Video } from "@/models";
 import type { VideoRecord } from "../types";
 
 export function sanitizeTitle(value: string): string {

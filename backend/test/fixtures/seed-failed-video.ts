@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 import path from "node:path";
 
-import type { BlobStorageService } from "../../src/storage";
-import type { VideoRecord } from "../../src/storage/types";
+import type { BlobStorageService } from "@/storage";
+import type { VideoRecord } from "@/storage/types";
 import { seedVideoMetadata } from "./seed-video-db";
 
 export type SeededFailedVideo = {

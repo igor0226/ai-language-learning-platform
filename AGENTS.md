@@ -112,4 +112,13 @@ cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
 docker compose up --build              # frontend :3000, backend :3001
 ```
 
-Host Node (lint/test/hooks) still uses `nvm use`, then `npm install` at the repo root. Package validation steps live in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md). Compose builds from the repo root so `@llp/contracts` resolves inside the images. After contract or lockfile changes, rebuild (`docker compose up --build`). If container `node_modules` volumes go stale, `docker compose down -v`.
+Host Node (lint/test/hooks) still uses `nvm use`, then `npm install` at the repo root. Package validation steps live in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md). Compose builds from the repo root so `@llp/contracts` resolves inside the images. After contract or lockfile changes, rebuild (`docker compose up --build`).
+
+**Hard rule:** never run `docker compose down -v`. That flag deletes every Compose volume, including `postgres_data` and `minio_data` (video metadata and Listening blobs). Stop the stack with `docker compose down` only.
+
+If container `node_modules` or the Next cache go stale, reset those volumes only (never `postgres_data` / `minio_data`), then rebuild:
+
+```bash
+npm run dev:reset-packages
+docker compose up --build
+```

@@ -1,4 +1,4 @@
-import type { TeacherCallRecord } from "../../storage/types";
+import type { TeacherCallRecord } from "@/storage/types";
 
 export function serializeCallDispatchMetadata(input: {
 	call: TeacherCallRecord;
