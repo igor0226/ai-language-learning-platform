@@ -1,8 +1,7 @@
+import { EmotionIntensity, TEACHER_EMOTION_TOPIC } from "@llp/contracts";
 import { describe, expect, it, vi } from "vitest";
 
 import {
-	EmotionIntensity,
-	TEACHER_EMOTION_TOPIC,
 	type EmotionPublisher,
 	normalizeEmotionMessage,
 	publishEmotion,

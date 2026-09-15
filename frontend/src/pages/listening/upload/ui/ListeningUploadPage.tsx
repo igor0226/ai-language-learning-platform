@@ -1,6 +1,6 @@
 "use client";
 
-import type { LanguageLevel } from "@/shared/config";
+import type { LanguageLevel } from "@llp/contracts";
 
 import { useQueryClient } from "@tanstack/react-query";
 import { AlertCircle, Loader2 } from "lucide-react";

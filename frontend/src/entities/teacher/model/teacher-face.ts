@@ -1,14 +1,7 @@
-export type TeacherFaceEmotion =
-	| "neutral"
-	| "smile"
-	| "laugh"
-	| "upset"
-	| "surprised"
-	| "angry"
-	| "thoughtful";
+import type { EmotionIntensity, TeacherEmotion } from "@llp/contracts";
 
-export type TeacherFaceIntensity = 1 | 2 | 3;
-
+export type TeacherFaceEmotion = TeacherEmotion;
+export type TeacherFaceIntensity = EmotionIntensity;
 export type TeacherFaceSpeech = "silent" | "quiet" | "normal" | "loud";
 
 export const DEFAULT_TEACHER_FACE_EMOTION: TeacherFaceEmotion = "neutral";

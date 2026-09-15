@@ -1,6 +1,6 @@
 "use client";
 
-import type { LanguageLevel } from "@/shared/config";
+import type { LanguageLevel } from "@llp/contracts";
 
 import { useCallback, useState } from "react";
 

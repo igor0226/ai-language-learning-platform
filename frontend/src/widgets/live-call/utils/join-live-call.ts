@@ -1,8 +1,8 @@
+import type { TeacherEmotionMessage } from "@llp/contracts";
 import type {
 	ConnectionStep,
 	CreateCallRequest,
 	CreateCallResponse,
-	TeacherEmotionMessage,
 } from "@/entities/speaking-session";
 
 import { Room } from "livekit-client";

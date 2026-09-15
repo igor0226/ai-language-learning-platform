@@ -1,9 +1,9 @@
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
-import { AgentDispatchService } from "../../../src/speaking/agent-dispatch.service";
-import { LivekitRoomService } from "../../../src/speaking/livekit-room.service";
-import { LivekitWebhookService } from "../../../src/speaking/livekit-webhook.service";
+import { AgentDispatchService } from "@/speaking/agent-dispatch.service";
+import { LivekitRoomService } from "@/speaking/livekit-room.service";
+import { LivekitWebhookService } from "@/speaking/livekit-webhook.service";
 import { createTestApp } from "../../create-test-app";
 import { resetPostgresTables } from "../../postgres-test-setup";
 import { setupE2eStorage, teardownE2eStorage } from "../../setup-e2e";

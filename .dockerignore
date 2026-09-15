@@ -1,0 +1,10 @@
+.git
+**/.git
+**/node_modules
+**/.next
+**/dist
+**/coverage
+videos
+backend/.env
+frontend/.env.local
+**/*.md

@@ -1,9 +1,6 @@
-import { createAppDataSource } from "../../src/database/data-source";
-import { ProcessingHistory, Video } from "../../src/models";
-import type {
-	VideoProcessingHistory,
-	VideoRecord,
-} from "../../src/storage/types";
+import { createAppDataSource } from "@/database/data-source";
+import { ProcessingHistory, Video } from "@/models";
+import type { VideoProcessingHistory, VideoRecord } from "@/storage/types";
 
 export async function seedVideoMetadata(input: {
 	record: VideoRecord;

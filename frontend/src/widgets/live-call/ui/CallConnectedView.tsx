@@ -1,10 +1,9 @@
 "use client";
 
+import type { EmotionIntensity, TeacherEmotion } from "@llp/contracts";
 import type {
 	CallControlState,
-	EmotionIntensity,
 	SavedPhrase,
-	TeacherEmotion,
 } from "@/entities/speaking-session";
 
 import { useState } from "react";

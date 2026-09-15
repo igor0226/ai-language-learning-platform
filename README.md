@@ -148,7 +148,16 @@ Or `npm run dev` from the repo root (same as `docker compose up`).
 
 Source is bind-mounted, so frontend and backend hot-reload on file changes.
 
-After `package.json` or lockfile changes, rebuild (`docker compose up --build`). To reset container `node_modules` / build caches, run `docker compose down -v` (the bind-mounted `videos/` directory is not removed).
+After `package.json` or lockfile changes, rebuild (`docker compose up --build`).
+
+Do **not** run `docker compose down -v`. That deletes Postgres and MinIO volumes (`postgres_data`, `minio_data`) and wipes local video metadata and blobs. Stop the stack with `docker compose down`.
+
+If container `node_modules` or the Next `.next` cache go stale, reset those volumes only (see [`scripts/reset-compose-package-volumes.sh`](scripts/reset-compose-package-volumes.sh)), then rebuild:
+
+```bash
+npm run dev:reset-packages
+docker compose up --build
+```
 
 Compose sets `NEXT_PUBLIC_API_URL=http://localhost:3001` and `CORS_ORIGIN=http://localhost:3000` so the browser can call Nest on the host-published ports.
 
@@ -161,11 +170,16 @@ nvm use
 ffmpeg -version
 ```
 
+From the repository root:
+
+```bash
+npm install
+```
+
 Terminal 1 (backend):
 
 ```bash
 cd backend
-npm install
 cp .env.example .env   # then set OPENAI_API_KEY
 npm run start:dev
 ```
@@ -174,7 +188,6 @@ Terminal 2 (frontend):
 
 ```bash
 cd frontend
-npm install
 npm run dev
 ```
 
@@ -237,7 +250,7 @@ When prompted, install the recommended **Biome** extension (`biomejs.biome`). Th
 - format on save
 - safe Biome fixes on save
 
-Each package uses its own local Biome binary (`./node_modules/.bin/biome`) and `biome.json`. Run `npm install` in the package you are editing before opening it in the editor.
+Each package uses its own Biome config (`biome.json`). Run `npm install` at the repo root before opening a package in the editor (workspaces hoist binaries).
 
 CLI equivalents:
 

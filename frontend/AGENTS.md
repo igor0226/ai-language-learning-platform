@@ -4,7 +4,9 @@ Next.js frontend for the **Language Learning Platform**. Today's routes implemen
 
 Make sure to read the AGENTS.md file in the parent direction.
 
-Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md).
+Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md). Host installs are `npm install` from the repo root (npm workspaces).
+
+**Hard rule:** Import shared types, enums, and Zod schemas from `@llp/contracts`. Do not redeclare or re-export them in frontend modules.
 
 ## Architecture
 
@@ -39,7 +41,7 @@ The UI is organized with Feature-Sliced Design under `src/`:
 - `src/entities` — business models and entity UI
 - `src/shared` — UI kit, lib, API helpers, config
 
-Import only downward (pages → widgets → features → entities → shared). Each slice exposes a public `index.ts` with named exports (no `export *`). Import shadcn primitives as `@/shared/ui/button`.
+Import only downward (pages → widgets → features → entities → shared). Each slice exposes a public `index.ts` with named exports (no `export *`). Import shadcn primitives as `@/shared/ui/button`. Prefer `@/` over `../../` and deeper when importing across slices; keep `./` and one-level `../` within the same slice.
 
 A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pages Router.
 

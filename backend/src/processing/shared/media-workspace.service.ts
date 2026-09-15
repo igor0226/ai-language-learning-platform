@@ -5,7 +5,7 @@ import { pipeline } from "node:stream/promises";
 
 import { Injectable } from "@nestjs/common";
 
-import { BlobStorageService } from "../../storage";
+import { BlobStorageService } from "@/storage";
 import { resolveMediaWorkspaceRoot } from "./utils/resolve-media-workspace-root";
 
 export class MediaWorkspace {

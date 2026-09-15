@@ -1,8 +1,9 @@
 import {
-	parseEmotionMessage,
 	TEACHER_EMOTION_TOPIC,
 	type TeacherEmotionMessage,
-} from "@/entities/speaking-session";
+} from "@llp/contracts";
+
+import { parseEmotionMessage } from "@/entities/speaking-session";
 import {
 	isRecord,
 	logTeacherEmotion,

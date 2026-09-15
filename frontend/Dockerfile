@@ -1,11 +1,17 @@
 FROM node:24-bookworm-slim
 
-WORKDIR /app
+WORKDIR /repo
 
 COPY package.json package-lock.json ./
-RUN npm ci
+COPY packages/contracts packages/contracts
+COPY backend/package.json backend/package.json
+COPY frontend/package.json frontend/package.json
 
-COPY . .
+RUN npm ci -w frontend --include-workspace-root
+
+COPY frontend frontend
+
+WORKDIR /repo/frontend
 
 EXPOSE 3000
 

@@ -5,7 +5,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 import OpenAI from "openai";
 
-import { BlobStorageService } from "../../storage";
+import { BlobStorageService } from "@/storage";
 import { probeAudioDurationSeconds } from "../shared/ffmpeg-probe";
 import type { MediaWorkspace } from "../shared/media-workspace.service";
 import { MediaWorkspaceService } from "../shared/media-workspace.service";

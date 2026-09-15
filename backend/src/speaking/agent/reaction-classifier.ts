@@ -4,17 +4,13 @@ import { z } from "zod";
 
 import {
 	EmotionIntensity,
-	TEACHER_EMOTIONS,
-	type TeacherEmotion,
-} from "./emotion";
+	emotionIntensitySchema,
+	teacherEmotionSchema,
+} from "@llp/contracts";
 
 const ReactionSchema = z.object({
-	emotion: z.enum(TEACHER_EMOTIONS as [TeacherEmotion, ...TeacherEmotion[]]),
-	intensity: z.union([
-		z.literal(EmotionIntensity.Low),
-		z.literal(EmotionIntensity.Medium),
-		z.literal(EmotionIntensity.High),
-	]),
+	emotion: teacherEmotionSchema,
+	intensity: emotionIntensitySchema,
 });
 
 export type ReactionClassification = z.infer<typeof ReactionSchema>;

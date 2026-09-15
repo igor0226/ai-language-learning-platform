@@ -7,30 +7,19 @@ import {
 	buildTeacherInstructions,
 } from "../utils/teacher-instructions";
 import {
-	EmotionIntensity,
-	publishEmotion,
-	requireEmotionPublisher,
-} from "./emotion";
+	buildTeacherTurnHandling,
+	buildTeacherVad,
+	resolveSttModel,
+} from "../utils/teacher-turn-config";
+import { emotionIntensitySchema, teacherEmotionSchema } from "@llp/contracts";
+
+import { publishEmotion, requireEmotionPublisher } from "./emotion";
 import { parseTeacherJobMetadata } from "./parse-job-metadata";
 import { ReactionController } from "./reaction-controller";
 
 const emotionToolSchema = z.object({
-	emotion: z.enum([
-		"neutral",
-		"smile",
-		"laugh",
-		"upset",
-		"surprised",
-		"angry",
-		"thoughtful",
-	]),
-	intensity: z
-		.union([
-			z.literal(EmotionIntensity.Low),
-			z.literal(EmotionIntensity.Medium),
-			z.literal(EmotionIntensity.High),
-		])
-		.optional(),
+	emotion: teacherEmotionSchema,
+	intensity: emotionIntensitySchema.optional(),
 });
 
 export default defineAgent({
@@ -43,14 +32,14 @@ export default defineAgent({
 
 		const setEmotion = llm.tool({
 			description:
-				"Set the teacher's visible facial emotion for the current spoken reply.",
+				"Silently update the teacher's on-screen facial emotion before speaking. Never mention this tool, the emotion name, or your face in spoken audio.",
 			parameters: emotionToolSchema,
 			execute: async ({ emotion, intensity }) => {
 				await publishEmotion({
 					publisher,
 					message: { emotion, intensity, source: "reply" },
 				});
-				return "emotion updated";
+				return "ok";
 			},
 		});
 
@@ -59,12 +48,21 @@ export default defineAgent({
 			tools: { set_emotion: setEmotion },
 		});
 
+		const vad = buildTeacherVad();
 		const session = new voice.AgentSession({
+			vad,
+			stt: new openai.STT({
+				model: resolveSttModel(),
+				vad,
+				turnDetection: null,
+			}),
 			llm: new openai.realtime.RealtimeModel({
 				model: process.env.SPEAKING_TEACHER_MODEL?.trim() || "gpt-realtime",
 				voice: process.env.SPEAKING_TEACHER_VOICE?.trim() || "coral",
-				inputAudioTranscription: { model: "gpt-4o-mini-transcribe" },
+				turnDetection: null,
+				inputAudioTranscription: null,
 			}),
+			turnHandling: buildTeacherTurnHandling(),
 		});
 
 		session.on(voice.AgentSessionEventTypes.UserInputTranscribed, (event) => {

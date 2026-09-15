@@ -1,4 +1,4 @@
-import type { ProcessingStep } from "../../storage";
+import type { ProcessingStep } from "@/storage";
 
 export class StepFailedError extends Error {
 	constructor(

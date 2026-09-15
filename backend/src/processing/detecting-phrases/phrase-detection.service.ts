@@ -4,7 +4,7 @@ import OpenAI from "openai";
 import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
-import { BlobStorageService, type VideoRecord } from "../../storage";
+import { BlobStorageService, type VideoRecord } from "@/storage";
 import type { WhisperTranscript } from "../shared/merge-transcripts";
 import { PHRASE_DETECTION_PROMPT } from "./prompt";
 

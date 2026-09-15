@@ -4,7 +4,9 @@ export type VideoProcessingStatus =
 	| "ready"
 	| "failed";
 
-export type LanguageLevel = "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+import type { LanguageLevel } from "@llp/contracts";
+
+export type { LanguageLevel };
 
 export type VideoRecord = {
 	id: string;

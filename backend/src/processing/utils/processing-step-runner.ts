@@ -1,6 +1,6 @@
 import type { PinoLogger } from "nestjs-pino";
 
-import type { ProcessingHistoryService, ProcessingStep } from "../../storage";
+import type { ProcessingHistoryService, ProcessingStep } from "@/storage";
 import { StepFailedError } from "./processing-errors";
 
 type StepRunnerDeps = {

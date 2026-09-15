@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { EmotionIntensity } from "./emotion";
+import { EmotionIntensity } from "@llp/contracts";
 import { ReactionClassifier } from "./reaction-classifier";
 
 vi.mock("openai", () => {

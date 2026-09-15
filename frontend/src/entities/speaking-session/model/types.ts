@@ -1,4 +1,4 @@
-import type { LanguageLevel } from "@/shared/config";
+import type { LanguageLevel } from "@llp/contracts";
 
 export type CallTopic = {
 	id: string;
@@ -52,7 +52,7 @@ export type SavedPhrase = {
 	id: string;
 	term: string;
 	phonetic: string;
-	cefr: "A1" | "A2" | "B1" | "B2" | "C1" | "C2";
+	cefr: LanguageLevel;
 	definition: string;
 	exampleSentence?: string;
 	savedAt: string;
@@ -68,37 +68,6 @@ export type ConnectionStep =
 	| "ice_negotiation"
 	| "model_warmup"
 	| "ready";
-
-export type TeacherEmotion =
-	| "neutral"
-	| "smile"
-	| "laugh"
-	| "upset"
-	| "surprised"
-	| "angry"
-	| "thoughtful";
-
-export type EmotionSource = "reply" | "reaction";
-
-export type EmotionIntensity = 1 | 2 | 3;
-
-export type TeacherEmotionMessage = {
-	emotion: TeacherEmotion;
-	intensity?: EmotionIntensity;
-	source: EmotionSource;
-};
-
-export const TEACHER_EMOTIONS: readonly TeacherEmotion[] = [
-	"neutral",
-	"smile",
-	"laugh",
-	"upset",
-	"surprised",
-	"angry",
-	"thoughtful",
-];
-
-export const TEACHER_EMOTION_TOPIC = "teacher-emotion";
 
 export type CreateCallRequest = {
 	userId: string;

@@ -1,5 +1,7 @@
 import type { CallHistoryItem, SpeakingCall } from "../model/types";
 
+import { languageLevelSchema } from "@llp/contracts";
+
 import { apiUrl } from "@/shared/api";
 import { isRecord } from "@/shared/lib";
 import { mapCallHistoryItem } from "../utils/map-call-history-item";
@@ -70,15 +72,9 @@ function readHistoryStatus(value: unknown): CallHistoryItem["status"] {
 }
 
 function readLanguageLevel(value: unknown): CallHistoryItem["languageLevel"] {
-	if (
-		value === "A1" ||
-		value === "A2" ||
-		value === "B1" ||
-		value === "B2" ||
-		value === "C1" ||
-		value === "C2"
-	) {
-		return value;
+	const parsed = languageLevelSchema.safeParse(value);
+	if (!parsed.success) {
+		throw new Error("Invalid speaking history item: languageLevel");
 	}
-	throw new Error("Invalid speaking history item: languageLevel");
+	return parsed.data;
 }

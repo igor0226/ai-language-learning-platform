@@ -1,37 +1,10 @@
-export type TeacherEmotion =
-	| "neutral"
-	| "smile"
-	| "laugh"
-	| "upset"
-	| "surprised"
-	| "angry"
-	| "thoughtful";
-
-export enum EmotionIntensity {
-	Low = 1,
-	Medium = 2,
-	High = 3,
-}
-
-export type EmotionSource = "reply" | "reaction";
-
-export interface TeacherEmotionMessage {
-	emotion: TeacherEmotion;
-	intensity?: EmotionIntensity;
-	source: EmotionSource;
-}
-
-export const TEACHER_EMOTIONS: readonly TeacherEmotion[] = [
-	"neutral",
-	"smile",
-	"laugh",
-	"upset",
-	"surprised",
-	"angry",
-	"thoughtful",
-];
-
-export const TEACHER_EMOTION_TOPIC = "teacher-emotion";
+import {
+	TEACHER_EMOTION_TOPIC,
+	emotionIntensitySchema,
+	isTeacherEmotion,
+	type EmotionSource,
+	type TeacherEmotionMessage,
+} from "@llp/contracts";
 
 export type EmotionPublisher = {
 	publishData: (
@@ -40,26 +13,11 @@ export type EmotionPublisher = {
 	) => Promise<void> | void;
 };
 
-const INTENSITY_VALUES = new Set<number>([
-	EmotionIntensity.Low,
-	EmotionIntensity.Medium,
-	EmotionIntensity.High,
-]);
-
-export function isTeacherEmotion(value: unknown): value is TeacherEmotion {
-	return (
-		typeof value === "string" &&
-		(TEACHER_EMOTIONS as readonly string[]).includes(value)
-	);
-}
-
 export function parseEmotionIntensity(
 	value: unknown,
-): EmotionIntensity | undefined {
-	if (typeof value !== "number" || !INTENSITY_VALUES.has(value)) {
-		return undefined;
-	}
-	return value as EmotionIntensity;
+): TeacherEmotionMessage["intensity"] {
+	const parsed = emotionIntensitySchema.safeParse(value);
+	return parsed.success ? parsed.data : undefined;
 }
 
 export function normalizeEmotionMessage(input: {

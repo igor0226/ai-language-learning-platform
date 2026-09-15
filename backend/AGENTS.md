@@ -4,7 +4,7 @@ Nest.js backend for the **Language Learning Platform**. Today's modules implemen
 
 Make sure to read the AGENTS.md file in the parent direction.
 
-Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md). Compose starts **postgres**, **minio**, **backend**, and **frontend**. FFmpeg is in the backend image when using Compose. The backend runs migrations on boot (`npm run migration:run`) before `start:dev`.
+Run the app with Docker Compose from the repo root (`docker compose up --build`); see the parent [`AGENTS.md`](../AGENTS.md). Compose starts **postgres**, **minio**, **backend**, and **frontend**. FFmpeg is in the backend image when using Compose. The backend runs migrations on boot (`npm run migration:run`) before `start:dev`. Never run `docker compose down -v` (it wipes `postgres_data` and `minio_data`). For stale container `node_modules`, run `npm run dev:reset-packages` from the repo root (see [`scripts/reset-compose-package-volumes.sh`](../scripts/reset-compose-package-volumes.sh)).
 
 ## Architecture
 
@@ -20,7 +20,11 @@ Nest.js app under `src/` with feature modules:
 
 `main.ts` sets Pino app logger, CORS, global `api` prefix, port `3001`. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
 
+Speaking JSON/query fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
+
 Store module-bound utility functions under each module's `utils/` directory (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`). Do not blend helpers into service files.
+
+`@/` maps to `src/` (see [`tsconfig.json`](tsconfig.json) `paths`). Prefer `@/` over `../../` and deeper when importing from another module under `src/`; keep `./` and one-level `../` within the same module.
 
 ## Tech stack
 
@@ -177,8 +181,13 @@ Self-hosted LiveKit (`livekit` in Compose) plus a Node agent worker (`teacher-ag
 - Stale-call cron (`StaleCallWorkerService`) marks leftover `active` calls as `failed` (`endedReason: stale_room_missing`) when they are older than the grace period and the LiveKit room is gone.
 - Agent publishes teacher audio into the room and emotion JSON on data topic `teacher-emotion` (`source: "reply" | "reaction"`).
 
-Env: `LIVEKIT_URL` (browser-facing), `LIVEKIT_API_URL` (Nest Room/Dispatch API, defaults to `http` form of `LIVEKIT_URL`), `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `SPEAKING_AGENT_NAME`, `SPEAKING_TEACHER_MODEL`, `SPEAKING_TEACHER_VOICE`, `SPEAKING_CALL_TOKEN_TTL`, `SPEAKING_EMPTY_ROOM_TIMEOUT_SECONDS`, `SPEAKING_STALE_CALL_CRON_ENABLED`, `SPEAKING_STALE_CALL_CRON`, `SPEAKING_STALE_CALL_GRACE_SECONDS`.
+Env: `LIVEKIT_URL` (browser-facing), `LIVEKIT_API_URL` (Nest Room/Dispatch API, defaults to `http` form of `LIVEKIT_URL`), `LIVEKIT_API_KEY`, `LIVEKIT_API_SECRET`, `SPEAKING_AGENT_NAME`, `SPEAKING_TEACHER_MODEL`, `SPEAKING_TEACHER_VOICE`, `SPEAKING_CALL_TOKEN_TTL`, `SPEAKING_EMPTY_ROOM_TIMEOUT_SECONDS`, `SPEAKING_REACTION_DEBOUNCE_MS`, `SPEAKING_STT_MODEL`, `SPEAKING_VAD_ACTIVATION_THRESHOLD`, `SPEAKING_VAD_MIN_SPEECH_MS`, `SPEAKING_INTERRUPT_MIN_WORDS`, `SPEAKING_INTERRUPT_MIN_DURATION_MS`, `SPEAKING_STALE_CALL_CRON_ENABLED`, `SPEAKING_STALE_CALL_CRON`, `SPEAKING_STALE_CALL_GRACE_SECONDS`.
 
+- `SPEAKING_STT_MODEL` — streaming STT for user transcripts and interruption word-count gating (default `gpt-4o-mini-transcribe`). Realtime model turn detection is disabled; client VAD drives turns instead.
+- `SPEAKING_VAD_ACTIVATION_THRESHOLD` — Silero VAD activation threshold, 0–1 (default `0.65`; higher ignores quieter coughs).
+- `SPEAKING_VAD_MIN_SPEECH_MS` — minimum sustained speech in ms before VAD reports user speech (default `400`).
+- `SPEAKING_INTERRUPT_MIN_WORDS` — minimum transcribed user words before the teacher yields (default `3`).
+- `SPEAKING_INTERRUPT_MIN_DURATION_MS` — minimum user speech duration in ms before mid-reply interruption (default `1500`).
 - `SPEAKING_STALE_CALL_CRON_ENABLED` — set to `false` to skip stale-call cron and the startup tick (used in tests). Default: enabled (`true` in `.env.example`).
 - `SPEAKING_STALE_CALL_CRON` — cron expression for the stale-call sweep (default every minute).
 - `SPEAKING_STALE_CALL_GRACE_SECONDS` — ignore `active` calls younger than this (default `120`) so create/setup is not raced.

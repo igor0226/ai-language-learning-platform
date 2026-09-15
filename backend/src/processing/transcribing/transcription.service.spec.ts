@@ -2,7 +2,7 @@ import { createReadStream } from "node:fs";
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { BlobStorageService } from "../../storage";
+import { BlobStorageService } from "@/storage";
 import type { MediaWorkspace } from "../shared/media-workspace.service";
 import { MediaWorkspaceService } from "../shared/media-workspace.service";
 import { makeTestVideoRecord } from "../../../test/helpers/make-test-video-record";
