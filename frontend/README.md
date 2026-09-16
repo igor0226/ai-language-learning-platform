@@ -18,7 +18,7 @@ From the repository root:
 npm run dev
 ```
 
-App: [http://localhost:3000](http://localhost:3000)
+App: [https://app.llp.test](https://app.llp.test) (HTTPS via Caddy; run `npm run dev:https-setup` once first). Direct port: [http://localhost:3000](http://localhost:3000).
 
 Without Docker:
 
@@ -31,10 +31,11 @@ npm run dev
 
 ### Environment (optional)
 
-Compose sets `NEXT_PUBLIC_API_URL=http://localhost:3001`. Create `frontend/.env.local` only if you need a non-default API URL on the host:
+Compose sets `NEXT_PUBLIC_API_URL=https://app.llp.test` (same origin as the UI). Create `frontend/.env.local` only if you need a non-default API URL on the host:
 
 ```bash
-NEXT_PUBLIC_API_URL=http://localhost:3001
+NEXT_PUBLIC_API_URL=https://app.llp.test
+# Host-only without Caddy: NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
 ## Routes
