@@ -9,7 +9,7 @@ let started = false;
 
 const MINIO_USER = "minioadmin";
 const MINIO_PASSWORD = "minioadmin";
-const MINIO_BUCKET = "video-streaming-test";
+const MINIO_BUCKET = "language-learning-platform-test";
 
 export async function startMinioForTests(): Promise<void> {
 	if (started) {

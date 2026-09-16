@@ -1,0 +1,27 @@
+# Local HTTPS via mkcert (see scripts/setup-local-https.sh).
+# UI and Nest API share one origin for future auth cookies + SSR.
+
+http://app.llp.test {
+	redir https://app.llp.test{uri}
+}
+
+app.llp.test {
+	tls /certs/llp.test.pem /certs/llp.test-key.pem
+
+	handle /api/* {
+		reverse_proxy backend:3001
+	}
+
+	handle {
+		reverse_proxy frontend:3000
+	}
+}
+
+http://media.llp.test {
+	redir https://media.llp.test{uri}
+}
+
+media.llp.test {
+	tls /certs/llp.test.pem /certs/llp.test-key.pem
+	reverse_proxy livekit:7880
+}

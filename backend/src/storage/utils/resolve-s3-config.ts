@@ -22,7 +22,7 @@ export function resolveS3Config(): S3Config {
 	return {
 		endpoint,
 		region: process.env.S3_REGION?.trim() || "us-east-1",
-		bucket: process.env.S3_BUCKET?.trim() || "video-streaming",
+		bucket: process.env.S3_BUCKET?.trim() || "language-learning-platform",
 		accessKeyId: process.env.S3_ACCESS_KEY_ID?.trim() || "minioadmin",
 		secretAccessKey: process.env.S3_SECRET_ACCESS_KEY?.trim() || "minioadmin",
 		forcePathStyle: parseBoolean(

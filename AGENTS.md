@@ -98,9 +98,10 @@ The browser calls Nest directly (no Next.js API proxy).
 - **TTS (Listening):** explanation text is spoken via TTS (provider TBD); locale follows the explanation language.
 - **Language params** travel with the upload record and drive prompt and TTS locale selection.
 - No authentication/authorization layer yet.
-- Defaults: frontend `http://localhost:3000`, backend `http://localhost:3001`.
-  - `NEXT_PUBLIC_API_URL` (frontend → Nest)
-  - `CORS_ORIGIN` (Nest → Next origin)
+- **Local HTTPS (Compose + Caddy):** `https://app.llp.test` serves Next.js and proxies `/api/*` to Nest on the same origin (for future Google OAuth cookies + SSR auth). Media signaling: `wss://media.llp.test`. One-time setup: `npm run dev:https-setup` then add `/etc/hosts` entries. Direct ports `localhost:3000` / `:3001` remain for debugging.
+- Defaults with Caddy: app `https://app.llp.test`, API `https://app.llp.test/api`.
+  - `NEXT_PUBLIC_API_URL` (frontend → Nest; same origin in Compose)
+  - `CORS_ORIGIN` (Nest → Next origin; same as app URL in Compose)
 - Keep files under 300 lines. If not possible, ask.
 - Keep functions under 50 lines. If not possible, ask.
 - Store module-bound utility functions under "utils" directory, don't blend them with the rest business logic files.
@@ -109,7 +110,8 @@ The browser calls Nest directly (no Next.js API proxy).
 
 ```bash
 cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
-docker compose up --build              # frontend :3000, backend :3001
+npm run dev:https-setup                # one-time mkcert + /etc/hosts
+docker compose up --build              # https://app.llp.test (UI + /api), wss://media.llp.test
 ```
 
 Host Node (lint/test/hooks) still uses `nvm use`, then `npm install` at the repo root. Package validation steps live in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md). Compose builds from the repo root so `@llp/contracts` resolves inside the images. After contract or lockfile changes, rebuild (`docker compose up --build`).

@@ -138,13 +138,23 @@ From the repository root:
 
 ```bash
 cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
+npm run dev:https-setup                # one-time: mkcert + /etc/hosts instructions
 docker compose up --build
 ```
 
 Or `npm run dev` from the repo root (same as `docker compose up`).
 
+**Primary URL (HTTPS, same-origin UI + API):**
+
+- App: [https://app.llp.test](https://app.llp.test) — Next.js UI and Nest `/api/*` via Caddy
+- Media signaling: `wss://media.llp.test` (Speaking / LiveKit)
+
+Direct ports remain published for debugging:
+
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend: [http://localhost:3001](http://localhost:3001) (global prefix `/api`)
+
+Use `https://app.llp.test` for normal development (required for future Google OAuth). `localhost` bypasses Caddy and may not match `CORS_ORIGIN`.
 
 Source is bind-mounted, so frontend and backend hot-reload on file changes.
 
@@ -159,7 +169,21 @@ npm run dev:reset-packages
 docker compose up --build
 ```
 
-Compose sets `NEXT_PUBLIC_API_URL=http://localhost:3001` and `CORS_ORIGIN=http://localhost:3000` so the browser can call Nest on the host-published ports.
+### Local HTTPS setup
+
+1. Install [mkcert](https://github.com/FiloSottile/mkcert): `brew install mkcert nss && mkcert -install`
+2. Run `npm run dev:https-setup` — writes trusted certs to `certs/` and prints `/etc/hosts` lines
+3. Add the hosts entries (requires sudo), then `docker compose up --build`
+
+Caddy terminates TLS and routes:
+
+- `https://app.llp.test` → Next.js
+- `https://app.llp.test/api/*` → Nest (same origin; session cookies can live on `app.llp.test` for SSR auth later)
+- `https://media.llp.test` → media WebSocket (LiveKit; required because an HTTPS page cannot use `ws://localhost`)
+
+Future Google OAuth redirect URI: `https://app.llp.test/api/auth/google/callback`
+
+Compose sets `NEXT_PUBLIC_API_URL=https://app.llp.test`, `CORS_ORIGIN=https://app.llp.test`, and `LIVEKIT_URL=wss://media.llp.test`.
 
 ## Without Docker
 
@@ -241,7 +265,7 @@ Open either a single package folder (`backend/` or `frontend/`) or the workspace
 ```bash
 cursor backend/
 # or
-cursor video-streaming.code-workspace
+cursor language-learning-platform.code-workspace
 ```
 
 When prompted, install the recommended **Biome** extension (`biomejs.biome`). The repo config then enables:
