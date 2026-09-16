@@ -62,8 +62,8 @@ services:
     environment:
       S3_ENDPOINT: http://minio:9000
       POSTGRES_HOST: postgres
-      CORS_ORIGIN: https://app.llp.test
-      LIVEKIT_URL: wss://media.llp.test
+      CORS_ORIGIN: https://app.llp-test.com
+      LIVEKIT_URL: wss://media.llp-test.com
       LIVEKIT_API_URL: http://livekit:7880
       CHOKIDAR_USEPOLLING: "true"
       CHOKIDAR_INTERVAL: "300"
@@ -151,7 +151,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: https://app.llp.test
+      NEXT_PUBLIC_API_URL: https://app.llp-test.com
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
       NODE_ENV: development

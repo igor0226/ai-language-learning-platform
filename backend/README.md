@@ -17,7 +17,7 @@ cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
 npm run dev
 ```
 
-API: [https://app.llp.test/api](https://app.llp.test/api) via Caddy (run `npm run dev:https-setup` once first). Direct port: [http://localhost:3001](http://localhost:3001) (global prefix `/api`).
+API: [https://app.llp-test.com/api](https://app.llp-test.com/api) via Caddy (run `npm run dev:https-setup` once first). Direct port: [http://localhost:3001](http://localhost:3001) (global prefix `/api`).
 
 Without Docker:
 
