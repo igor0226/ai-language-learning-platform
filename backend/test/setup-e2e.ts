@@ -10,7 +10,7 @@ export const getE2eWorkspaceRoot = () => e2eWorkspaceRoot;
 
 export async function setupE2eStorage(): Promise<string> {
 	e2eWorkspaceRoot = await mkdtemp(
-		path.join(os.tmpdir(), "video-streaming-e2e-workspace-"),
+		path.join(os.tmpdir(), "language-learning-platform-e2e-workspace-"),
 	);
 	process.env.MEDIA_WORKSPACE_ROOT = e2eWorkspaceRoot;
 	return e2eWorkspaceRoot;

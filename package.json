@@ -1,9 +1,13 @@
 {
-	"name": "video-streaming",
+	"name": "language-learning-platform",
 	"version": "1.0.0",
 	"private": true,
 	"description": "Local language learning platform monorepo (Next frontend + Nest backend)",
-	"workspaces": ["packages/contracts", "backend", "frontend"],
+	"workspaces": [
+		"packages/contracts",
+		"backend",
+		"frontend"
+	],
 	"scripts": {
 		"prepare": "husky",
 		"dev": "docker compose up",

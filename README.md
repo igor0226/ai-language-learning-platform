@@ -265,7 +265,7 @@ Open either a single package folder (`backend/` or `frontend/`) or the workspace
 ```bash
 cursor backend/
 # or
-cursor video-streaming.code-workspace
+cursor language-learning-platform.code-workspace
 ```
 
 When prompted, install the recommended **Biome** extension (`biomejs.biome`). The repo config then enables:
