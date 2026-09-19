@@ -19,7 +19,7 @@ Nest.js app under `src/` with feature modules:
 
 `main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
 
-Store module-bound utility functions under each module's `utils/` directory (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`). Do not blend helpers into service files.
+Store module-bound utility functions under each module's `utils/` directory (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`). Do not blend helpers into service files. Store substantial type declarations under `type/` (e.g. `storage/type/`, `speaking/type/`). Do not keep type-only files in `utils/`.
 
 `@/` maps to `src/` (see [`tsconfig.json`](../backend/tsconfig.json) `paths`). Prefer `@/` over `../../` and deeper when importing from another module under `src/`; keep `./` and one-level `../` within the same module.
 
@@ -51,7 +51,7 @@ In Docker Compose, backend uses `POSTGRES_HOST=postgres`. Host dev defaults to `
 - `processing_locks` — worker concurrency guard (row insert = acquire, PK = one lock per video)
 - `teacher_calls` — speaking-skill AI teacher call records (`TeacherCallRecord` fields)
 
-Domain types live in [`src/storage/types.ts`](../backend/src/storage/types.ts). Entities mirror those types; ISO date/bigint transformers are in `src/models/utils/`.
+Domain types live in [`src/storage/type/`](../backend/src/storage/type). Entities mirror those types; ISO date/bigint transformers are in `src/models/utils/`.
 
 **Migrations** (TypeORM CLI via `src/database/data-source.ts`):
 

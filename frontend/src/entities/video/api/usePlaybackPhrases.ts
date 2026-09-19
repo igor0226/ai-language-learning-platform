@@ -1,6 +1,6 @@
 "use client";
 
-import type { PlaybackPhrasesResponse } from "../model/types";
+import type { PlaybackPhrasesResponse } from "../type";
 
 import { useQuery } from "@tanstack/react-query";
 

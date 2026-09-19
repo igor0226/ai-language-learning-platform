@@ -1,7 +1,7 @@
 import { ConflictException, NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { VideoRecord } from "../storage/types";
+import type { VideoRecord } from "../storage/type";
 import { makeTestVideoRecord } from "../../test/helpers/make-test-video-record";
 import { VideosService } from "./videos.service";
 

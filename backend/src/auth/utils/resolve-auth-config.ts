@@ -1,14 +1,4 @@
-export type AuthConfig = {
-	googleClientId: string;
-	googleClientSecret: string;
-	googleRedirectUri: string;
-	sessionSecret: string;
-	sessionMaxAgeMs: number;
-	secureCookies: boolean;
-	successRedirectUrl: string;
-	failureRedirectUrl: string;
-	sessionCookieName: string;
-};
+import type { AuthConfig } from "../type/auth-config";
 
 function requireEnv(name: string): string {
 	const value = process.env[name]?.trim();

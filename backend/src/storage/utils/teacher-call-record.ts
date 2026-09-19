@@ -1,4 +1,4 @@
-import type { TeacherCallRecord } from "../types";
+import type { TeacherCallRecord } from "../type";
 
 export function normalizeTeacherCallRecord(
 	record: TeacherCallRecord,

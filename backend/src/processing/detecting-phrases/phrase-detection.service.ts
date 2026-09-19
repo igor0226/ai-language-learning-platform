@@ -5,7 +5,7 @@ import { zodTextFormat } from "openai/helpers/zod";
 import { z } from "zod";
 
 import { BlobStorageService, type VideoRecord } from "@/storage";
-import type { WhisperTranscript } from "../shared/merge-transcripts";
+import type { WhisperTranscript } from "../shared/type/whisper-transcript";
 import { PHRASE_DETECTION_PROMPT } from "./prompt";
 
 const PHRASE_MODEL = "gpt-5.6-luna";

@@ -1,11 +1,4 @@
-export type S3Config = {
-	endpoint: string | undefined;
-	region: string;
-	bucket: string;
-	accessKeyId: string;
-	secretAccessKey: string;
-	forcePathStyle: boolean;
-};
+import type { S3Config } from "../type/s3-config";
 
 function parseBoolean(
 	value: string | undefined,

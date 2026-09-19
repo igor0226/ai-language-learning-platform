@@ -1,6 +1,6 @@
 import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
-import type { UserRecord } from "../storage/types";
+import type { UserRecord } from "../storage/type";
 import { isoDateTransformer } from "./utils/iso-date.transformer";
 
 @Entity({ name: "users" })

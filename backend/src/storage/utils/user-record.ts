@@ -1,5 +1,5 @@
 import type { User } from "../../models";
-import type { UserRecord } from "../types";
+import type { UserRecord } from "../type";
 
 export function normalizeUserRecord(user: User): UserRecord {
 	return {

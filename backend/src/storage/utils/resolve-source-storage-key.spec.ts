@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import type { BlobStorageService } from "../blob-storage.service";
-import type { VideoRecord } from "../types";
+import type { VideoRecord } from "../type";
 import { resolveSourceStorageKey } from "./resolve-source-storage-key";
 
 describe("resolveSourceStorageKey", () => {

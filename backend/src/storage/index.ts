@@ -15,6 +15,6 @@ export type {
 	VideoProcessingHistory,
 	VideoProcessingStatus,
 	VideoRecord,
-} from "./types";
+} from "./type";
 export { resolveResumeStep } from "./utils/resolve-resume-step";
 export { VideoRepositoryService } from "./video-repository.service";

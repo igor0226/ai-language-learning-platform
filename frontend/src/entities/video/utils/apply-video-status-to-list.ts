@@ -1,4 +1,4 @@
-import type { VideoStatusResponse, VideosResponse } from "../model/types";
+import type { VideoStatusResponse, VideosResponse } from "../type";
 
 export function applyVideoStatusToList(input: {
 	previous: VideosResponse | undefined;

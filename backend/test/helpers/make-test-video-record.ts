@@ -1,4 +1,4 @@
-import type { VideoRecord } from "@/storage/types";
+import type { VideoRecord } from "@/storage/type";
 
 export function makeTestVideoRecord(
 	overrides: Partial<VideoRecord> = {},

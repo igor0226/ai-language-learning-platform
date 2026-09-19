@@ -6,7 +6,7 @@ import {
 	resolveSentenceStartSeconds,
 } from "./insert-points";
 import type { DetectedPhrase } from "../detecting-phrases/phrase-detection.service";
-import type { WhisperTranscript } from "../shared/merge-transcripts";
+import type { WhisperTranscript } from "../shared/type/whisper-transcript";
 
 function makePhrase(overrides: Partial<DetectedPhrase> = {}): DetectedPhrase {
 	return {

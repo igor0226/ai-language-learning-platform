@@ -1,4 +1,4 @@
-import type { VideoProcessingHistory } from "../types";
+import type { VideoProcessingHistory } from "../type";
 
 export function createDefaultHistory(videoId: string): VideoProcessingHistory {
 	return {

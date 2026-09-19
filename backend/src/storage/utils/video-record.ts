@@ -1,5 +1,5 @@
 import type { Video } from "@/models";
-import type { VideoRecord } from "../types";
+import type { VideoRecord } from "../type";
 
 export function sanitizeTitle(value: string): string {
 	const trimmed = value.trim();

@@ -1,4 +1,4 @@
-import type { CallTopic } from "../model/types";
+import type { CallTopic } from "../type";
 
 export function formatSpeakingTopicText(
 	topic: Pick<CallTopic, "title" | "description">,

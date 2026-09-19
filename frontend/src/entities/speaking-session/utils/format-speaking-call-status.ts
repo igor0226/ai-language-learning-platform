@@ -1,4 +1,4 @@
-import type { SpeakingCallStatus } from "../model/types";
+import type { SpeakingCallStatus } from "../type";
 
 const STATUS_LABEL: Record<SpeakingCallStatus, string> = {
 	connecting: "Connecting",

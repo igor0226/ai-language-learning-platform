@@ -6,14 +6,13 @@ import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
 import { BlobStorageService, type VideoRecord } from "@/storage";
 import type { DetectedPhrase } from "../detecting-phrases/phrase-detection.service";
-import type { ExplanationClipsManifest } from "../generating-clips/explanation-clip.service";
+import type { ExplanationClipsManifest } from "../generating-clips/type/explanation-clip";
 import {
 	buildCompositionParts,
 	buildExplanationsByIndex,
 	buildPlaybackPhrases,
-	type CompositionPart,
-	type PlaybackPhrase,
 } from "./compose-plan";
+import type { CompositionPart, PlaybackPhrase } from "./type/compose-plan";
 import {
 	probeMediaDurationSeconds,
 	probeVideoFile,

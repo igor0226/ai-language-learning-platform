@@ -1,7 +1,7 @@
 import { UnauthorizedException } from "@nestjs/common";
 import { describe, expect, it, vi } from "vitest";
 
-import type { AuthenticatedRequest } from "./express-request";
+import type { AuthenticatedRequest } from "../type/express-request";
 import { loginAndSaveSession } from "./login-and-save-session";
 
 describe("loginAndSaveSession", () => {

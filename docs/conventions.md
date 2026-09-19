@@ -9,8 +9,11 @@
 - Keep files under 300 lines. If not possible, ask.
 - Keep functions under 50 lines. If not possible, ask.
 - Store module-bound utility functions under a `utils/` directory; do not blend them with business logic files.
+- Store substantial type declarations under a `type/` directory next to the owning module or slice. Do not put type-only files or large type blocks in `utils/`. Tiny local types (component props, a one-function input) may stay colocated.
 
-Backend: each Nest module has its own `utils/` (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`).
+Backend: each Nest module has its own `utils/` and, when types take space, `type/` (e.g. `storage/type/`, `speaking/type/`, `videos/type/`).
+
+Frontend: entity/slice types that occupy space live in `type/` (e.g. `entities/video/type/`), not in `utils/` or mixed into `model/` type dumps.
 
 ## Communication
 

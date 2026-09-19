@@ -4,7 +4,7 @@ import type {
 	LanguageLevel,
 	TeacherCallRecord,
 	TeacherCallStatus,
-} from "../storage/types";
+} from "../storage/type";
 import {
 	isoDateTransformer,
 	nullableIsoDateTransformer,

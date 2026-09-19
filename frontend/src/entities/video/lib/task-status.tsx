@@ -2,7 +2,7 @@ import type {
 	ProcessingEventStatus,
 	ProcessingStep,
 	VideoStatus,
-} from "../model/types";
+} from "../type";
 
 import { AlertCircle, CheckCircle2, Timer } from "lucide-react";
 

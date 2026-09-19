@@ -4,7 +4,7 @@ import type {
 	LanguageLevel,
 	VideoProcessingStatus,
 	VideoRecord,
-} from "../storage/types";
+} from "../storage/type";
 import {
 	bigintTransformer,
 	isoDateTransformer,

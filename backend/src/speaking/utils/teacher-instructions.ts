@@ -1,11 +1,6 @@
-import { formatAllowedEmotions, type LanguageLevel } from "@llp/contracts";
+import { formatAllowedEmotions } from "@llp/contracts";
 
-export type TeacherInstructionInput = {
-	sourceLanguage: string;
-	languageLevel: LanguageLevel;
-	explanationLanguage?: string | null;
-	topic?: string | null;
-};
+import type { TeacherInstructionInput } from "../type/teacher-instruction";
 
 export function buildTeacherInstructions(
 	input: TeacherInstructionInput,

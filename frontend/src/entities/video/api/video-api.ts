@@ -1,4 +1,4 @@
-import type { VideoStatusResponse, VideosResponse } from "../model/types";
+import type { VideoStatusResponse, VideosResponse } from "../type";
 
 import { apiUrl } from "@/shared/api";
 

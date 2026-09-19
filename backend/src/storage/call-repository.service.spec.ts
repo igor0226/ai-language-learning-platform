@@ -2,7 +2,7 @@ import { LessThan } from "typeorm";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { CallRepositoryService } from "./call-repository.service";
-import type { TeacherCallRecord } from "./types";
+import type { TeacherCallRecord } from "./type";
 
 describe("CallRepositoryService", () => {
 	const saved: TeacherCallRecord[] = [];

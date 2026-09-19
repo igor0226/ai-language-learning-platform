@@ -43,29 +43,11 @@ import { downloadSourceVideoToWorkspace } from "../shared/utils/download-source-
 import { normalizeFfmpegError, runProcess } from "../shared/ffmpeg-process";
 import { mapWithConcurrency } from "../shared/map-with-concurrency";
 import type { DetectedPhrase } from "../detecting-phrases/phrase-detection.service";
-
-export type ExplanationClipManifestEntry = {
-	index: number;
-	phrase: string;
-	insertAtSeconds: number;
-	sentenceStartSeconds: number;
-	durationSeconds: number;
-	relativePath: string;
-};
-
-export type ExplanationClipsManifest = {
-	clips: ExplanationClipManifestEntry[];
-};
-
-export type GenerateClipsInput = {
-	video: VideoRecord;
-	phrasesRelativePath: string;
-	transcriptRelativePath: string;
-};
-
-export type GenerateClipsResult = {
-	clipsManifestRelativePath: string;
-};
+import type {
+	ExplanationClipManifestEntry,
+	GenerateClipsInput,
+	GenerateClipsResult,
+} from "./type/explanation-clip";
 
 type PhrasesFile = {
 	phrases: DetectedPhrase[];

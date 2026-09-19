@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { ParticipantTokenInput } from "./utils/livekit-types";
+import type { ParticipantTokenInput } from "./type/livekit";
 import { resolveLivekitConfig } from "./utils/resolve-livekit-config";
 
 @Injectable()

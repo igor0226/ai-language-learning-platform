@@ -15,7 +15,7 @@ Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend
 |---|---|
 | Product / roadmap / CEFR fields | [`docs/product.md`](docs/product.md) |
 | Compose, HTTPS, volumes, `nvm` | [`docs/local-dev.md`](docs/local-dev.md) |
-| Style, contracts, size limits | [`docs/conventions.md`](docs/conventions.md) |
+| Style, contracts, `utils/` / `type/` | [`docs/conventions.md`](docs/conventions.md) |
 | Login, sessions, cookies | [`docs/auth.md`](docs/auth.md) |
 | Listening pipeline, DASH, player | [`docs/listening.md`](docs/listening.md) |
 | Speaking / LiveKit | [`docs/speaking.md`](docs/speaking.md) |

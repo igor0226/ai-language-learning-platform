@@ -1,4 +1,4 @@
-import type { ProcessingStep, VideoProcessingHistory } from "../types";
+import type { ProcessingStep, VideoProcessingHistory } from "../type";
 
 const RESUMABLE_STEPS = [
 	"audio_extract",

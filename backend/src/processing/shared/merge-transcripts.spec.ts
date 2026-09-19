@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { mergeWhisperTranscripts } from "./merge-transcripts";
-import type { WhisperTranscript } from "./merge-transcripts";
+import type { WhisperTranscript } from "./type/whisper-transcript";
 
 describe("mergeWhisperTranscripts", () => {
 	it("merges chunk text and offsets word timestamps", () => {

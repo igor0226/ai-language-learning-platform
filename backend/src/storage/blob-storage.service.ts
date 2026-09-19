@@ -13,10 +13,10 @@ import {
 import { Upload } from "@aws-sdk/lib-storage";
 import { Inject, Injectable } from "@nestjs/common";
 
-import type { ProcessingStep, VideoRecord } from "./types";
+import type { ProcessingStep, VideoRecord } from "./type";
 import { normalizeObjectKey } from "./utils/normalize-object-key";
 import { S3_CLIENT, S3_CONFIG } from "./s3-client.provider";
-import type { S3Config } from "./utils/resolve-s3-config";
+import type { S3Config } from "./type/s3-config";
 
 const DASH_DIR = "dash";
 const AUDIO_DIR = "audio";

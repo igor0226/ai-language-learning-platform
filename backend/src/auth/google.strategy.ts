@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy, type Profile } from "passport-google-oauth20";
 
-import type { UserRecord } from "../storage/types";
+import type { UserRecord } from "../storage/type";
 import { AuthService } from "./auth.service";
 import { toGoogleUserInput } from "./utils/google-profile";
 import { resolveAuthConfig } from "./utils/resolve-auth-config";

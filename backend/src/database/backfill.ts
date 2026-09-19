@@ -4,7 +4,7 @@ import path from "node:path";
 import { ProcessingHistory, Video } from "../models";
 import { createDefaultHistory } from "../storage/utils/create-default-history";
 import { normalizeLegacyVideoRecord } from "../storage/utils/video-record";
-import type { VideoProcessingHistory, VideoRecord } from "../storage/types";
+import type { VideoProcessingHistory, VideoRecord } from "../storage/type";
 import { resolveStorageRoot } from "../storage/utils/resolve-storage-root";
 import { createAppDataSource } from "./data-source";
 

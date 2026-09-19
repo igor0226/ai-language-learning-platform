@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type { CreateRoomInput } from "./utils/livekit-types";
+import type { CreateRoomInput } from "./type/livekit";
 import { resolveLivekitConfig } from "./utils/resolve-livekit-config";
 
 @Injectable()

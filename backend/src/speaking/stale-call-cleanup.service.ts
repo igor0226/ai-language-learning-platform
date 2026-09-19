@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
 import { CallRepositoryService } from "../storage";
-import type { TeacherCallRecord } from "../storage/types";
+import type { TeacherCallRecord } from "../storage/type";
 import { LivekitRoomService } from "./livekit-room.service";
 import {
 	STALE_CALL_ENDED_REASON,

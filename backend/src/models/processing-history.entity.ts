@@ -4,7 +4,7 @@ import type {
 	ProcessingHistoryEvent,
 	ProcessingStep,
 	VideoProcessingHistory,
-} from "../storage/types";
+} from "../storage/type";
 import { isoDateTransformer } from "./utils/iso-date.transformer";
 
 @Entity({ name: "processing_history" })

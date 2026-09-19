@@ -8,7 +8,7 @@ Detailed agent guidance lives here. Each [`AGENTS.md`](../AGENTS.md) file is a s
 |---|---|
 | [`product.md`](product.md) | Product goal, skills roadmap, CEFR/language inputs, monorepo layout |
 | [`local-dev.md`](local-dev.md) | Docker Compose, HTTPS/Caddy, `nvm`, volumes, env bootstrap |
-| [`conventions.md`](conventions.md) | `@llp/contracts`, file/function limits, utils/, ask when unclear |
+| [`conventions.md`](conventions.md) | `@llp/contracts`, file/function limits, `utils/`, `type/`, ask when unclear |
 | [`auth.md`](auth.md) | Google OAuth, session cookie, Next middleware, CORS |
 | [`listening.md`](listening.md) | Listening pipeline, artifacts, video API, retry, DASH, player |
 | [`speaking.md`](speaking.md) | Speaking API, LiveKit, agent worker, frontend call UI |

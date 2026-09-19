@@ -5,7 +5,7 @@ import {
 	buildExplanationsByIndex,
 	buildPlaybackPhrases,
 } from "./compose-plan";
-import type { ExplanationClipManifestEntry } from "../generating-clips/explanation-clip.service";
+import type { ExplanationClipManifestEntry } from "../generating-clips/type/explanation-clip";
 
 function makeClip(
 	overrides: Partial<ExplanationClipManifestEntry> &

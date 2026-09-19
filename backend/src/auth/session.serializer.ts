@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { PassportSerializer } from "@nestjs/passport";
 
-import type { UserRecord } from "../storage/types";
+import type { UserRecord } from "../storage/type";
 import { AuthService } from "./auth.service";
 
 @Injectable()

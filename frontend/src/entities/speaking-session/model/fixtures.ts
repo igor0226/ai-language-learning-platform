@@ -3,7 +3,7 @@ import type {
 	ConnectionStep,
 	SavedPhrase,
 	TranscriptSegment,
-} from "./types";
+} from "../type";
 
 export const SPEAKING_TOPICS: CallTopic[] = [
 	{

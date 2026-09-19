@@ -1,19 +1,5 @@
-import type {
-	LanguageLevel,
-	TeacherCallRecord,
-	TeacherCallStatus,
-} from "@/storage/types";
-
-export type TeacherCallHistoryItem = {
-	id: string;
-	status: TeacherCallStatus;
-	sourceLanguage: string;
-	languageLevel: LanguageLevel;
-	explanationLanguage: string | null;
-	createdAt: string;
-	endedAt: string | null;
-	durationSeconds: number | null;
-};
+import type { TeacherCallRecord } from "@/storage/type";
+import type { TeacherCallHistoryItem } from "../type/teacher-call-history-item";
 
 export function toCallHistoryItem(
 	record: TeacherCallRecord,

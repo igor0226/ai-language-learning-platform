@@ -1,4 +1,4 @@
-import type { VideoItem, VideoStatusResponse } from "../model/types";
+import type { VideoItem, VideoStatusResponse } from "../type";
 
 import { describe, expect, it } from "vitest";
 

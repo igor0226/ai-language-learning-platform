@@ -1,10 +1,4 @@
-export type PostgresConfig = {
-	host: string;
-	port: number;
-	username: string;
-	password: string;
-	database: string;
-};
+import type { PostgresConfig } from "../type/postgres-config";
 
 export function getPostgresConfig(): PostgresConfig {
 	return {

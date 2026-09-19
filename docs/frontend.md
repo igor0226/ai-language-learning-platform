@@ -44,6 +44,8 @@ The UI is organized under `src/`:
 
 Import only downward (pages → widgets → features → entities → shared). Each slice exposes a public `index.ts` with named exports (no `export *`). Import shadcn primitives as `@/shared/ui/button`. Prefer `@/` over `../../` and deeper when importing across slices; keep `./` and one-level `../` within the same slice.
 
+Substantial type declarations live in a slice `type/` directory (e.g. `entities/video/type/`). Do not mix large type blocks into `utils/` or `model/`. Tiny local types such as component props may stay colocated.
+
 A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pages Router.
 
 ## Data fetching

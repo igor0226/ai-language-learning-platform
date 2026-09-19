@@ -7,7 +7,7 @@ import { Repository } from "typeorm";
 import { Video } from "../models";
 import { BlobStorageService } from "./blob-storage.service";
 import { ProcessingHistoryService } from "./processing-history.service";
-import type { CreateVideoInput, VideoRecord } from "./types";
+import type { CreateVideoInput, VideoRecord } from "./type";
 import { isInvalidUuidError } from "./utils/postgres-errors";
 import {
 	normalizeVideoRecord,
