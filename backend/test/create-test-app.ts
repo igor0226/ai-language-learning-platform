@@ -3,6 +3,7 @@ import type { TestingModule } from "@nestjs/testing";
 import { Test, type TestingModuleBuilder } from "@nestjs/testing";
 
 import { AppModule } from "../src/app.module";
+import { configureHttpApp } from "../src/auth/utils/configure-http-app";
 
 export async function createTestApp(options?: {
 	override?: (builder: TestingModuleBuilder) => TestingModuleBuilder;
@@ -18,7 +19,7 @@ export async function createTestApp(options?: {
 	}
 	const moduleRef = await builder.compile();
 	const app = moduleRef.createNestApplication({ rawBody: true });
-	app.setGlobalPrefix("api");
+	configureHttpApp(app);
 	await app.init();
 
 	return { app, moduleRef };

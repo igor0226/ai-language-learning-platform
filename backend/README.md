@@ -13,7 +13,7 @@ Without Docker: Node.js v24 (see repo-root `.nvmrc`), npm, and FFmpeg on system 
 From the repository root:
 
 ```bash
-cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
+cp backend/.env.example backend/.env   # then set OPENAI_API_KEY, Google OAuth, SESSION_SECRET
 npm run dev
 ```
 
@@ -30,6 +30,15 @@ npm run start:dev
 ```
 
 ## Main endpoints
+
+### Auth (Google OAuth + session)
+
+- `GET /api/auth/google` — start Google sign-in
+- `GET /api/auth/google/callback` — OAuth callback (sets `llp.sid` cookie)
+- `GET /api/auth/me` — current user (401 when unauthenticated)
+- `POST /api/auth/logout` — destroy session
+
+### Listening & Speaking
 
 - `POST /api/videos/upload` — upload a source video (requires `title`, `file`, `sourceLanguage`, `explanationLanguage`, `languageLevel`)
 - `GET /api/videos` — list videos
@@ -58,5 +67,5 @@ Video metadata and processing history are in PostgreSQL. To migrate existing loc
 ## Notes
 
 - The processing worker starts on Nest boot via `ProcessingWorkerService` (`OnModuleInit`).
-- No authentication/authorization layer yet.
+- UI routes are gated by Google OAuth; videos/DASH/speaking APIs remain open until a later slice.
 - Agent guidance: [`AGENTS.md`](AGENTS.md)

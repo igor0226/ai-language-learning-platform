@@ -97,8 +97,8 @@ The browser calls Nest directly (no Next.js API proxy).
 - **Phrase analysis + explanations (Listening):** LLM (e.g. OpenAI) to flag idioms, collocations, and grammatically tricky phrases and generate learner explanations in the explanation language.
 - **TTS (Listening):** explanation text is spoken via TTS (provider TBD); locale follows the explanation language.
 - **Language params** travel with the upload record and drive prompt and TTS locale selection.
-- No authentication/authorization layer yet.
-- **Local HTTPS (Compose + Caddy):** `https://app.llp-test.com` serves Next.js and proxies `/api/*` to Nest on the same origin (for future Google OAuth cookies + SSR auth). Media signaling: `wss://media.llp-test.com`. One-time setup: `npm run dev:https-setup` then add `/etc/hosts` entries. Direct ports `localhost:3000` / `:3001` remain for debugging.
+- **Auth (UI gate):** Google OAuth via Nest (`GET /api/auth/google`, callback, `GET /api/auth/me`, `POST /api/auth/logout`) with Postgres-backed session cookie `llp.sid`. Next.js middleware gates UI routes; videos/DASH/speaking APIs stay unauthenticated until a later slice.
+- **Local HTTPS (Compose + Caddy):** `https://app.llp-test.com` serves Next.js and proxies `/api/*` to Nest on the same origin (session cookies + SSR auth checks). Media signaling: `wss://media.llp-test.com`. One-time setup: `npm run dev:https-setup` then add `/etc/hosts` entries. Direct ports `localhost:3000` / `:3001` remain for debugging.
 - Defaults with Caddy: app `https://app.llp-test.com`, API `https://app.llp-test.com/api`.
   - `NEXT_PUBLIC_API_URL` (frontend → Nest; same origin in Compose)
   - `CORS_ORIGIN` (Nest → Next origin; same as app URL in Compose)
@@ -109,7 +109,7 @@ The browser calls Nest directly (no Next.js API proxy).
 ### Local dev (Docker Compose)
 
 ```bash
-cp backend/.env.example backend/.env   # then set OPENAI_API_KEY
+cp backend/.env.example backend/.env   # then set OPENAI_API_KEY, Google OAuth, SESSION_SECRET
 npm run dev:https-setup                # one-time mkcert + /etc/hosts
 docker compose up --build              # https://app.llp-test.com (UI + /api), wss://media.llp-test.com
 ```

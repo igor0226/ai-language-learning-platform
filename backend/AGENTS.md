@@ -10,15 +10,22 @@ Run the app with Docker Compose from the repo root (`docker compose up --build`)
 
 Nest.js app under `src/` with feature modules:
 
+- `auth/` — Google OAuth + Postgres session cookie (`llp.sid`); `/api/auth/*` routes
 - `videos/` — list/upload/status HTTP API
 - `speaking/` — AI teacher call HTTP API (create/end/status) + LiveKit token/room/dispatch + agent worker (`src/speaking/agent/`)
 - `processing/` — cron worker, jobs, FFmpeg DASH generation, audio extraction, Whisper transcription, phrase detection, explanation clip generation, video composition
 - `dash/` — manifest rewrite + segment serving
 - `storage/` — `BlobStorageService` (S3/MinIO object keys) + Postgres-backed repositories/services
-- `models/` — TypeORM entity declarations (`Video`, `ProcessingHistory`, `ProcessingLock`, `TeacherCall`)
+- `models/` — TypeORM entity declarations (`Video`, `ProcessingHistory`, `ProcessingLock`, `TeacherCall`, `User`)
 - `database/` — TypeORM wiring, migrations, backfill script
 
-`main.ts` sets Pino app logger, CORS, global `api` prefix, port `3001`. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
+`main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
+
+### Auth (Google OAuth)
+
+Env: `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `SESSION_SECRET` (see `.env.example`). Optional: `AUTH_SUCCESS_REDIRECT`, `AUTH_FAILURE_REDIRECT`, `SESSION_MAX_AGE_MS`.
+
+Routes: `GET /api/auth/google`, `GET /api/auth/google/callback`, `GET /api/auth/me`, `POST /api/auth/logout`. Videos, DASH, and speaking APIs stay unauthenticated until a later slice.
 
 Speaking JSON/query fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
 

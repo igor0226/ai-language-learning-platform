@@ -3,6 +3,7 @@ import { LoggerModule } from "nestjs-pino";
 
 import { ConfigModule } from "@nestjs/config";
 
+import { AuthModule } from "./auth/auth.module";
 import { DatabaseModule } from "./database/database.module";
 import { DashModule } from "./dash/dash.module";
 import { ProcessingModule } from "./processing/processing.module";
@@ -17,6 +18,7 @@ import { VideosModule } from "./videos/videos.module";
 			ignoreEnvFile: process.env.VITEST === "true",
 		}),
 		DatabaseModule,
+		AuthModule,
 		LoggerModule.forRoot({
 			pinoHttp: {
 				level:

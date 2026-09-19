@@ -23,6 +23,7 @@ Run the app with Docker Compose from the repo root (`docker compose up --build`)
 
 **Current routes** (implemented today):
 
+- `/login` — Google sign-in (middleware gates other UI routes)
 - `/` — redirect to `/dashboard`
 - `/dashboard` — progress overview
 - `/listening` — video library
@@ -45,7 +46,7 @@ Import only downward (pages → widgets → features → entities → shared). E
 
 A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pages Router.
 
-Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`).
+Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Auth session uses `authFetch()` with `credentials: "include"`. Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
 
 - **Hard rule:** do not call `useQuery` or `useInfiniteQuery` in pages or widgets. Each query lives in a dedicated hook under the owning entity or feature (`api/` or `model/`). Pages and widgets only consume those hooks. `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, and `useSpeakingCalls` are the current examples. The same applies to mutations (`useRetryVideo`).
 

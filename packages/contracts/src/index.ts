@@ -1,3 +1,4 @@
+export { authUserSchema, type AuthUser } from "./auth-user";
 export {
 	LANGUAGE_LEVELS,
 	languageLevelInputSchema,

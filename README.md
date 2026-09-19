@@ -154,7 +154,7 @@ Direct ports remain published for debugging:
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - Backend: [http://localhost:3001](http://localhost:3001) (global prefix `/api`)
 
-Use `https://app.llp-test.com` for normal development (required for future Google OAuth). `localhost` bypasses Caddy and may not match `CORS_ORIGIN`.
+Use `https://app.llp-test.com` for normal development (required for Google OAuth). `localhost` bypasses Caddy and may not match `CORS_ORIGIN` or the registered Google redirect URI.
 
 Source is bind-mounted, so frontend and backend hot-reload on file changes.
 
@@ -181,9 +181,13 @@ Caddy terminates TLS and routes:
 - `https://app.llp-test.com/api/*` → Nest (same origin; session cookies can live on `app.llp-test.com` for SSR auth later)
 - `https://media.llp-test.com` → media WebSocket (LiveKit; required because an HTTPS page cannot use `ws://localhost`)
 
-Future Google OAuth redirect URI: `https://app.llp-test.com/api/auth/google/callback`
+Google OAuth redirect URI: `https://app.llp-test.com/api/auth/google/callback`
 
-Compose sets `NEXT_PUBLIC_API_URL=https://app.llp-test.com`, `CORS_ORIGIN=https://app.llp-test.com`, and `LIVEKIT_URL=wss://media.llp-test.com`.
+Set `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `SESSION_SECRET` in `backend/.env` before signing in.
+
+Compose sets `NEXT_PUBLIC_API_URL=https://app.llp-test.com`, `AUTH_API_URL=http://backend:3001` (Next middleware → Nest), `CORS_ORIGIN=https://app.llp-test.com`, and `LIVEKIT_URL=wss://media.llp-test.com`.
+
+The UI requires Google sign-in (`/login`). Nest videos, DASH, and speaking APIs remain open for now.
 
 ## Without Docker
 
