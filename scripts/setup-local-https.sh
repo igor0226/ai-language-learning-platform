@@ -13,15 +13,15 @@ fi
 
 mkdir -p "$CERT_DIR"
 mkcert -install
-mkcert -cert-file "$CERT_DIR/llp.test.pem" -key-file "$CERT_DIR/llp.test-key.pem" \
-	"app.llp.test" "media.llp.test"
+mkcert -cert-file "$CERT_DIR/llp-test.com.pem" -key-file "$CERT_DIR/llp-test.com-key.pem" \
+	"app.llp-test.com" "media.llp-test.com"
 
 echo
 echo "Certificates written to $CERT_DIR"
 echo
 echo "Add these lines to /etc/hosts (requires sudo):"
-echo "127.0.0.1 app.llp.test media.llp.test"
-echo "::1       app.llp.test media.llp.test"
+echo "127.0.0.1 app.llp-test.com media.llp-test.com"
+echo "::1       app.llp-test.com media.llp-test.com"
 echo
 echo "Then start the stack: docker compose up --build"
-echo "App: https://app.llp.test  (UI + /api on the same origin)"
+echo "App: https://app.llp-test.com  (UI + /api on the same origin)"

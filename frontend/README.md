@@ -18,7 +18,7 @@ From the repository root:
 npm run dev
 ```
 
-App: [https://app.llp.test](https://app.llp.test) (HTTPS via Caddy; run `npm run dev:https-setup` once first). Direct port: [http://localhost:3000](http://localhost:3000).
+App: [https://app.llp-test.com](https://app.llp-test.com) (HTTPS via Caddy; run `npm run dev:https-setup` once first). Direct port: [http://localhost:3000](http://localhost:3000).
 
 Without Docker:
 
@@ -31,10 +31,10 @@ npm run dev
 
 ### Environment (optional)
 
-Compose sets `NEXT_PUBLIC_API_URL=https://app.llp.test` (same origin as the UI). Create `frontend/.env.local` only if you need a non-default API URL on the host:
+Compose sets `NEXT_PUBLIC_API_URL=https://app.llp-test.com` (same origin as the UI) and `AUTH_API_URL=http://backend:3001` for middleware session checks. Create `frontend/.env.local` only if you need a non-default API URL on the host:
 
 ```bash
-NEXT_PUBLIC_API_URL=https://app.llp.test
+NEXT_PUBLIC_API_URL=https://app.llp-test.com
 # Host-only without Caddy: NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 
@@ -51,11 +51,16 @@ NEXT_PUBLIC_API_URL=https://app.llp.test
 - `/writing` — writing workspace (coming soon)
 - `/reading` — reading practice (planned)
 
-**Current Listening routes** (implemented today):
+**Current routes** (implemented today):
 
-- `/` — tasks list
-- `/tasks/new` — upload form
-- `/tasks/[id]` — task detail + DASH player
+- `/login` — Google sign-in (required before other UI routes)
+- `/dashboard` — progress overview
+- `/listening` — video library
+- `/listening/upload` — upload form
+- `/listening/[id]` — video detail + DASH player
+- `/speaking` — call launcher + history
+- `/speaking/call/[callId]` — live AI teacher call
+- `/writing` — coming soon
 
 ## Notes
 

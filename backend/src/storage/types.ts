@@ -76,6 +76,23 @@ export type TeacherCallRecord = {
 	endedAt: string | null;
 };
 
+export type UserRecord = {
+	id: string;
+	googleSub: string;
+	email: string;
+	name: string;
+	pictureUrl: string | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type UpsertGoogleUserInput = {
+	googleSub: string;
+	email: string;
+	name: string;
+	pictureUrl: string | null;
+};
+
 export type CreateTeacherCallInput = {
 	userId: string;
 	sourceLanguage: string;

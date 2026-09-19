@@ -6,6 +6,7 @@ import {
 	ProcessingHistory,
 	ProcessingLock,
 	TeacherCall,
+	User,
 	Video,
 } from "../models";
 import { getPostgresConfig } from "./utils/postgres-config";
@@ -14,7 +15,7 @@ export function createAppDataSource(): DataSource {
 	return new DataSource({
 		type: "postgres",
 		...getPostgresConfig(),
-		entities: [Video, ProcessingHistory, ProcessingLock, TeacherCall],
+		entities: [Video, ProcessingHistory, ProcessingLock, TeacherCall, User],
 		migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],
 		synchronize: false,
 	});

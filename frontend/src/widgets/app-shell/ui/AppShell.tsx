@@ -1,10 +1,9 @@
 "use client";
 
-import { User } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Avatar, AvatarFallback } from "@/shared/ui/avatar";
+import { UserAccountMenu } from "@/widgets/user-menu";
 import { AppNavLinks } from "./AppNavLinks";
 import "./AppShell.css";
 
@@ -14,7 +13,8 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
 	const pathname = usePathname() ?? "";
-	const isImmersive = pathname.startsWith("/speaking/call/");
+	const isImmersive =
+		pathname.startsWith("/speaking/call/") || pathname === "/login";
 
 	if (isImmersive) {
 		return <div className="callPage">{children}</div>;
@@ -34,12 +34,7 @@ export function AppShell({ children }: AppShellProps) {
 						</Link>
 						<AppNavLinks pathname={pathname} className="appShellNav" />
 					</div>
-					<Avatar>
-						<AvatarFallback>
-							<User className="h-4 w-4" />
-							<span className="sr-only">User profile</span>
-						</AvatarFallback>
-					</Avatar>
+					<UserAccountMenu />
 				</div>
 				<AppNavLinks pathname={pathname} className="appShellMobileNav" />
 			</header>

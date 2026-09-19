@@ -13,6 +13,11 @@ export async function setupE2eStorage(): Promise<string> {
 		path.join(os.tmpdir(), "language-learning-platform-e2e-workspace-"),
 	);
 	process.env.MEDIA_WORKSPACE_ROOT = e2eWorkspaceRoot;
+	process.env.GOOGLE_CLIENT_ID ??= "test-google-client-id";
+	process.env.GOOGLE_CLIENT_SECRET ??= "test-google-client-secret";
+	process.env.GOOGLE_REDIRECT_URI ??=
+		"http://localhost:3001/api/auth/google/callback";
+	process.env.SESSION_SECRET ??= "test-session-secret-at-least-32-characters";
 	return e2eWorkspaceRoot;
 }
 
