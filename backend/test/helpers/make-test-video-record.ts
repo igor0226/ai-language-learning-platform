@@ -5,6 +5,7 @@ export function makeTestVideoRecord(
 ): VideoRecord {
 	return {
 		id: "video-1",
+		userId: "user-1",
 		title: "Test",
 		originalFileName: "clip.mp4",
 		mimeType: "video/mp4",

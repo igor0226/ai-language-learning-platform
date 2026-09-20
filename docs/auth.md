@@ -1,6 +1,6 @@
 # Auth
 
-Google OAuth via Nest with Postgres-backed session cookie `llp.sid`. Next.js middleware gates UI routes; videos, DASH, and speaking APIs stay unauthenticated until a later slice.
+Google OAuth via Nest with Postgres-backed session cookie `llp.sid`. Next.js middleware gates UI routes. Nest `/api/videos/*` and `/api/speaking/calls*` require the session cookie (`401` without it). DASH routes and the LiveKit webhook stay public.
 
 ## Backend routes
 

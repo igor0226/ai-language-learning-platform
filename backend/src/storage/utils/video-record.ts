@@ -22,6 +22,7 @@ export function normalizeLegacyVideoRecord(
 ): VideoRecord {
 	return {
 		...parsed,
+		userId: parsed.userId ?? null,
 		transcriptRelativePath: parsed.transcriptRelativePath ?? null,
 		phrasesRelativePath: parsed.phrasesRelativePath ?? null,
 		sourceLanguage: parsed.sourceLanguage ?? "",

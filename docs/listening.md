@@ -78,10 +78,12 @@ Processing steps tracked in history: `queued`, `audio_extract`, `transcribing`, 
 
 ## Video API
 
+All video HTTP routes require the session cookie (`llp.sid`). List, status, retry, and playback-phrases are scoped to the logged-in user's `userId` on the video record (`404` when missing or owned by another user). Upload stamps `userId` from the session. DASH manifest/segment routes stay public.
+
 - `GET /api/videos` — each item includes `processingStep` and `queuePosition` (`null` unless `status === "pending"`)
 - `GET /api/videos/:id/status` — adds `processingHistory` (full event log) plus `processingStep` and `queuePosition`
 - `POST /api/videos/:id/retry` — retry a **failed** video; returns `409` for non-failed videos, `404` if missing
-- `queuePosition` is computed at read time: 1-based index among pending videos sorted by `createdAt`
+- `queuePosition` is computed at read time: 1-based index among pending videos sorted by `createdAt` (global pending set, not per-user)
 
 ## Retry failed videos
 

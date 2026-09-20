@@ -9,7 +9,7 @@ Run the app with Docker Compose from the repo root (`docker compose up --build`)
 Nest.js app under `src/` with feature modules:
 
 - `auth/` — Google OAuth + Postgres session cookie (`llp.sid`); `/api/auth/*` routes
-- `videos/` — list/upload/status HTTP API
+- `videos/` — session-gated list/upload/status HTTP API (`videos.userId` owner scope)
 - `speaking/` — AI teacher call HTTP API (create/end/status) + LiveKit token/room/dispatch + agent worker (`src/speaking/agent/`)
 - `processing/` — cron worker, jobs, FFmpeg DASH generation, audio extraction, Whisper transcription, phrase detection, explanation clip generation, video composition
 - `dash/` — manifest rewrite + segment serving
@@ -23,7 +23,9 @@ Store module-bound utility functions under each module's `utils/` directory (e.g
 
 `@/` maps to `src/` (see [`tsconfig.json`](../backend/tsconfig.json) `paths`). Prefer `@/` over `../../` and deeper when importing from another module under `src/`; keep `./` and one-level `../` within the same module.
 
-Speaking JSON/query fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
+Speaking JSON fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
+
+**Auth gate:** `/api/videos/*` and `/api/speaking/calls*` require `AuthenticatedGuard` (session cookie). `/api/dash/*` and `POST /api/speaking/livekit/webhook` stay public.
 
 ## Tech stack
 
@@ -46,7 +48,7 @@ In Docker Compose, backend uses `POSTGRES_HOST=postgres`. Host dev defaults to `
 
 **Tables** (see `src/models/`):
 
-- `videos` — video metadata (`VideoRecord` fields)
+- `videos` — video metadata (`VideoRecord` fields, nullable `userId` FK to `users`)
 - `processing_history` — per-video step history (`currentStep`, `events` jsonb)
 - `processing_locks` — worker concurrency guard (row insert = acquire, PK = one lock per video)
 - `teacher_calls` — speaking-skill AI teacher call records (`TeacherCallRecord` fields)

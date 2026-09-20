@@ -29,8 +29,9 @@ export class VideosService {
 		private readonly blobStorage: BlobStorageService,
 	) {}
 
-	async listVideosForApi(): Promise<VideoListItem[]> {
-		const videos = await this.videoRepository.listVideos();
+	async listVideosForApi(userId: string): Promise<VideoListItem[]> {
+		const videos = await this.videoRepository.listVideosByUserId(userId);
+		const allVideos = await this.videoRepository.listVideos();
 		const histories = await Promise.all(
 			videos.map((video) => this.processingHistory.getHistory(video.id)),
 		);
@@ -46,17 +47,19 @@ export class VideosService {
 			updatedAt: video.updatedAt,
 			failureReason: video.failureReason,
 			processingStep: histories[index].currentStep,
-			queuePosition: getQueuePosition(video, videos),
+			queuePosition: getQueuePosition(video, allVideos),
 			sourceLanguage: video.sourceLanguage,
 			explanationLanguage: video.explanationLanguage,
 			languageLevel: video.languageLevel,
 		}));
 	}
 
-	async getPlaybackPhrasesForApi(
-		videoId: string,
-	): Promise<PlaybackPhrasesForApi> {
-		await this.getVideoRecordById(videoId);
+	async getPlaybackPhrasesForApi(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<PlaybackPhrasesForApi> {
+		const { videoId } = input;
+		await this.getOwnedVideoRecord(input);
 
 		const playbackPhrasesRelativePath =
 			this.blobStorage.getPlaybackPhrasesRelativePath(videoId);
@@ -74,8 +77,12 @@ export class VideosService {
 		};
 	}
 
-	async getVideoStatusForApi(videoId: string): Promise<VideoStatusForApi> {
-		const video = await this.getVideoRecordById(videoId);
+	async getVideoStatusForApi(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<VideoStatusForApi> {
+		const { videoId } = input;
+		const video = await this.getOwnedVideoRecord(input);
 		const allVideos = await this.videoRepository.listVideos();
 		const history = await this.processingHistory.getHistory(videoId);
 
@@ -102,12 +109,27 @@ export class VideosService {
 		return video;
 	}
 
+	async getOwnedVideoRecord(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<VideoRecord> {
+		const video = await this.getVideoRecordById(input.videoId);
+		if (video.userId !== input.userId) {
+			throw new NotFoundException("Video not found");
+		}
+		return video;
+	}
+
 	async createVideo(input: CreateVideoInput): Promise<VideoRecord> {
 		return this.videoRepository.createVideo(input);
 	}
 
-	async retryFailedVideo(videoId: string): Promise<VideoRetryForApi> {
-		const video = await this.getVideoRecordById(videoId);
+	async retryFailedVideo(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<VideoRetryForApi> {
+		const { videoId } = input;
+		const video = await this.getOwnedVideoRecord(input);
 		if (video.status !== "failed") {
 			throw new ConflictException("Only failed videos can be retried");
 		}

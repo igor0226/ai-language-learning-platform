@@ -4,9 +4,9 @@ Live 1-on-1 AI teacher calls via self-hosted LiveKit (`livekit` in Compose) plus
 
 ## Backend API
 
-- `POST /api/speaking/calls` — stub auth via `userId`; creates a `teacher_calls` row, LiveKit room, agent dispatch, and participant token. Optional `topic` string is forwarded only in agent dispatch metadata (not stored). Returns `{ callId, roomName, token, livekitUrl }`.
-- `GET /api/speaking/calls?userId=` — owner-scoped history (`id`, status, languages, timestamps, `durationSeconds`). Omits topic, fluency, and LiveKit internals.
-- `GET /api/speaking/calls/:id?userId=` — owner-scoped call status.
+- `POST /api/speaking/calls` — session auth; creates a `teacher_calls` row for the logged-in user, LiveKit room, agent dispatch, and participant token. Optional `topic` string is forwarded only in agent dispatch metadata (not stored). Returns `{ callId, roomName, token, livekitUrl }`.
+- `GET /api/speaking/calls` — owner-scoped history for the session user (`id`, status, languages, timestamps, `durationSeconds`). Omits topic, fluency, and LiveKit internals.
+- `GET /api/speaking/calls/:id` — owner-scoped call status.
 - `POST /api/speaking/calls/:id/end` — owner-scoped end; deletes the LiveKit room and marks the call `ended`.
 - `POST /api/speaking/livekit/webhook` — LiveKit `room_finished` / `participant_left` reconciliation.
 - Stale-call cron (`StaleCallWorkerService`) marks leftover `active` calls as `failed` (`endedReason: stale_room_missing`) when they are older than the grace period and the LiveKit room is gone.

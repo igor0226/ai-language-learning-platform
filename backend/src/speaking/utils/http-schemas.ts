@@ -27,7 +27,6 @@ const optionalTopic = z
 	});
 
 export const createCallBodySchema = z.object({
-	userId: requiredString,
 	sourceLanguage: requiredString,
 	languageLevel: languageLevelInputSchema,
 	explanationLanguage: optionalExplanationLanguage,
@@ -35,11 +34,8 @@ export const createCallBodySchema = z.object({
 });
 
 export type CreateCallBody = {
-	userId: string;
 	sourceLanguage: string;
 	languageLevel: LanguageLevel;
 	explanationLanguage?: string;
 	topic?: string;
 };
-
-export const requiredUserIdSchema = requiredString;

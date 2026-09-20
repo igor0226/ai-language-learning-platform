@@ -6,22 +6,30 @@ import {
 	HttpCode,
 	Param,
 	Post,
+	Req,
 	Res,
 	UploadedFile,
+	UseGuards,
 	UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
 import { memoryStorage } from "multer";
+
+import { AuthenticatedGuard } from "@/auth/authenticated.guard";
+import type { AuthenticatedRequest } from "@/auth/type/express-request";
+import { getAuthenticatedUser } from "@/auth/utils/get-authenticated-user";
 import { VideosService } from "./videos.service";
 
 @Controller("videos")
+@UseGuards(AuthenticatedGuard)
 export class VideosController {
 	constructor(private readonly videosService: VideosService) {}
 
 	@Get()
-	async listVideos() {
-		const videos = await this.videosService.listVideosForApi();
+	async listVideos(@Req() request: AuthenticatedRequest) {
+		const user = getAuthenticatedUser(request);
+		const videos = await this.videosService.listVideosForApi(user.id);
 		const payload = videos.map((video) => ({
 			...video,
 			dashManifestUrl: video.playable ? `/api/dash/${video.id}/manifest` : null,
@@ -30,19 +38,40 @@ export class VideosController {
 	}
 
 	@Get(":id/status")
-	async getStatus(@Param("id") id: string) {
-		return this.videosService.getVideoStatusForApi(id);
+	async getStatus(
+		@Param("id") id: string,
+		@Req() request: AuthenticatedRequest,
+	) {
+		const user = getAuthenticatedUser(request);
+		return this.videosService.getVideoStatusForApi({
+			videoId: id,
+			userId: user.id,
+		});
 	}
 
 	@Get(":id/playback-phrases")
-	async getPlaybackPhrases(@Param("id") id: string) {
-		return this.videosService.getPlaybackPhrasesForApi(id);
+	async getPlaybackPhrases(
+		@Param("id") id: string,
+		@Req() request: AuthenticatedRequest,
+	) {
+		const user = getAuthenticatedUser(request);
+		return this.videosService.getPlaybackPhrasesForApi({
+			videoId: id,
+			userId: user.id,
+		});
 	}
 
 	@Post(":id/retry")
 	@HttpCode(200)
-	async retryVideo(@Param("id") id: string) {
-		return this.videosService.retryFailedVideo(id);
+	async retryVideo(
+		@Param("id") id: string,
+		@Req() request: AuthenticatedRequest,
+	) {
+		const user = getAuthenticatedUser(request);
+		return this.videosService.retryFailedVideo({
+			videoId: id,
+			userId: user.id,
+		});
 	}
 
 	@Post("upload")
@@ -58,6 +87,7 @@ export class VideosController {
 		@Body("sourceLanguage") sourceLanguage: string | undefined,
 		@Body("explanationLanguage") explanationLanguage: string | undefined,
 		@Body("languageLevel") languageLevel: string | undefined,
+		@Req() request: AuthenticatedRequest,
 		@Res() res: Response,
 	) {
 		try {
@@ -95,7 +125,9 @@ export class VideosController {
 				return res.status(400).send("Only video files are allowed");
 			}
 
+			const user = getAuthenticatedUser(request);
 			const record = await this.videosService.createVideo({
+				userId: user.id,
 				title,
 				originalFileName: originalName,
 				mimeType: file.mimetype || "application/octet-stream",

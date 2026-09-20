@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 import type {
 	LanguageLevel,
@@ -11,9 +11,13 @@ import {
 } from "./utils/iso-date.transformer";
 
 @Entity({ name: "videos" })
+@Index("IDX_videos_userId", ["userId"])
 export class Video implements VideoRecord {
 	@PrimaryColumn("uuid")
 	id!: string;
+
+	@Column({ type: "uuid", nullable: true })
+	userId!: string | null;
 
 	@Column({ type: "varchar" })
 	title!: string;

@@ -10,6 +10,7 @@ export type VideoProcessingStatus =
 
 export type VideoRecord = {
 	id: string;
+	userId: string | null;
 	title: string;
 	originalFileName: string;
 	mimeType: string;
@@ -30,6 +31,7 @@ export type VideoRecord = {
 };
 
 export type CreateVideoInput = {
+	userId: string;
 	title: string;
 	originalFileName: string;
 	mimeType: string;
