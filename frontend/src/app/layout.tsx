@@ -8,6 +8,20 @@ import "./styles/globals.css";
 export const metadata: Metadata = {
 	description:
 		"Learn languages from video with listening, speaking, and writing practice",
+	icons: {
+		icon: [
+			{
+				media: "(prefers-color-scheme: light)",
+				type: "image/svg+xml",
+				url: "/icon-light.svg",
+			},
+			{
+				media: "(prefers-color-scheme: dark)",
+				type: "image/svg+xml",
+				url: "/icon-dark.svg",
+			},
+		],
+	},
 	title: "Language Studio",
 };
 

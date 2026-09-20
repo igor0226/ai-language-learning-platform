@@ -73,6 +73,7 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 - In component CSS, use `@apply` with Tailwind utilities, or `hsl(var(--token))` when `@apply` is impractical.
 - Use Tailwind spacing/radius scales instead of raw pixel values.
 - Page-level theme overrides may redefine CSS variables; children should still use tokens.
+- Tab icons are `public/icon-light.svg` and `public/icon-dark.svg` (same mark as `public/favicon.ico`), declared in root `metadata.icons` with `prefers-color-scheme` media queries.
 
 ## Testing
 
