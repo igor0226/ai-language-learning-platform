@@ -5,7 +5,7 @@ import {
 } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { TeacherCallRecord } from "../storage/types";
+import type { TeacherCallRecord } from "../storage/type";
 import { SpeakingService } from "./speaking.service";
 
 function makeCall(

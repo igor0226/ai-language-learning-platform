@@ -34,7 +34,6 @@ export type VideoItem = {
 	failureReason: string | null;
 	dashManifestUrl: string | null;
 	processingStep: ProcessingStep;
-	queuePosition: number | null;
 	sourceLanguage: string;
 	explanationLanguage: string;
 	languageLevel: LanguageLevel;
@@ -51,7 +50,6 @@ export type VideoStatusResponse = {
 	playable: boolean;
 	chunkCount: number;
 	processingStep: ProcessingStep;
-	queuePosition: number | null;
 	processingHistory: ProcessingHistoryEvent[];
 	sourceLanguage: string;
 	explanationLanguage: string;

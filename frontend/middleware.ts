@@ -2,6 +2,12 @@ import type { NextRequest } from "next/server";
 
 import { NextResponse } from "next/server";
 
+import {
+	buildUnauthenticatedRedirect,
+	isPublicPath,
+	resolveAuthenticatedPublicRedirect,
+} from "@/shared/lib/middleware-auth";
+
 const sessionCookieName = "llp.sid";
 
 function resolveAuthApiUrl(): string {
@@ -10,10 +16,6 @@ function resolveAuthApiUrl(): string {
 		process.env.NEXT_PUBLIC_API_URL ??
 		"http://localhost:3001";
 	return base.replace(/\/$/, "");
-}
-
-function isPublicPath(pathname: string): boolean {
-	return pathname === "/login" || pathname.startsWith("/login/");
 }
 
 async function hasValidSession(request: NextRequest): Promise<boolean> {
@@ -38,10 +40,11 @@ async function hasValidSession(request: NextRequest): Promise<boolean> {
 export async function middleware(request: NextRequest) {
 	const { pathname } = request.nextUrl;
 	const authenticated = await hasValidSession(request);
+	const origin = request.nextUrl.origin;
 
 	if (isPublicPath(pathname)) {
 		if (authenticated) {
-			return NextResponse.redirect(new URL("/dashboard", request.url));
+			return NextResponse.redirect(resolveAuthenticatedPublicRedirect(origin));
 		}
 		return NextResponse.next();
 	}
@@ -50,11 +53,7 @@ export async function middleware(request: NextRequest) {
 		return NextResponse.next();
 	}
 
-	const loginUrl = new URL("/login", request.url);
-	if (pathname !== "/") {
-		loginUrl.searchParams.set("next", pathname);
-	}
-	return NextResponse.redirect(loginUrl);
+	return NextResponse.redirect(buildUnauthenticatedRedirect(pathname, origin));
 }
 
 export const config = {

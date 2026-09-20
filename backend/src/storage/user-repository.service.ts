@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 import { User } from "../models";
-import type { UpsertGoogleUserInput, UserRecord } from "./types";
+import type { UpsertGoogleUserInput, UserRecord } from "./type";
 import { isInvalidUuidError } from "./utils/postgres-errors";
 import { normalizeUserRecord } from "./utils/user-record";
 

@@ -2,7 +2,7 @@ import type {
 	ActivityHeatmapEntry,
 	LearningMetric,
 	RecentActivity,
-} from "./types";
+} from "../type";
 
 export const HEATMAP_ENTRIES: ActivityHeatmapEntry[] = [
 	{ date: "2026-08-01", value: 45, label: "45 mins", intensity: 3 },

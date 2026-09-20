@@ -1,28 +1,8 @@
-import type { PinoLogger } from "nestjs-pino";
-
-import type { ProcessingHistoryService, ProcessingStep } from "@/storage";
+import type {
+	ExecuteProcessingStepInput,
+	SkipProcessingStepInput,
+} from "../type/processing-step-runner";
 import { StepFailedError } from "./processing-errors";
-
-type StepRunnerDeps = {
-	processingHistory: ProcessingHistoryService;
-	logger: PinoLogger;
-};
-
-export type SkipProcessingStepInput<T> = {
-	deps: StepRunnerDeps;
-	videoId: string;
-	step: ProcessingStep;
-	logMessage: string;
-	result: T;
-};
-
-export type ExecuteProcessingStepInput<T> = {
-	deps: StepRunnerDeps;
-	videoId: string;
-	step: ProcessingStep;
-	startLogMessage: string;
-	run: () => Promise<T>;
-};
 
 export async function skipProcessingStep<T>(
 	input: SkipProcessingStepInput<T>,

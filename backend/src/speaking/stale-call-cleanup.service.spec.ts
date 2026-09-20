@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { TeacherCallRecord } from "../storage/types";
+import type { TeacherCallRecord } from "../storage/type";
 import { StaleCallCleanupService } from "./stale-call-cleanup.service";
 import { STALE_CALL_ENDED_REASON } from "./utils/stale-call-config";
 

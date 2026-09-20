@@ -1,4 +1,4 @@
-import type { VideoStatusResponse, VideosResponse } from "../model/types";
+import type { VideoStatusResponse, VideosResponse } from "../type";
 
 export function applyVideoStatusToList(input: {
 	previous: VideosResponse | undefined;
@@ -18,7 +18,6 @@ export function applyVideoStatusToList(input: {
 						chunkCount: input.status.chunkCount,
 						failureReason: input.status.failureReason,
 						processingStep: input.status.processingStep,
-						queuePosition: input.status.queuePosition,
 						sourceLanguage: input.status.sourceLanguage,
 						explanationLanguage: input.status.explanationLanguage,
 						languageLevel: input.status.languageLevel,

@@ -7,7 +7,7 @@ import type {
 	ProcessingHistoryEvent,
 	ProcessingStep,
 	VideoProcessingHistory,
-} from "./types";
+} from "./type";
 import { createDefaultHistory } from "./utils/create-default-history";
 
 @Injectable()

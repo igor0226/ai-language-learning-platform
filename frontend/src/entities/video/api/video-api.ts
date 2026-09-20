@@ -1,9 +1,9 @@
-import type { VideoStatusResponse, VideosResponse } from "../model/types";
+import type { VideoStatusResponse, VideosResponse } from "../type";
 
-import { apiUrl } from "@/shared/api";
+import { authFetch } from "@/shared/api/auth-fetch";
 
 export async function fetchVideos(): Promise<VideosResponse> {
-	const response = await fetch(apiUrl("/api/videos"));
+	const response = await authFetch("/api/videos");
 	if (!response.ok) {
 		throw new Error("Failed to load videos");
 	}
@@ -13,7 +13,7 @@ export async function fetchVideos(): Promise<VideosResponse> {
 export async function fetchVideoStatus(
 	videoId: string,
 ): Promise<VideoStatusResponse> {
-	const response = await fetch(apiUrl(`/api/videos/${videoId}/status`));
+	const response = await authFetch(`/api/videos/${videoId}/status`);
 	if (!response.ok) {
 		throw new Error("Failed to load video status");
 	}

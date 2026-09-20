@@ -7,36 +7,53 @@ import {
 	transcriptDir,
 } from "../../fixtures/seed-failed-video";
 import { seedReadyVideo } from "../../fixtures/seed-ready-video";
+import { createE2eAuthSession } from "../../helpers/e2e-auth-session";
 import { useE2eApp } from "../helpers/e2e-lifecycle";
 
 describe("Videos retry (e2e)", () => {
 	const { getApp, getBlobStorage } = useE2eApp();
 
-	it("POST /api/videos/:id/retry returns 404 for unknown video", async () => {
+	it("POST /api/videos/:id/retry returns 401 without a session", async () => {
 		const response = await request(getApp().getHttpServer()).post(
 			"/api/videos/unknown-video-id/retry",
 		);
+
+		expect(response.status).toBe(401);
+	});
+
+	it("POST /api/videos/:id/retry returns 404 for unknown video", async () => {
+		const { cookie } = await createE2eAuthSession(getApp());
+
+		const response = await request(getApp().getHttpServer())
+			.post("/api/videos/unknown-video-id/retry")
+			.set("Cookie", [cookie]);
 
 		expect(response.status).toBe(404);
 	});
 
 	it("POST /api/videos/:id/retry returns 409 for non-failed video", async () => {
-		const { videoId } = await seedReadyVideo(getBlobStorage());
+		const { user, cookie } = await createE2eAuthSession(getApp());
+		const { videoId } = await seedReadyVideo(getBlobStorage(), {
+			userId: user.id,
+		});
 
-		const response = await request(getApp().getHttpServer()).post(
-			`/api/videos/${videoId}/retry`,
-		);
+		const response = await request(getApp().getHttpServer())
+			.post(`/api/videos/${videoId}/retry`)
+			.set("Cookie", [cookie]);
 
 		expect(response.status).toBe(409);
 	});
 
 	it("POST /api/videos/:id/retry queues failed video from last failed step", async () => {
 		const blobStorage = getBlobStorage();
-		const { videoId } = await seedFailedVideo(blobStorage);
+		const { user, cookie } = await createE2eAuthSession(getApp());
+		const { videoId } = await seedFailedVideo(blobStorage, {
+			userId: user.id,
+		});
 
-		const response = await request(getApp().getHttpServer()).post(
-			`/api/videos/${videoId}/retry`,
-		);
+		const response = await request(getApp().getHttpServer())
+			.post(`/api/videos/${videoId}/retry`)
+			.set("Cookie", [cookie]);
 
 		expect(response.status).toBe(200);
 		expect(response.body).toMatchObject({
@@ -46,9 +63,9 @@ describe("Videos retry (e2e)", () => {
 			failureReason: null,
 		});
 
-		const statusResponse = await request(getApp().getHttpServer()).get(
-			`/api/videos/${videoId}/status`,
-		);
+		const statusResponse = await request(getApp().getHttpServer())
+			.get(`/api/videos/${videoId}/status`)
+			.set("Cookie", [cookie]);
 		expect(statusResponse.body).toMatchObject({
 			status: "pending",
 			failureReason: null,

@@ -16,7 +16,6 @@ import {
 } from "react";
 
 import { endSpeakingCall } from "@/features/end-speaking-call";
-import { getAnonymousUserId } from "@/shared/lib";
 import { removeAttachedAudioElements } from "../utils/attach-remote-audio";
 import { isAbortError, isMicDenied } from "../utils/connection-errors";
 import { joinLiveCall } from "../utils/join-live-call";
@@ -30,9 +29,7 @@ const IDLE_TEACHER_EMOTION: TeacherEmotionMessage = {
 	source: "reply",
 };
 
-export function useLiveCallConnection(
-	request: Omit<CreateCallRequest, "userId">,
-) {
+export function useLiveCallConnection(request: CreateCallRequest) {
 	const [step, setStep] = useState<ConnectionStep>("permissions");
 	const [phase, setPhase] = useState<LiveCallPhase>("connecting");
 	const [errorType, setErrorType] =
@@ -100,7 +97,7 @@ export function useLiveCallConnection(
 
 function startConnection(input: {
 	attempt: number;
-	request: Omit<CreateCallRequest, "userId">;
+	request: CreateCallRequest;
 	setStep: (step: ConnectionStep) => void;
 	setPhase: (phase: LiveCallPhase) => void;
 	setErrorType: (errorType: LiveCallErrorType) => void;
@@ -168,7 +165,7 @@ async function runJoin(
 	try {
 		const joined = await joinLiveCall({
 			attemptKey: String(input.attempt),
-			request: { ...input.request, userId: getAnonymousUserId() },
+			request: input.request,
 			signal: controller.signal,
 			onStep: input.setStep,
 			onCallId: (id: string) => {
@@ -211,7 +208,7 @@ async function leaveCall(
 		return;
 	}
 	try {
-		await endSpeakingCall({ callId, userId: getAnonymousUserId() });
+		await endSpeakingCall(callId);
 	} catch {
 		return;
 	}

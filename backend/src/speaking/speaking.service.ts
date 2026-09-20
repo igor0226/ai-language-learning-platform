@@ -5,34 +5,19 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 
-import { CallRepositoryService, type CreateTeacherCallInput } from "../storage";
+import { CallRepositoryService } from "../storage";
 import { AgentDispatchService } from "./agent-dispatch.service";
 import { LivekitRoomService } from "./livekit-room.service";
 import { LivekitTokenService } from "./livekit-token.service";
+import type {
+	CreateCallInput,
+	CreateCallResult,
+	EndCallInput,
+	GetCallInput,
+} from "./type/speaking-call";
 import { serializeCallDispatchMetadata } from "./utils/dispatch-metadata";
 import { resolveLivekitConfig } from "./utils/resolve-livekit-config";
 import { toCallHistoryItem } from "./utils/to-call-history-item";
-
-export type CreateCallInput = CreateTeacherCallInput & {
-	topic?: string;
-};
-
-export type CreateCallResult = {
-	callId: string;
-	roomName: string;
-	token: string;
-	livekitUrl: string;
-};
-
-export type EndCallInput = {
-	callId: string;
-	userId: string;
-};
-
-export type GetCallInput = {
-	callId: string;
-	userId: string;
-};
 
 @Injectable()
 export class SpeakingService {

@@ -1,4 +1,3 @@
-export { getAnonymousUserId } from "./anonymous-user-id";
 export { computeInputLevel } from "./audio/compute-input-level";
 export { createAudioContext } from "./audio/create-audio-context";
 export { startLevelPolling } from "./audio/start-level-polling";

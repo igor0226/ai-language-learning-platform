@@ -1,126 +1,38 @@
 # Language Learning Platform — Agent Notes
 
-Shared monorepo context. Package-specific guidance lives in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md).
+Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend/AGENTS.md), [`backend/AGENTS.md`](backend/AGENTS.md). Detailed docs: [`docs/README.md`](docs/README.md).
 
-## Goal
+## Hard rules (always)
 
-Build a language learning platform that helps self-directed learners acquire fluency across four core skills:
+- Ask questions if something from the user's instruction seems not clear enough.
+- Always run `nvm use` before host Node commands (lint, test, commit hooks).
+- Never run `docker compose down -v` (wipes `postgres_data` and `minio_data`).
+- Shared wire types, enums, and Zod schemas live only in [`packages/contracts`](packages/contracts) — import from `@llp/contracts`; do not redeclare in app modules.
 
-- **Listening** *(implemented)* — comprehension from real-world video with automated transcription, phrase detection, and AI-generated explanation inserts
-- **Speaking** *(planned)* — live 1-on-1 conversational sessions with an AI language teacher (real-time captions, feedback, vocabulary tracking)
-- **Writing** *(planned)* — guided essay and short-form composition with AI feedback
-- **Reading** *(planned)* — leveled reading practice with comprehension support
+## Read next
 
-Only **Listening** is built today. The other three skills are on the roadmap.
+| Task | Doc |
+|---|---|
+| Product / roadmap / CEFR fields | [`docs/product.md`](docs/product.md) |
+| Compose, HTTPS, volumes, `nvm` | [`docs/local-dev.md`](docs/local-dev.md) |
+| Style, contracts, `utils/` / `type/` | [`docs/conventions.md`](docs/conventions.md) |
+| Login, sessions, cookies | [`docs/auth.md`](docs/auth.md) |
+| Listening pipeline, DASH, player | [`docs/listening.md`](docs/listening.md) |
+| Speaking / LiveKit | [`docs/speaking.md`](docs/speaking.md) |
+| Next.js UI / FSD / tests | [`docs/frontend.md`](docs/frontend.md) |
+| Nest modules / DB / storage | [`docs/backend.md`](docs/backend.md) |
+| Maintain or add agent docs | [`docs/README.md`](docs/README.md) |
 
-Language inputs for Listening uploads (selected per upload):
-
-- **Video language** — the source language spoken in the upload (`sourceLanguage` on upload).
-- **Explanation language** — the language for AI-generated explanations and TTS narration (`explanationLanguage` on upload).
-- **Language level** — the learner's CEFR level (`A1`–`C2`, `languageLevel` on upload); drives phrase-detection difficulty filtering.
-
-## Target scenario
-
-A learner uses the platform to practice all four skills. Today, only the Listening skill is available:
-
-**Listening (implemented):** A user uploads a video and selects the video language and explanation language. The pipeline transcribes the speech, identifies learner-relevant phrases, and uses AI to write short explanations in the explanation language. Each explanation is turned into TTS audio and paired with a simple text slide. FFmpeg composes the **destination video**: original footage with burned-in subtitles and phrase highlights, plus explanation inserts (text slide + TTS) appended after each target sentence ends. The enriched video is longer than the original. The user watches it in the app via DASH playback.
-
-**Speaking (planned):** Live 1-on-1 simulated conversational sessions with an AI language teacher featuring real-time captioning, conversational feedback, and interactive vocabulary tracking.
-
-**Writing (planned):** Guided essay and short-form composition feedback.
-
-**Reading (planned):** Leveled reading practice with comprehension support.
-
-## Architecture
-
-- `frontend/` — Next.js UI (workspace package)
-- `backend/` — Nest.js API + processing worker (workspace package)
-- `packages/contracts` — shared Zod schemas/types (`@llp/contracts`)
-- `videos/` — legacy on-disk data (optional one-time migration source into MinIO)
-- `compose.yaml` — Docker Compose dev stack (frontend + backend, hot reload)
-- Root `package.json` — npm workspaces, husky/commitlint, and `npm run dev` (`docker compose up`)
-
-**Hard rule:** Shared wire types, enums, and Zod schemas live only in [`packages/contracts`](packages/contracts). Frontend and backend import them from `@llp/contracts`. Do not redeclare or re-export those contracts in app modules. If a new consumer needs the same values, extend that package.
-
-### Skills
-
-| Skill | Status | Target routes | Current modules |
-|---|---|---|---|
-| **Listening** | Implemented | `/listening`, `/listening/upload`, `/listening/:videoId` | `videos/`, `processing/`, `dash/`, `storage/` |
-| **Speaking** | Implemented (server) | `/speaking`, `/speaking/call/:callId` | `speaking/` (Nest) + LiveKit agent worker |
-| **Writing** | Planned | `/writing` | — (composition feedback TBD) |
-| **Reading** | Planned | `/reading` | — (reading practice TBD) |
-| **Dashboard** | Planned | `/dashboard` | — (cross-skill analytics TBD) |
-
-Today's frontend routes (`/`, `/tasks/new`, `/tasks/[id]`) implement the Listening skill and will migrate to `/listening/*`.
-
-### Artifacts (Listening skill)
-
-Target blob outputs in S3/MinIO (same key layout as the former repo-root `videos/` tree):
-
-- `uploads/<videoId>/` — source upload
-- `transcripts/<videoId>/transcript.json` — timed transcript (word/segment timestamps)
-- `explanations/<videoId>/phrases.json` — detected tricky phrases (word indexes + explanations)
-- `explanations/<videoId>/` — TTS audio clips, slide assets
-- `enriched/<videoId>/` — composed destination video (pre-DASH)
-- `dash/<videoId>/` — streamable DASH output (enriched video, not raw source)
-
-Video metadata lives in PostgreSQL. Legacy `videos/records/*.json` may still exist locally for one-time backfill only.
-
-## Product flow (Listening skill)
-
-1. Upload via Nest `POST /api/videos/upload` with source file and language settings → record created as `pending`.
-2. Backend worker transcribes speech to text with word/segment timestamps.
-3. AI analyzes the transcript and flags tricky phrases for language learners (`gpt-5.6-luna`).
-4. AI generates brief explanations in the explanation language (included in phrase detection output for now).
-5. Explanation text is converted to TTS audio and paired with simple text slides.
-6. FFmpeg composes the enriched destination video: burned-in subtitles, phrase highlights, and explanation inserts (slide + TTS) spliced after target sentences.
-7. Enriched video is packaged as DASH assets.
-8. Status transitions: `pending → processing → ready|failed`.
-9. Frontend polls Nest for list/status and plays ready videos from Nest DASH routes.
-
-The browser calls Nest directly (no Next.js API proxy).
-
-## Tech stack
-
-- npm workspaces (`frontend/`, `backend/`, `packages/contracts`); install from the repo root (`npm install` / `npm ci`)
-- Frontend: Next.js under `frontend/`
-- Backend: Nest.js under `backend/`
-- Local dev: Docker Compose (`compose.yaml`)
-
-## Key technical details
-
-- **Hard rule:** ask questions if something from the user's instruction seems not clear enough.
-- **Hard rule:** always run `nvm use` before host Node commands (lint, test, commit hooks).
-- FFmpeg is provided by the backend Docker image when using Compose. On the host (without Docker), FFmpeg must be on system `PATH` for DASH packaging and video compositing (burn-in subtitles, phrase highlights, splice explanation clips at sentence boundaries derived from transcript timestamps).
-- **Transcription (Listening):** Whisper (or equivalent) for speech-to-text with timed word/segment output.
-- **Phrase analysis + explanations (Listening):** LLM (e.g. OpenAI) to flag idioms, collocations, and grammatically tricky phrases and generate learner explanations in the explanation language.
-- **TTS (Listening):** explanation text is spoken via TTS (provider TBD); locale follows the explanation language.
-- **Language params** travel with the upload record and drive prompt and TTS locale selection.
-- **Auth (UI gate):** Google OAuth via Nest (`GET /api/auth/google`, callback, `GET /api/auth/me`, `POST /api/auth/logout`) with Postgres-backed session cookie `llp.sid`. Next.js middleware gates UI routes; videos/DASH/speaking APIs stay unauthenticated until a later slice.
-- **Local HTTPS (Compose + Caddy):** `https://app.llp-test.com` serves Next.js and proxies `/api/*` to Nest on the same origin (session cookies + SSR auth checks). Media signaling: `wss://media.llp-test.com`. One-time setup: `npm run dev:https-setup` then add `/etc/hosts` entries. Direct ports `localhost:3000` / `:3001` remain for debugging.
-- Defaults with Caddy: app `https://app.llp-test.com`, API `https://app.llp-test.com/api`.
-  - `NEXT_PUBLIC_API_URL` (frontend → Nest; same origin in Compose)
-  - `CORS_ORIGIN` (Nest → Next origin; same as app URL in Compose)
-- Keep files under 300 lines. If not possible, ask.
-- Keep functions under 50 lines. If not possible, ask.
-- Store module-bound utility functions under "utils" directory, don't blend them with the rest business logic files.
-
-### Local dev (Docker Compose)
+## Quick start
 
 ```bash
-cp backend/.env.example backend/.env   # then set OPENAI_API_KEY, Google OAuth, SESSION_SECRET
+cp backend/.env.example backend/.env   # OPENAI_API_KEY, Google OAuth, SESSION_SECRET
 npm run dev:https-setup                # one-time mkcert + /etc/hosts
-docker compose up --build              # https://app.llp-test.com (UI + /api), wss://media.llp-test.com
+docker compose up --build              # https://app.llp-test.com
 ```
 
-Host Node (lint/test/hooks) still uses `nvm use`, then `npm install` at the repo root. Package validation steps live in [`frontend/AGENTS.md`](frontend/AGENTS.md) and [`backend/AGENTS.md`](backend/AGENTS.md). Compose builds from the repo root so `@llp/contracts` resolves inside the images. After contract or lockfile changes, rebuild (`docker compose up --build`).
+Stale container `node_modules` or Next cache: `npm run dev:reset-packages` then rebuild. See [`docs/local-dev.md`](docs/local-dev.md).
 
-**Hard rule:** never run `docker compose down -v`. That flag deletes every Compose volume, including `postgres_data` and `minio_data` (video metadata and Listening blobs). Stop the stack with `docker compose down` only.
+## Doc maintenance
 
-If container `node_modules` or the Next cache go stale, reset those volumes only (never `postgres_data` / `minio_data`), then rebuild:
-
-```bash
-npm run dev:reset-packages
-docker compose up --build
-```
+After implementing a feature, update the matching `docs/*.md`. If none fits, create `docs/<kebab-topic>.md` and add it to all three `AGENTS.md` indexes and [`docs/README.md`](docs/README.md). Keep `AGENTS.md` files as indexes under 80 lines — no how-tos here.

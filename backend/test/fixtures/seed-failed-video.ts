@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import path from "node:path";
 
 import type { BlobStorageService } from "@/storage";
-import type { VideoRecord } from "@/storage/types";
+import type { VideoRecord } from "@/storage/type";
 import { seedVideoMetadata } from "./seed-video-db";
 
 export type SeededFailedVideo = {
@@ -12,7 +12,7 @@ export type SeededFailedVideo = {
 
 export async function seedFailedVideo(
 	blobStorage: BlobStorageService,
-	options?: { title?: string },
+	options: { userId: string; title?: string },
 ): Promise<SeededFailedVideo> {
 	const videoId = randomUUID();
 	const title = options?.title ?? "Failed fixture video";
@@ -32,6 +32,7 @@ export async function seedFailedVideo(
 
 	const record: VideoRecord = {
 		id: videoId,
+		userId: options.userId,
 		title,
 		originalFileName: sourceFileName,
 		mimeType: "video/mp4",

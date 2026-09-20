@@ -30,7 +30,7 @@ describe("fetchSpeakingCalls", () => {
 			}),
 		);
 
-		await expect(fetchSpeakingCalls("user-1")).resolves.toEqual([
+		await expect(fetchSpeakingCalls()).resolves.toEqual([
 			expect.objectContaining({
 				id: "call-1",
 				status: "completed",
@@ -49,7 +49,7 @@ describe("fetchSpeakingCalls", () => {
 			vi.fn().mockResolvedValue({ ok: false, status: 500 }),
 		);
 
-		await expect(fetchSpeakingCalls("user-1")).rejects.toThrow(
+		await expect(fetchSpeakingCalls()).rejects.toThrow(
 			"Failed to load speaking sessions",
 		);
 	});

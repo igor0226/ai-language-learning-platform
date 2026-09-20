@@ -5,10 +5,10 @@ import type { VideoRetryResponse } from "@/entities/video";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-import { apiUrl } from "@/shared/api";
+import { authFetch } from "@/shared/api/auth-fetch";
 
 async function retryVideoRequest(videoId: string): Promise<VideoRetryResponse> {
-	const response = await fetch(apiUrl(`/api/videos/${videoId}/retry`), {
+	const response = await authFetch(`/api/videos/${videoId}/retry`, {
 		method: "POST",
 	});
 

@@ -9,7 +9,7 @@ export type {
 	SpeakingCall,
 	SpeakingCallStatus,
 	TranscriptSegment,
-} from "./model/types";
+} from "./type";
 
 export { fetchSpeakingCalls } from "./api/fetchSpeakingCalls";
 export { useSpeakingCalls } from "./api/useSpeakingCalls";

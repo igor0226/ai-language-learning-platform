@@ -1,6 +1,6 @@
 import { UnauthorizedException } from "@nestjs/common";
 
-import type { AuthenticatedRequest } from "./express-request";
+import type { AuthenticatedRequest } from "../type/express-request";
 
 export async function loginAndSaveSession(
 	request: AuthenticatedRequest,

@@ -17,7 +17,6 @@ import { useMemo } from "react";
 type ProcessingHistoryPanelProps = {
 	events: ProcessingHistoryEvent[] | null;
 	currentStep: ProcessingStep | null;
-	queuePosition: number | null;
 	failureReason?: string | null;
 	isLoading?: boolean;
 	canRetry?: boolean;
@@ -28,7 +27,6 @@ type ProcessingHistoryPanelProps = {
 export function ProcessingHistoryPanel({
 	events,
 	currentStep,
-	queuePosition,
 	failureReason,
 	isLoading = false,
 	canRetry = false,
@@ -38,9 +36,6 @@ export function ProcessingHistoryPanel({
 	const metaParts: string[] = [];
 	if (currentStep) {
 		metaParts.push(`Current: ${getProcessingStepLabel(currentStep)}`);
-	}
-	if (queuePosition != null) {
-		metaParts.push(`Queue #${queuePosition}`);
 	}
 
 	const showFailureReason =

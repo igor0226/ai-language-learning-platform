@@ -81,6 +81,7 @@ function postUpload(
 	return new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
 		xhr.open("POST", apiUrl("/api/videos/upload"));
+		xhr.withCredentials = true;
 		xhr.upload.onprogress = (progressEvent) => {
 			if (progressEvent.lengthComputable) {
 				setUploadProgress((progressEvent.loaded / progressEvent.total) * 100);

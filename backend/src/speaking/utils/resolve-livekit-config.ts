@@ -1,12 +1,4 @@
-export type LivekitConfig = {
-	url: string;
-	apiUrl: string;
-	apiKey: string;
-	apiSecret: string;
-	agentName: string;
-	tokenTtl: string;
-	emptyRoomTimeoutSeconds: number;
-};
+import type { LivekitConfig } from "../type/livekit-config";
 
 function requiredEnv(name: string, fallback?: string): string {
 	const value = process.env[name]?.trim() || fallback;

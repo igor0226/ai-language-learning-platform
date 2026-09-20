@@ -1,4 +1,4 @@
-import { parseLearningMode } from "./types";
+import { parseLearningMode } from "./parse-learning-mode";
 
 describe("parseLearningMode", () => {
 	it("accepts listening and speaking", () => {

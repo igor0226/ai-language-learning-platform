@@ -9,7 +9,7 @@ export type {
 	VideoStatus,
 	VideoStatusResponse,
 	VideosResponse,
-} from "./model/types";
+} from "./type";
 
 export { usePlaybackPhrases } from "./api/usePlaybackPhrases";
 export { useVideoStatus } from "./api/useVideoStatus";

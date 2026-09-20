@@ -1,19 +1,23 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, Entity, Index, PrimaryColumn } from "typeorm";
 
 import type {
 	LanguageLevel,
 	VideoProcessingStatus,
 	VideoRecord,
-} from "../storage/types";
+} from "../storage/type";
 import {
 	bigintTransformer,
 	isoDateTransformer,
 } from "./utils/iso-date.transformer";
 
 @Entity({ name: "videos" })
+@Index("IDX_videos_userId", ["userId"])
 export class Video implements VideoRecord {
 	@PrimaryColumn("uuid")
 	id!: string;
+
+	@Column({ type: "uuid" })
+	userId!: string;
 
 	@Column({ type: "varchar" })
 	title!: string;

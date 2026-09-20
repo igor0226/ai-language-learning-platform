@@ -33,10 +33,3 @@ export type RecentActivity = {
 	duration: string;
 	score?: number;
 };
-
-export function parseLearningMode(value: string | null): LearningMode {
-	if (value === "speaking" || value === "listening") {
-		return value;
-	}
-	return "listening";
-}

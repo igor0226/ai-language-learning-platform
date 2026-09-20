@@ -1,5 +1,5 @@
 import type { BlobStorageService } from "../blob-storage.service";
-import type { VideoRecord } from "../types";
+import type { VideoRecord } from "../type";
 
 export async function resolveSourceStorageKey(
 	blobStorage: BlobStorageService,

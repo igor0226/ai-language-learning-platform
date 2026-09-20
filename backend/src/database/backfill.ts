@@ -4,7 +4,7 @@ import path from "node:path";
 import { ProcessingHistory, Video } from "../models";
 import { createDefaultHistory } from "../storage/utils/create-default-history";
 import { normalizeLegacyVideoRecord } from "../storage/utils/video-record";
-import type { VideoProcessingHistory, VideoRecord } from "../storage/types";
+import type { VideoProcessingHistory, VideoRecord } from "../storage/type";
 import { resolveStorageRoot } from "../storage/utils/resolve-storage-root";
 import { createAppDataSource } from "./data-source";
 
@@ -41,9 +41,14 @@ async function backfill(): Promise<void> {
 	const historyRepo = AppDataSource.getRepository(ProcessingHistory);
 
 	const records = await readJsonFiles<Partial<VideoRecord>>(RECORDS_DIR);
-	for (const { data } of records) {
-		await videoRepo.save(normalizeLegacyVideoRecord(data));
-		process.stdout.write(`backfilled video ${String(data.id)}\n`);
+	for (const { fileName, data } of records) {
+		try {
+			await videoRepo.save(normalizeLegacyVideoRecord(data));
+			process.stdout.write(`backfilled video ${String(data.id)}\n`);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			process.stderr.write(`skipped ${fileName}: ${message}\n`);
+		}
 	}
 
 	const histories =

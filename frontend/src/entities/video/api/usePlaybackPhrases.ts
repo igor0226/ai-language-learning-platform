@@ -1,17 +1,15 @@
 "use client";
 
-import type { PlaybackPhrasesResponse } from "../model/types";
+import type { PlaybackPhrasesResponse } from "../type";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { apiUrl } from "@/shared/api";
+import { authFetch } from "@/shared/api/auth-fetch";
 
 async function fetchPlaybackPhrases(
 	videoId: string,
 ): Promise<PlaybackPhrasesResponse> {
-	const response = await fetch(
-		apiUrl(`/api/videos/${videoId}/playback-phrases`),
-	);
+	const response = await authFetch(`/api/videos/${videoId}/playback-phrases`);
 
 	if (!response.ok) {
 		throw new Error("Failed to load playback phrases");

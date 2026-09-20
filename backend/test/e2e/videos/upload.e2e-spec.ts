@@ -1,6 +1,7 @@
 import request from "supertest";
 import { describe, expect, it } from "vitest";
 
+import { createE2eAuthSession } from "../../helpers/e2e-auth-session";
 import { useE2eApp } from "../helpers/e2e-lifecycle";
 
 const UPLOAD_FIELDS = {
@@ -13,9 +14,21 @@ const UPLOAD_FIELDS = {
 describe("Videos upload (e2e)", () => {
 	const { getApp } = useE2eApp();
 
-	it("POST /api/videos/upload returns 400 when title is missing", async () => {
+	it("POST /api/videos/upload returns 401 without a session", async () => {
 		const response = await request(getApp().getHttpServer())
 			.post("/api/videos/upload")
+			.field("title", UPLOAD_FIELDS.title)
+			.attach("file", Buffer.from("fake"), "clip.mp4");
+
+		expect(response.status).toBe(401);
+	});
+
+	it("POST /api/videos/upload returns 400 when title is missing", async () => {
+		const { cookie } = await createE2eAuthSession(getApp());
+
+		const response = await request(getApp().getHttpServer())
+			.post("/api/videos/upload")
+			.set("Cookie", [cookie])
 			.field("sourceLanguage", "Spanish")
 			.field("explanationLanguage", "English")
 			.field("languageLevel", "B1")
@@ -26,8 +39,11 @@ describe("Videos upload (e2e)", () => {
 	});
 
 	it("POST /api/videos/upload returns 400 when file is missing", async () => {
+		const { cookie } = await createE2eAuthSession(getApp());
+
 		const response = await request(getApp().getHttpServer())
 			.post("/api/videos/upload")
+			.set("Cookie", [cookie])
 			.field("title", "My clip")
 			.field("sourceLanguage", "Spanish")
 			.field("explanationLanguage", "English")
@@ -38,8 +54,11 @@ describe("Videos upload (e2e)", () => {
 	});
 
 	it("POST /api/videos/upload returns 400 when language fields are missing", async () => {
+		const { cookie } = await createE2eAuthSession(getApp());
+
 		const response = await request(getApp().getHttpServer())
 			.post("/api/videos/upload")
+			.set("Cookie", [cookie])
 			.field("title", "My clip")
 			.attach("file", Buffer.from("fake-video-bytes"), {
 				filename: "clip.mp4",
@@ -51,8 +70,11 @@ describe("Videos upload (e2e)", () => {
 	});
 
 	it("POST /api/videos/upload returns 400 for invalid language level", async () => {
+		const { cookie } = await createE2eAuthSession(getApp());
+
 		const response = await request(getApp().getHttpServer())
 			.post("/api/videos/upload")
+			.set("Cookie", [cookie])
 			.field("title", "My clip")
 			.field("sourceLanguage", "Spanish")
 			.field("explanationLanguage", "English")
@@ -69,8 +91,11 @@ describe("Videos upload (e2e)", () => {
 	});
 
 	it("POST /api/videos/upload creates a pending video", async () => {
+		const { cookie } = await createE2eAuthSession(getApp());
+
 		const uploadResponse = await request(getApp().getHttpServer())
 			.post("/api/videos/upload")
+			.set("Cookie", [cookie])
 			.field("title", UPLOAD_FIELDS.title)
 			.field("sourceLanguage", UPLOAD_FIELDS.sourceLanguage)
 			.field("explanationLanguage", UPLOAD_FIELDS.explanationLanguage)
@@ -92,9 +117,9 @@ describe("Videos upload (e2e)", () => {
 
 		const pendingId = uploadResponse.body.id as string;
 
-		const statusResponse = await request(getApp().getHttpServer()).get(
-			`/api/videos/${pendingId}/status`,
-		);
+		const statusResponse = await request(getApp().getHttpServer())
+			.get(`/api/videos/${pendingId}/status`)
+			.set("Cookie", [cookie]);
 		expect(statusResponse.status).toBe(200);
 		expect(statusResponse.body).toMatchObject({
 			id: pendingId,
@@ -105,9 +130,9 @@ describe("Videos upload (e2e)", () => {
 			languageLevel: UPLOAD_FIELDS.languageLevel,
 		});
 
-		const listResponse = await request(getApp().getHttpServer()).get(
-			"/api/videos",
-		);
+		const listResponse = await request(getApp().getHttpServer())
+			.get("/api/videos")
+			.set("Cookie", [cookie]);
 		expect(listResponse.status).toBe(200);
 		expect(listResponse.body.videos).toEqual(
 			expect.arrayContaining([
@@ -124,6 +149,6 @@ describe("Videos upload (e2e)", () => {
 		const manifestResponse = await request(getApp().getHttpServer()).get(
 			`/api/dash/${pendingId}/manifest.mpd`,
 		);
-		expect(manifestResponse.status).toBe(404);
+		expect(manifestResponse.status).toBe(401);
 	});
 });

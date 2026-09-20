@@ -1,8 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LivekitWebhookService } from "./livekit-webhook.service";
-import type { TeacherCallRecord } from "../storage/types";
-import { LivekitWebhookEventType } from "./utils/livekit-webhook-event";
+import type { TeacherCallRecord } from "../storage/type";
+import { LivekitWebhookEventType } from "./type/livekit-webhook-event";
 
 vi.mock("livekit-server-sdk", () => ({
 	WebhookReceiver: class {

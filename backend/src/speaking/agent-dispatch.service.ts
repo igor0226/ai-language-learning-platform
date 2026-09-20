@@ -1,9 +1,6 @@
 import { Injectable } from "@nestjs/common";
 
-import type {
-	AgentDispatchInfo,
-	CreateDispatchInput,
-} from "./utils/livekit-types";
+import type { AgentDispatchInfo, CreateDispatchInput } from "./type/livekit";
 import { resolveLivekitConfig } from "./utils/resolve-livekit-config";
 
 @Injectable()

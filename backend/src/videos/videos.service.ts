@@ -4,65 +4,21 @@ import {
 	NotFoundException,
 } from "@nestjs/common";
 
-import type { PlaybackPhrase } from "../processing/composing-video/compose-plan";
 import {
 	BlobStorageService,
 	ProcessingHistoryService,
 	resolveResumeStep,
-	type ProcessingHistoryEvent,
-	type ProcessingStep,
 	VideoRepositoryService,
 	type CreateVideoInput,
 	type VideoRecord,
 } from "../storage";
-import { getQueuePosition } from "./utils/queue-position";
-
-type PlaybackPhrasesFile = {
-	phrases: PlaybackPhrase[];
-};
-
-export type VideoListItem = {
-	id: string;
-	title: string;
-	status: "pending" | "processing" | "ready" | "failed";
-	sizeBytes: number;
-	chunkCount: number;
-	playable: boolean;
-	createdAt: string;
-	updatedAt: string;
-	failureReason: string | null;
-	processingStep: ProcessingStep;
-	queuePosition: number | null;
-	sourceLanguage: string;
-	explanationLanguage: string;
-	languageLevel: VideoRecord["languageLevel"];
-};
-
-export type VideoStatusForApi = {
-	id: string;
-	status: "pending" | "processing" | "ready" | "failed";
-	failureReason: string | null;
-	playable: boolean;
-	chunkCount: number;
-	processingStep: ProcessingStep;
-	queuePosition: number | null;
-	processingHistory: ProcessingHistoryEvent[];
-	sourceLanguage: string;
-	explanationLanguage: string;
-	languageLevel: VideoRecord["languageLevel"];
-};
-
-export type VideoRetryForApi = {
-	id: string;
-	status: "pending";
-	resumeFromStep: ProcessingStep;
-	failureReason: null;
-};
-
-export type PlaybackPhrasesForApi = {
-	videoId: string;
-	phrases: PlaybackPhrase[];
-};
+import type {
+	PlaybackPhrasesFile,
+	PlaybackPhrasesForApi,
+	VideoListItem,
+	VideoRetryForApi,
+	VideoStatusForApi,
+} from "./type/video-api";
 
 @Injectable()
 export class VideosService {
@@ -72,8 +28,8 @@ export class VideosService {
 		private readonly blobStorage: BlobStorageService,
 	) {}
 
-	async listVideosForApi(): Promise<VideoListItem[]> {
-		const videos = await this.videoRepository.listVideos();
+	async listVideosForApi(userId: string): Promise<VideoListItem[]> {
+		const videos = await this.videoRepository.listVideosByUserId(userId);
 		const histories = await Promise.all(
 			videos.map((video) => this.processingHistory.getHistory(video.id)),
 		);
@@ -89,17 +45,18 @@ export class VideosService {
 			updatedAt: video.updatedAt,
 			failureReason: video.failureReason,
 			processingStep: histories[index].currentStep,
-			queuePosition: getQueuePosition(video, videos),
 			sourceLanguage: video.sourceLanguage,
 			explanationLanguage: video.explanationLanguage,
 			languageLevel: video.languageLevel,
 		}));
 	}
 
-	async getPlaybackPhrasesForApi(
-		videoId: string,
-	): Promise<PlaybackPhrasesForApi> {
-		await this.getVideoRecordById(videoId);
+	async getPlaybackPhrasesForApi(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<PlaybackPhrasesForApi> {
+		const { videoId } = input;
+		await this.getOwnedVideoRecord(input);
 
 		const playbackPhrasesRelativePath =
 			this.blobStorage.getPlaybackPhrasesRelativePath(videoId);
@@ -117,9 +74,12 @@ export class VideosService {
 		};
 	}
 
-	async getVideoStatusForApi(videoId: string): Promise<VideoStatusForApi> {
-		const video = await this.getVideoRecordById(videoId);
-		const allVideos = await this.videoRepository.listVideos();
+	async getVideoStatusForApi(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<VideoStatusForApi> {
+		const { videoId } = input;
+		const video = await this.getOwnedVideoRecord(input);
 		const history = await this.processingHistory.getHistory(videoId);
 
 		return {
@@ -129,7 +89,6 @@ export class VideosService {
 			playable: video.status === "ready",
 			chunkCount: video.segmentCount,
 			processingStep: history.currentStep,
-			queuePosition: getQueuePosition(video, allVideos),
 			processingHistory: history.events,
 			sourceLanguage: video.sourceLanguage,
 			explanationLanguage: video.explanationLanguage,
@@ -145,12 +104,27 @@ export class VideosService {
 		return video;
 	}
 
+	async getOwnedVideoRecord(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<VideoRecord> {
+		const video = await this.getVideoRecordById(input.videoId);
+		if (video.userId !== input.userId) {
+			throw new NotFoundException("Video not found");
+		}
+		return video;
+	}
+
 	async createVideo(input: CreateVideoInput): Promise<VideoRecord> {
 		return this.videoRepository.createVideo(input);
 	}
 
-	async retryFailedVideo(videoId: string): Promise<VideoRetryForApi> {
-		const video = await this.getVideoRecordById(videoId);
+	async retryFailedVideo(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<VideoRetryForApi> {
+		const { videoId } = input;
+		const video = await this.getOwnedVideoRecord(input);
 		if (video.status !== "failed") {
 			throw new ConflictException("Only failed videos can be retried");
 		}

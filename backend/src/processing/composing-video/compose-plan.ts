@@ -1,23 +1,5 @@
-import type { ExplanationClipManifestEntry } from "../generating-clips/explanation-clip.service";
-
-export type PlaybackPhrase = {
-	index: number;
-	phrase: string;
-	explanation: string;
-	startSeconds: number;
-	endSeconds: number;
-};
-
-export type CompositionPart =
-	| {
-			kind: "source";
-			startSeconds: number;
-			endSeconds: number;
-	  }
-	| {
-			kind: "clip";
-			clip: ExplanationClipManifestEntry;
-	  };
+import type { ExplanationClipManifestEntry } from "../generating-clips/type/explanation-clip";
+import type { CompositionPart, PlaybackPhrase } from "./type/compose-plan";
 
 function resolveResumeCursor(input: {
 	clipsAtInsert: ExplanationClipManifestEntry[];

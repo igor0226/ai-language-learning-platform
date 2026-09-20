@@ -1,30 +1,21 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
 
-import { getAnonymousUserId } from "@/shared/lib";
+import { useAuthSession } from "@/entities/session";
 import { fetchSpeakingCalls } from "./fetchSpeakingCalls";
 
 export function useSpeakingCalls() {
-	const userId = useAnonymousUserId();
+	const { data: user, isLoading: isAuthLoading } = useAuthSession();
 	const query = useQuery({
-		queryKey: ["speaking-calls", userId],
-		queryFn: () => fetchSpeakingCalls(userId ?? ""),
-		enabled: Boolean(userId),
+		queryKey: ["speaking-calls", user?.id],
+		queryFn: fetchSpeakingCalls,
+		enabled: Boolean(user?.id),
 	});
 
 	return {
 		calls: query.data ?? [],
-		isLoading: !userId || query.isPending,
+		isLoading: isAuthLoading || query.isPending,
 		errorMessage: query.error instanceof Error ? query.error.message : null,
 	};
-}
-
-function useAnonymousUserId(): string | null {
-	const [userId, setUserId] = useState<string | null>(null);
-	useEffect(() => {
-		setUserId(getAnonymousUserId());
-	}, []);
-	return userId;
 }

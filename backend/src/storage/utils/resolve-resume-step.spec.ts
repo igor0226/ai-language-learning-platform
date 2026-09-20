@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { VideoProcessingHistory } from "../types";
+import type { VideoProcessingHistory } from "../type";
 import { resolveResumeStep } from "./resolve-resume-step";
 
 function makeHistory(

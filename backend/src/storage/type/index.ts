@@ -1,15 +1,16 @@
+import type { LanguageLevel } from "@llp/contracts";
+
+export type { LanguageLevel };
+
 export type VideoProcessingStatus =
 	| "pending"
 	| "processing"
 	| "ready"
 	| "failed";
 
-import type { LanguageLevel } from "@llp/contracts";
-
-export type { LanguageLevel };
-
 export type VideoRecord = {
 	id: string;
+	userId: string;
 	title: string;
 	originalFileName: string;
 	mimeType: string;
@@ -30,6 +31,7 @@ export type VideoRecord = {
 };
 
 export type CreateVideoInput = {
+	userId: string;
 	title: string;
 	originalFileName: string;
 	mimeType: string;

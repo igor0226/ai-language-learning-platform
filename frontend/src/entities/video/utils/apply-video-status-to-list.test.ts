@@ -1,4 +1,4 @@
-import type { VideoItem, VideoStatusResponse } from "../model/types";
+import type { VideoItem, VideoStatusResponse } from "../type";
 
 import { describe, expect, it } from "vitest";
 
@@ -16,7 +16,6 @@ const status = {
 	chunkCount: 2,
 	failureReason: null,
 	processingStep: "completed",
-	queuePosition: null,
 	sourceLanguage: "English",
 	explanationLanguage: "Spanish",
 	languageLevel: "B1",

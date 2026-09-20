@@ -3,7 +3,7 @@ import type {
 	WhisperSegment,
 	WhisperTranscript,
 	WhisperWord,
-} from "../shared/merge-transcripts";
+} from "../shared/type/whisper-transcript";
 
 export type TranscriptWithSegments = WhisperTranscript;
 

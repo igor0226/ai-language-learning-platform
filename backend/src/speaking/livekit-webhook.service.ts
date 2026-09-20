@@ -5,7 +5,7 @@ import { LivekitRoomService } from "./livekit-room.service";
 import {
 	LivekitWebhookEventType,
 	type LivekitWebhookEvent,
-} from "./utils/livekit-webhook-event";
+} from "./type/livekit-webhook-event";
 import { resolveLivekitConfig } from "./utils/resolve-livekit-config";
 
 @Injectable()

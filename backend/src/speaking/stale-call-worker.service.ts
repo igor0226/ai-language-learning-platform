@@ -1,4 +1,8 @@
-import { Injectable, type OnModuleInit } from "@nestjs/common";
+import {
+	Injectable,
+	type OnModuleDestroy,
+	type OnModuleInit,
+} from "@nestjs/common";
 import { CronJob } from "cron";
 import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
@@ -9,9 +13,10 @@ import {
 } from "./utils/stale-call-config";
 
 @Injectable()
-export class StaleCallWorkerService implements OnModuleInit {
+export class StaleCallWorkerService implements OnModuleDestroy, OnModuleInit {
 	private started = false;
 	private tickLock = false;
+	private job: CronJob | undefined;
 
 	constructor(
 		@InjectPinoLogger(StaleCallWorkerService.name)
@@ -21,6 +26,10 @@ export class StaleCallWorkerService implements OnModuleInit {
 
 	onModuleInit(): void {
 		this.ensureStarted();
+	}
+
+	onModuleDestroy(): void {
+		this.job?.stop();
 	}
 
 	private async runWorkerTick(): Promise<void> {
@@ -63,11 +72,11 @@ export class StaleCallWorkerService implements OnModuleInit {
 
 		const cronExpression = resolveStaleCallCronExpression();
 		this.logger.info({ cronExpression }, "starting cron scheduler");
-		const job = new CronJob(cronExpression, () => {
+		this.job = new CronJob(cronExpression, () => {
 			void this.runWorkerTick();
 		});
 
-		job.start();
+		this.job.start();
 		this.started = true;
 		this.logger.info("scheduler started");
 		this.logger.info("running immediate startup tick");

@@ -13,10 +13,14 @@ type AppShellProps = {
 
 export function AppShell({ children }: AppShellProps) {
 	const pathname = usePathname() ?? "";
-	const isImmersive =
-		pathname.startsWith("/speaking/call/") || pathname === "/login";
+	const isLogin = pathname === "/login";
+	const isCallImmersive = pathname.startsWith("/speaking/call/");
 
-	if (isImmersive) {
+	if (isLogin) {
+		return <div className="studioPage">{children}</div>;
+	}
+
+	if (isCallImmersive) {
 		return <div className="callPage">{children}</div>;
 	}
 

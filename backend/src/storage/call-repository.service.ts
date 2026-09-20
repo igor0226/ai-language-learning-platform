@@ -5,7 +5,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { LessThan, Repository } from "typeorm";
 
 import { TeacherCall } from "../models";
-import type { CreateTeacherCallInput, TeacherCallRecord } from "./types";
+import type { CreateTeacherCallInput, TeacherCallRecord } from "./type";
 import { isInvalidUuidError } from "./utils/postgres-errors";
 import { normalizeTeacherCallRecord } from "./utils/teacher-call-record";
 

@@ -1,11 +1,6 @@
-import { formatAllowedEmotions, type LanguageLevel } from "@llp/contracts";
+import { formatAllowedEmotions } from "@llp/contracts";
 
-export type TeacherInstructionInput = {
-	sourceLanguage: string;
-	languageLevel: LanguageLevel;
-	explanationLanguage?: string | null;
-	topic?: string | null;
-};
+import type { TeacherInstructionInput } from "../type/teacher-instruction";
 
 export function buildTeacherInstructions(
 	input: TeacherInstructionInput,
@@ -17,6 +12,7 @@ export function buildTeacherInstructions(
 
 	return [
 		"You are a warm, expressive AI language teacher in a live 1-on-1 speaking session.",
+		"**Hard rule**: Greet the learner warmly in the source language at the start of the session.",
 		`The learner is practicing ${input.sourceLanguage} at CEFR level ${input.languageLevel}.`,
 		topic
 			? `The practice scenario is: ${topic}. Stay on this scenario and keep questions and vocabulary in that context.`

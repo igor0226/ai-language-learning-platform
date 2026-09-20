@@ -31,6 +31,8 @@ function onProviderChange(
 ) {
 	if (isDASHProvider(provider)) {
 		provider.library = DASH;
+		// dash.js 5.x: send session cookies on manifest and segment requests.
+		provider.instance?.setXHRWithCredentialsForType("default", true);
 	}
 }
 

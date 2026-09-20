@@ -14,7 +14,7 @@ import {
 	runProcessWithOutput,
 } from "../shared/ffmpeg-process";
 import { mergeWhisperTranscripts } from "../shared/merge-transcripts";
-import type { WhisperTranscript } from "../shared/merge-transcripts";
+import type { WhisperTranscript } from "../shared/type/whisper-transcript";
 
 const WHISPER_MAX_BYTES = 24 * 1024 * 1024;
 const CHUNK_DURATION_SECONDS = 600;

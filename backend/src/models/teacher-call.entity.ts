@@ -4,7 +4,7 @@ import type {
 	LanguageLevel,
 	TeacherCallRecord,
 	TeacherCallStatus,
-} from "../storage/types";
+} from "../storage/type";
 import {
 	isoDateTransformer,
 	nullableIsoDateTransformer,
@@ -16,7 +16,7 @@ export class TeacherCall implements TeacherCallRecord {
 	@PrimaryColumn("uuid")
 	id!: string;
 
-	@Column({ type: "varchar" })
+	@Column({ type: "uuid" })
 	userId!: string;
 
 	@Column({ type: "varchar" })

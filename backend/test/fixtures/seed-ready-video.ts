@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import path from "node:path";
 
 import type { BlobStorageService } from "@/storage";
-import type { VideoRecord } from "@/storage/types";
+import type { VideoRecord } from "@/storage/type";
 import { seedVideoMetadata } from "./seed-video-db";
 
 const MANIFEST_FILE_NAME = "manifest.mpd";
@@ -15,7 +15,7 @@ export type SeededReadyVideo = {
 
 export async function seedReadyVideo(
 	blobStorage: BlobStorageService,
-	options?: { title?: string },
+	options: { userId: string; title?: string },
 ): Promise<SeededReadyVideo> {
 	const videoId = randomUUID();
 	const title = options?.title ?? "Ready fixture video";
@@ -31,6 +31,7 @@ export async function seedReadyVideo(
 
 	const record: VideoRecord = {
 		id: videoId,
+		userId: options.userId,
 		title,
 		originalFileName: sourceFileName,
 		mimeType: "video/mp4",

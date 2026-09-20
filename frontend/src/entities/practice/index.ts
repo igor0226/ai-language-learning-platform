@@ -5,11 +5,11 @@ export type {
 	LearningMode,
 	RecentActivity,
 	VideoProcessingStatus,
-} from "./model/types";
+} from "./type";
 
 export {
 	DASHBOARD_METRICS,
 	HEATMAP_ENTRIES,
 	RECENT_ACTIVITIES,
 } from "./model/fixtures";
-export { parseLearningMode } from "./model/types";
+export { parseLearningMode } from "./utils/parse-learning-mode";

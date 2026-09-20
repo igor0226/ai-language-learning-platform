@@ -57,9 +57,6 @@ export default function ListeningDetailPage() {
 					currentStep={
 						statusData?.processingStep ?? selectedVideo?.processingStep ?? null
 					}
-					queuePosition={
-						statusData?.queuePosition ?? selectedVideo?.queuePosition ?? null
-					}
 					failureReason={
 						statusData?.failureReason ?? selectedVideo?.failureReason ?? null
 					}

@@ -12,7 +12,7 @@ import type { Response } from "express";
 
 import { AuthService } from "./auth.service";
 import { AuthenticatedGuard } from "./authenticated.guard";
-import type { AuthenticatedRequest } from "./utils/express-request";
+import type { AuthenticatedRequest } from "./type/express-request";
 import { loginAndSaveSession } from "./utils/login-and-save-session";
 import { toAuthUser } from "./utils/to-auth-user";
 

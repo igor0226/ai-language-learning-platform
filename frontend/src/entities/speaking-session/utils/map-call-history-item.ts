@@ -1,4 +1,4 @@
-import type { CallHistoryItem, SpeakingCall } from "../model/types";
+import type { CallHistoryItem, SpeakingCall } from "../type";
 
 import { formatCreatedAt, formatTime } from "@/shared/lib";
 

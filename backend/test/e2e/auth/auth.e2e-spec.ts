@@ -1,30 +1,19 @@
-import { randomUUID } from "node:crypto";
-
-import { sign } from "cookie-signature";
 import request from "supertest";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { UserRepositoryService } from "@/storage/user-repository.service";
 import { createTestApp } from "../../create-test-app";
+import { createE2eAuthSession } from "../../helpers/e2e-auth-session";
 import { resetPostgresTables } from "../../postgres-test-setup";
 import { setupE2eStorage, teardownE2eStorage } from "../../setup-e2e";
 import type { INestApplication } from "@nestjs/common";
 
-function signedSessionCookie(sessionId: string): string {
-	const secret =
-		process.env.SESSION_SECRET ?? "test-session-secret-at-least-32-characters";
-	return `llp.sid=s:${sign(sessionId, secret)}`;
-}
-
 describe("Auth (e2e)", () => {
 	let app: INestApplication;
-	let users: UserRepositoryService;
 
 	beforeAll(async () => {
 		await setupE2eStorage();
 		await resetPostgresTables();
 		({ app } = await createTestApp());
-		users = app.get(UserRepositoryService);
 	});
 
 	afterAll(async () => {
@@ -38,40 +27,16 @@ describe("Auth (e2e)", () => {
 	});
 
 	it("GET /api/auth/me returns the authenticated user for a valid session", async () => {
-		const user = await users.upsertGoogleUser({
+		const { user, cookie } = await createE2eAuthSession(app, {
 			googleSub: "google-sub-123",
 			email: "learner@example.com",
 			name: "Learner",
 			pictureUrl: "https://example.com/avatar.png",
 		});
-		const sessionId = randomUUID();
-		const expire = new Date(Date.now() + 3_600_000);
-		const sessionPayload = {
-			cookie: {
-				originalMaxAge: 3_600_000,
-				expires: expire.toISOString(),
-				secure: false,
-				httpOnly: true,
-				path: "/",
-				sameSite: "lax",
-			},
-			passport: { user: user.id },
-		};
-
-		const { createAppDataSource } = await import(
-			"../../../src/database/data-source.js"
-		);
-		const dataSource = createAppDataSource();
-		await dataSource.initialize();
-		await dataSource.query(
-			`INSERT INTO "session" ("sid", "sess", "expire") VALUES ($1, $2, $3)`,
-			[sessionId, sessionPayload, expire],
-		);
-		await dataSource.destroy();
 
 		const response = await request(app.getHttpServer())
 			.get("/api/auth/me")
-			.set("Cookie", [signedSessionCookie(sessionId)]);
+			.set("Cookie", [cookie]);
 
 		expect(response.status).toBe(200);
 		expect(response.body).toEqual({
@@ -83,41 +48,17 @@ describe("Auth (e2e)", () => {
 	});
 
 	it("POST /api/auth/logout clears the session cookie", async () => {
-		const user = await users.upsertGoogleUser({
+		const { cookie } = await createE2eAuthSession(app, {
 			googleSub: "google-sub-logout",
 			email: "logout@example.com",
 			name: "Logout User",
 			pictureUrl: null,
 		});
-		const sessionId = randomUUID();
-		const expire = new Date(Date.now() + 3_600_000);
-		const sessionPayload = {
-			cookie: {
-				originalMaxAge: 3_600_000,
-				expires: expire.toISOString(),
-				secure: false,
-				httpOnly: true,
-				path: "/",
-				sameSite: "lax",
-			},
-			passport: { user: user.id },
-		};
-
-		const { createAppDataSource } = await import(
-			"../../../src/database/data-source.js"
-		);
-		const dataSource = createAppDataSource();
-		await dataSource.initialize();
-		await dataSource.query(
-			`INSERT INTO "session" ("sid", "sess", "expire") VALUES ($1, $2, $3)`,
-			[sessionId, sessionPayload, expire],
-		);
-		await dataSource.destroy();
 
 		const agent = request.agent(app.getHttpServer());
 		const logoutResponse = await agent
 			.post("/api/auth/logout")
-			.set("Cookie", [signedSessionCookie(sessionId)]);
+			.set("Cookie", [cookie]);
 
 		expect(logoutResponse.status).toBe(204);
 

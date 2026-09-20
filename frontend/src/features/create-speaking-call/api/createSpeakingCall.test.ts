@@ -22,7 +22,6 @@ describe("createSpeakingCall", () => {
 
 		await expect(
 			createSpeakingCall({
-				userId: "user-1",
 				sourceLanguage: "English",
 				languageLevel: "B2",
 				explanationLanguage: "English",
@@ -41,7 +40,6 @@ describe("createSpeakingCall", () => {
 
 		await expect(
 			createSpeakingCall({
-				userId: "user-1",
 				sourceLanguage: "English",
 				languageLevel: "B2",
 			}),

@@ -7,7 +7,7 @@ import { Repository } from "typeorm";
 import { Video } from "../models";
 import { BlobStorageService } from "./blob-storage.service";
 import { ProcessingHistoryService } from "./processing-history.service";
-import type { CreateVideoInput, VideoRecord } from "./types";
+import type { CreateVideoInput, VideoRecord } from "./type";
 import { isInvalidUuidError } from "./utils/postgres-errors";
 import {
 	normalizeVideoRecord,
@@ -39,6 +39,7 @@ export class VideoRepositoryService {
 
 		const record: VideoRecord = {
 			id: videoId,
+			userId: input.userId,
 			title: sanitizeTitle(input.title),
 			originalFileName: safeFileName,
 			mimeType: input.mimeType,
@@ -69,6 +70,14 @@ export class VideoRepositoryService {
 
 	async listVideos(): Promise<VideoRecord[]> {
 		const records = await this.videoRepository.find({
+			order: { createdAt: "DESC" },
+		});
+		return records.map(normalizeVideoRecord);
+	}
+
+	async listVideosByUserId(userId: string): Promise<VideoRecord[]> {
+		const records = await this.videoRepository.find({
+			where: { userId },
 			order: { createdAt: "DESC" },
 		});
 		return records.map(normalizeVideoRecord);

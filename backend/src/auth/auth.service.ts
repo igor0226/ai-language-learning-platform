@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 
 import { UserRepositoryService } from "../storage/user-repository.service";
-import type { UpsertGoogleUserInput, UserRecord } from "../storage/types";
+import type { UpsertGoogleUserInput, UserRecord } from "../storage/type";
 import { resolveAuthConfig } from "./utils/resolve-auth-config";
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { ConflictException, NotFoundException } from "@nestjs/common";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { VideoRecord } from "../storage/types";
+import type { VideoRecord } from "../storage/type";
 import { makeTestVideoRecord } from "../../test/helpers/make-test-video-record";
 import { VideosService } from "./videos.service";
 
@@ -54,7 +54,10 @@ describe("VideosService", () => {
 	});
 
 	it("retryFailedVideo resets failed video to pending from last failed step", async () => {
-		const result = await service.retryFailedVideo("video-1");
+		const result = await service.retryFailedVideo({
+			videoId: "video-1",
+			userId: "user-1",
+		});
 
 		expect(result).toEqual({
 			id: "video-1",
@@ -79,9 +82,15 @@ describe("VideosService", () => {
 	it("retryFailedVideo throws NotFoundException for missing video", async () => {
 		videoRepository.getVideoById.mockResolvedValueOnce(null);
 
-		await expect(service.retryFailedVideo("missing")).rejects.toBeInstanceOf(
-			NotFoundException,
-		);
+		await expect(
+			service.retryFailedVideo({ videoId: "missing", userId: "user-1" }),
+		).rejects.toBeInstanceOf(NotFoundException);
+	});
+
+	it("retryFailedVideo throws NotFoundException for another user's video", async () => {
+		await expect(
+			service.retryFailedVideo({ videoId: "video-1", userId: "other-user" }),
+		).rejects.toBeInstanceOf(NotFoundException);
 	});
 
 	it("retryFailedVideo throws ConflictException for non-failed video", async () => {
@@ -90,13 +99,16 @@ describe("VideosService", () => {
 			status: "ready",
 		});
 
-		await expect(service.retryFailedVideo("video-1")).rejects.toBeInstanceOf(
-			ConflictException,
-		);
+		await expect(
+			service.retryFailedVideo({ videoId: "video-1", userId: "user-1" }),
+		).rejects.toBeInstanceOf(ConflictException);
 	});
 
 	it("getPlaybackPhrasesForApi returns empty phrases when file is missing", async () => {
-		const result = await service.getPlaybackPhrasesForApi("video-1");
+		const result = await service.getPlaybackPhrasesForApi({
+			videoId: "video-1",
+			userId: "user-1",
+		});
 
 		expect(result).toEqual({ videoId: "video-1", phrases: [] });
 	});
@@ -117,7 +129,10 @@ describe("VideosService", () => {
 			}),
 		);
 
-		const result = await service.getPlaybackPhrasesForApi("video-1");
+		const result = await service.getPlaybackPhrasesForApi({
+			videoId: "video-1",
+			userId: "user-1",
+		});
 
 		expect(result).toEqual({
 			videoId: "video-1",
@@ -137,7 +152,10 @@ describe("VideosService", () => {
 		videoRepository.getVideoById.mockResolvedValueOnce(null);
 
 		await expect(
-			service.getPlaybackPhrasesForApi("missing"),
+			service.getPlaybackPhrasesForApi({
+				videoId: "missing",
+				userId: "user-1",
+			}),
 		).rejects.toBeInstanceOf(NotFoundException);
 	});
 });

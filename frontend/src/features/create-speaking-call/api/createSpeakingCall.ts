@@ -3,13 +3,13 @@ import type {
 	CreateCallResponse,
 } from "@/entities/speaking-session";
 
-import { apiUrl } from "@/shared/api";
+import { authFetch } from "@/shared/api/auth-fetch";
 import { isRecord } from "@/shared/lib";
 
 export async function createSpeakingCall(
 	request: CreateCallRequest,
 ): Promise<CreateCallResponse> {
-	const response = await fetch(apiUrl("/api/speaking/calls"), {
+	const response = await authFetch("/api/speaking/calls", {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify(request),

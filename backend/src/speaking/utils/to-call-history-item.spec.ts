@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import type { TeacherCallRecord } from "@/storage/types";
+import type { TeacherCallRecord } from "@/storage/type";
 import { toCallHistoryItem } from "./to-call-history-item";
 
 function makeRecord(

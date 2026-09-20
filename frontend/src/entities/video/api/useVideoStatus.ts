@@ -1,6 +1,6 @@
 "use client";
 
-import type { VideosResponse } from "../model/types";
+import type { VideosResponse } from "../type";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect } from "react";

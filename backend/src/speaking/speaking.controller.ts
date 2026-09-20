@@ -6,19 +6,21 @@ import {
 	HttpCode,
 	Param,
 	Post,
-	Query,
 	Req,
 	UnauthorizedException,
+	UseGuards,
 	type RawBodyRequest,
 } from "@nestjs/common";
 import type { Request } from "express";
 
+import { AuthenticatedGuard } from "@/auth/authenticated.guard";
+import type { AuthenticatedRequest } from "@/auth/type/express-request";
+import { getAuthenticatedUser } from "@/auth/utils/get-authenticated-user";
 import { ZodValidationPipe } from "../http/utils/zod-validation-pipe";
 import { LivekitWebhookService } from "./livekit-webhook.service";
 import { SpeakingService } from "./speaking.service";
 import {
 	createCallBodySchema,
-	requiredUserIdSchema,
 	type CreateCallBody,
 } from "./utils/http-schemas";
 
@@ -30,41 +32,43 @@ export class SpeakingController {
 	) {}
 
 	@Post("calls")
+	@UseGuards(AuthenticatedGuard)
 	async createCall(
 		@Body(new ZodValidationPipe(createCallBodySchema)) body: CreateCallBody,
+		@Req() request: AuthenticatedRequest,
 	) {
-		return this.speakingService.createCall(body);
+		const user = getAuthenticatedUser(request);
+		return this.speakingService.createCall({
+			...body,
+			userId: user.id,
+		});
 	}
 
 	@Get("calls")
-	async listCalls(
-		@Query("userId", new ZodValidationPipe(requiredUserIdSchema))
-		userId: string,
-	) {
-		return this.speakingService.listCallsForUser(userId);
+	@UseGuards(AuthenticatedGuard)
+	async listCalls(@Req() request: AuthenticatedRequest) {
+		const user = getAuthenticatedUser(request);
+		return this.speakingService.listCallsForUser(user.id);
 	}
 
 	@Get("calls/:id")
-	async getCall(
-		@Param("id") id: string,
-		@Query("userId", new ZodValidationPipe(requiredUserIdSchema))
-		userId: string,
-	) {
+	@UseGuards(AuthenticatedGuard)
+	async getCall(@Param("id") id: string, @Req() request: AuthenticatedRequest) {
+		const user = getAuthenticatedUser(request);
 		return this.speakingService.getCall({
 			callId: id,
-			userId,
+			userId: user.id,
 		});
 	}
 
 	@Post("calls/:id/end")
+	@UseGuards(AuthenticatedGuard)
 	@HttpCode(200)
-	async endCall(
-		@Param("id") id: string,
-		@Body("userId", new ZodValidationPipe(requiredUserIdSchema)) userId: string,
-	) {
+	async endCall(@Param("id") id: string, @Req() request: AuthenticatedRequest) {
+		const user = getAuthenticatedUser(request);
 		const call = await this.speakingService.endCall({
 			callId: id,
-			userId,
+			userId: user.id,
 		});
 		return { id: call.id, status: call.status };
 	}

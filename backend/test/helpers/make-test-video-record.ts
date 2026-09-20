@@ -1,10 +1,11 @@
-import type { VideoRecord } from "@/storage/types";
+import type { VideoRecord } from "@/storage/type";
 
 export function makeTestVideoRecord(
 	overrides: Partial<VideoRecord> = {},
 ): VideoRecord {
 	return {
 		id: "video-1",
+		userId: "user-1",
 		title: "Test",
 		originalFileName: "clip.mp4",
 		mimeType: "video/mp4",
