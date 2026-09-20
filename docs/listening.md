@@ -78,7 +78,7 @@ Processing steps tracked in history: `queued`, `audio_extract`, `transcribing`, 
 
 ## Video API
 
-All video HTTP routes require the session cookie (`llp.sid`). List, status, retry, and playback-phrases are scoped to the logged-in user's `userId` on the video record (`404` when missing or owned by another user). Upload stamps `userId` from the session. DASH manifest/segment routes stay public.
+All video and DASH HTTP routes require the session cookie (`llp.sid`). List, status, retry, playback-phrases, and DASH manifest/segment serving are scoped to the logged-in user's `userId` on the video record (`404` when missing or owned by another user). Upload stamps `userId` from the session.
 
 - `GET /api/videos` — each item includes `processingStep`
 - `GET /api/videos/:id/status` — adds `processingHistory` (full event log) plus `processingStep`
@@ -96,6 +96,7 @@ All video HTTP routes require the session cookie (`llp.sid`). List, status, retr
 
 ## DASH (backend)
 
+- Session-gated and owner-scoped like other video routes.
 - Serve manifests at `/api/dash/<videoId>/manifest.mpd`.
 - `DashService` rewrites served MPDs at read time to inject `<BaseURL>/api/dash/<videoId>/segment/</BaseURL>` before each `<SegmentTemplate>`; segment bytes are streamed from object storage through the backend.
 - Preserve `manifest.mpd` route + `/segment/` asset path conventions.
@@ -104,6 +105,6 @@ All video HTTP routes require the session cookie (`llp.sid`). List, status, retr
 ## Playback (frontend)
 
 - Ready videos play from Nest `/api/dash/<videoId>/manifest.mpd` via `apiUrl(...)`.
-- `PlayerPanel` loads dash.js with `import * as DASH from "dashjs"` and sets `provider.library = DASH` in `onProviderChange`.
+- `PlayerPanel` loads dash.js with `import * as DASH from "dashjs"`, sets `provider.library = DASH`, and calls `setXHRWithCredentialsForType("default", true)` in `onProviderChange`.
 - Use `key={videoId}` on `MediaPlayer` when switching task detail pages to avoid stale dash.js state.
 - Do not reintroduce custom MSE/SourceBuffer playback; use Vidstack + dash.js.

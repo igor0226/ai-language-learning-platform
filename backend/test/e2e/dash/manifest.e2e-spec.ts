@@ -8,6 +8,19 @@ import { useE2eApp } from "../helpers/e2e-lifecycle";
 describe("DASH manifest (e2e)", () => {
 	const { getApp, getBlobStorage } = useE2eApp();
 
+	it("GET /api/dash/:id/manifest.mpd returns 401 without a session", async () => {
+		const { user } = await createE2eAuthSession(getApp());
+		const { videoId } = await seedReadyVideo(getBlobStorage(), {
+			userId: user.id,
+		});
+
+		const response = await request(getApp().getHttpServer()).get(
+			`/api/dash/${videoId}/manifest.mpd`,
+		);
+
+		expect(response.status).toBe(401);
+	});
+
 	it("GET /api/dash/:id/manifest.mpd returns 404 for pending videos", async () => {
 		const { cookie } = await createE2eAuthSession(getApp());
 
@@ -25,22 +38,42 @@ describe("DASH manifest (e2e)", () => {
 
 		const pendingId = uploadResponse.body.id as string;
 
-		const response = await request(getApp().getHttpServer()).get(
-			`/api/dash/${pendingId}/manifest.mpd`,
-		);
+		const response = await request(getApp().getHttpServer())
+			.get(`/api/dash/${pendingId}/manifest.mpd`)
+			.set("Cookie", [cookie]);
+
+		expect(response.status).toBe(404);
+	});
+
+	it("GET /api/dash/:id/manifest.mpd returns 404 for another user's video", async () => {
+		const owner = await createE2eAuthSession(getApp(), {
+			googleSub: "dash-owner",
+			email: "dash-owner@example.com",
+		});
+		const other = await createE2eAuthSession(getApp(), {
+			googleSub: "dash-other",
+			email: "dash-other@example.com",
+		});
+		const { videoId } = await seedReadyVideo(getBlobStorage(), {
+			userId: owner.user.id,
+		});
+
+		const response = await request(getApp().getHttpServer())
+			.get(`/api/dash/${videoId}/manifest.mpd`)
+			.set("Cookie", [other.cookie]);
 
 		expect(response.status).toBe(404);
 	});
 
 	it("GET /api/dash/:id/manifest.mpd serves rewritten manifest for ready videos", async () => {
-		const { user } = await createE2eAuthSession(getApp());
+		const { user, cookie } = await createE2eAuthSession(getApp());
 		const { videoId } = await seedReadyVideo(getBlobStorage(), {
 			userId: user.id,
 		});
 
-		const response = await request(getApp().getHttpServer()).get(
-			`/api/dash/${videoId}/manifest.mpd`,
-		);
+		const response = await request(getApp().getHttpServer())
+			.get(`/api/dash/${videoId}/manifest.mpd`)
+			.set("Cookie", [cookie]);
 
 		expect(response.status).toBe(200);
 		expect(response.headers["content-type"]).toContain("application/dash+xml");

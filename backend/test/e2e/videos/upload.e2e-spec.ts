@@ -149,6 +149,6 @@ describe("Videos upload (e2e)", () => {
 		const manifestResponse = await request(getApp().getHttpServer()).get(
 			`/api/dash/${pendingId}/manifest.mpd`,
 		);
-		expect(manifestResponse.status).toBe(404);
+		expect(manifestResponse.status).toBe(401);
 	});
 });

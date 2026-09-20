@@ -16,8 +16,8 @@ export class Video implements VideoRecord {
 	@PrimaryColumn("uuid")
 	id!: string;
 
-	@Column({ type: "uuid", nullable: true })
-	userId!: string | null;
+	@Column({ type: "uuid" })
+	userId!: string;
 
 	@Column({ type: "varchar" })
 	title!: string;

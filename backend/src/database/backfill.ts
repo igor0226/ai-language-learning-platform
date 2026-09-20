@@ -41,9 +41,14 @@ async function backfill(): Promise<void> {
 	const historyRepo = AppDataSource.getRepository(ProcessingHistory);
 
 	const records = await readJsonFiles<Partial<VideoRecord>>(RECORDS_DIR);
-	for (const { data } of records) {
-		await videoRepo.save(normalizeLegacyVideoRecord(data));
-		process.stdout.write(`backfilled video ${String(data.id)}\n`);
+	for (const { fileName, data } of records) {
+		try {
+			await videoRepo.save(normalizeLegacyVideoRecord(data));
+			process.stdout.write(`backfilled video ${String(data.id)}\n`);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			process.stderr.write(`skipped ${fileName}: ${message}\n`);
+		}
 	}
 
 	const histories =

@@ -20,9 +20,12 @@ export function sanitizeFileName(value: string): string {
 export function normalizeLegacyVideoRecord(
 	parsed: Partial<VideoRecord>,
 ): VideoRecord {
+	if (!parsed.userId) {
+		throw new Error(`Video ${String(parsed.id)} is missing userId`);
+	}
 	return {
 		...parsed,
-		userId: parsed.userId ?? null,
+		userId: parsed.userId,
 		transcriptRelativePath: parsed.transcriptRelativePath ?? null,
 		phrasesRelativePath: parsed.phrasesRelativePath ?? null,
 		sourceLanguage: parsed.sourceLanguage ?? "",

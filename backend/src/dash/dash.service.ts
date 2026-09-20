@@ -3,7 +3,8 @@ import type { Readable } from "node:stream";
 
 import { Injectable, NotFoundException } from "@nestjs/common";
 
-import { BlobStorageService, VideoRepositoryService } from "../storage";
+import { VideosService } from "../videos/videos.service";
+import { BlobStorageService } from "../storage";
 import { normalizeObjectKey } from "../storage/utils/normalize-object-key";
 
 export type DashManifest = {
@@ -20,7 +21,7 @@ export type DashAssetStream = {
 @Injectable()
 export class DashService {
 	constructor(
-		private readonly videoRepository: VideoRepositoryService,
+		private readonly videosService: VideosService,
 		private readonly blobStorage: BlobStorageService,
 	) {}
 
@@ -71,11 +72,12 @@ export class DashService {
 		return joinedKey;
 	}
 
-	async readDashManifest(videoId: string): Promise<DashManifest> {
-		const video = await this.videoRepository.getVideoById(videoId);
-		if (!video) {
-			throw new NotFoundException("Video not found");
-		}
+	async readDashManifest(input: {
+		videoId: string;
+		userId: string;
+	}): Promise<DashManifest> {
+		const { videoId } = input;
+		const video = await this.videosService.getOwnedVideoRecord(input);
 
 		if (video.status !== "ready") {
 			throw new NotFoundException("Video is not ready for playback");
@@ -94,16 +96,14 @@ export class DashService {
 
 	async getDashAssetStream(input: {
 		videoId: string;
+		userId: string;
 		assetPathParts: string[];
 	}): Promise<DashAssetStream> {
 		if (input.assetPathParts.length === 0) {
 			throw new NotFoundException("Missing DASH asset path");
 		}
 
-		const video = await this.videoRepository.getVideoById(input.videoId);
-		if (!video) {
-			throw new NotFoundException("Video not found");
-		}
+		const video = await this.videosService.getOwnedVideoRecord(input);
 
 		const assetKey = this.resolveDashAssetKey({
 			dashRelativePath: video.dashRelativePath,

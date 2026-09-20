@@ -25,7 +25,7 @@ Store module-bound utility functions under each module's `utils/` directory (e.g
 
 Speaking JSON fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
 
-**Auth gate:** `/api/videos/*` and `/api/speaking/calls*` require `AuthenticatedGuard` (session cookie). `/api/dash/*` and `POST /api/speaking/livekit/webhook` stay public.
+**Auth gate:** `/api/videos/*`, `/api/speaking/calls*`, and `/api/dash/*` require `AuthenticatedGuard` (session cookie) and owner scope where applicable. `POST /api/speaking/livekit/webhook` stays public.
 
 ## Tech stack
 
@@ -48,10 +48,10 @@ In Docker Compose, backend uses `POSTGRES_HOST=postgres`. Host dev defaults to `
 
 **Tables** (see `src/models/`):
 
-- `videos` — video metadata (`VideoRecord` fields, nullable `userId` FK to `users`)
+- `videos` — video metadata (`VideoRecord` fields, required `userId` FK to `users`)
+- `teacher_calls` — speaking-skill AI teacher call records (`userId` FK to `users`)
 - `processing_history` — per-video step history (`currentStep`, `events` jsonb)
 - `processing_locks` — worker concurrency guard (row insert = acquire, PK = one lock per video)
-- `teacher_calls` — speaking-skill AI teacher call records (`TeacherCallRecord` fields)
 
 Domain types live in [`src/storage/type/`](../backend/src/storage/type). Entities mirror those types; ISO date/bigint transformers are in `src/models/utils/`.
 

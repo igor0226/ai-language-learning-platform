@@ -50,7 +50,7 @@ A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pag
 
 ## Data fetching
 
-Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated routes (`/api/videos/*`, `/api/speaking/calls*`, `/api/auth/*`) use `authFetch()` with `credentials: "include"`. Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback stays on plain `fetch`/`apiUrl()`. Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
+Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated routes (`/api/videos/*`, `/api/speaking/calls*`, `/api/auth/*`) use `authFetch()` with `credentials: "include"`. Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback uses `apiUrl()` for the manifest `src` and dash.js `setXHRWithCredentialsForType("default", true)` in `onProviderChange` so manifest and segment requests include the session cookie. Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
 
 **Hard rule:** do not call `useQuery` or `useInfiniteQuery` in pages or widgets. Each query lives in a dedicated hook under the owning entity or feature (`api/` or `model/`). Pages and widgets only consume those hooks. `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, and `useSpeakingCalls` are the current examples. The same applies to mutations (`useRetryVideo`).
 

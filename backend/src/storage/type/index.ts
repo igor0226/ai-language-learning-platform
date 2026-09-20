@@ -10,7 +10,7 @@ export type VideoProcessingStatus =
 
 export type VideoRecord = {
 	id: string;
-	userId: string | null;
+	userId: string;
 	title: string;
 	originalFileName: string;
 	mimeType: string;
