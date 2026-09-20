@@ -35,6 +35,7 @@ Compose sets `NEXT_PUBLIC_API_URL=https://app.llp-test.com` (same origin as the 
 
 ```bash
 NEXT_PUBLIC_API_URL=https://app.llp-test.com
+AUTH_API_URL=http://localhost:3001
 # Host-only without Caddy: NEXT_PUBLIC_API_URL=http://localhost:3001
 ```
 

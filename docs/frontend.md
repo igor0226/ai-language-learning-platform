@@ -21,7 +21,7 @@ Run the app with Docker Compose from the repo root (`docker compose up --build`)
 
 **Current routes** (implemented today):
 
-- `/login` — Google sign-in (middleware gates other UI routes)
+- `/login` — Google sign-in (the only public UI route; middleware default-denies all others)
 - `/` — redirect to `/dashboard`
 - `/dashboard` — progress overview
 - `/listening` — video library
@@ -50,7 +50,7 @@ A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pag
 
 ## Data fetching
 
-Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated routes (`/api/videos/*`, `/api/speaking/calls*`, `/api/auth/*`) use `authFetch()` with `credentials: "include"`. Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback uses `apiUrl()` for the manifest `src` and dash.js `setXHRWithCredentialsForType("default", true)` in `onProviderChange` so manifest and segment requests include the session cookie. Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
+Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated routes (`/api/videos/*`, `/api/speaking/calls*`, `/api/auth/*`) use `authFetch()` with `credentials: "include"`. Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback uses `apiUrl()` for the manifest `src` and dash.js `setXHRWithCredentialsForType("default", true)` in `onProviderChange` so manifest and segment requests include the session cookie. UI route auth is enforced by [`frontend/middleware.ts`](../frontend/middleware.ts) at the project root (not `src/` — required because of the empty root `pages/` directory). Middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
 
 **Hard rule:** do not call `useQuery` or `useInfiniteQuery` in pages or widgets. Each query lives in a dedicated hook under the owning entity or feature (`api/` or `model/`). Pages and widgets only consume those hooks. `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, and `useSpeakingCalls` are the current examples. The same applies to mutations (`useRetryVideo`).
 

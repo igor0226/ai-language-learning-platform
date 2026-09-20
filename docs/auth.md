@@ -18,9 +18,15 @@ See `backend/.env.example`:
 
 ## Frontend
 
-- `/login` — Google sign-in (middleware gates other UI routes)
+- `/login` — Google sign-in (the only public UI route)
 - Auth session uses `authFetch()` with `credentials: "include"`
 - Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`)
+
+### Frontend route gate
+
+Default-deny: all UI routes require a valid session except `/login`. Middleware forwards `llp.sid` to `GET /api/auth/me`; unauthenticated requests redirect to `/login` (with `?next=` when the original path was not `/`). A logged-in user visiting `/login` is redirected to `/dashboard`.
+
+Middleware lives at [`frontend/middleware.ts`](../frontend/middleware.ts) (project root). The empty [`frontend/pages/`](../frontend/pages/) directory blocks `src/pages` from becoming the Pages Router; with that layout, Next.js does not pick up `src/middleware.ts`.
 
 ## CORS and cookies
 

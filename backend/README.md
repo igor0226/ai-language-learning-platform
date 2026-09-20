@@ -67,5 +67,5 @@ Video metadata and processing history are in PostgreSQL. To migrate existing loc
 ## Notes
 
 - The processing worker starts on Nest boot via `ProcessingWorkerService` (`OnModuleInit`).
-- UI routes are gated by Google OAuth; videos/DASH/speaking APIs remain open until a later slice.
+- UI routes are gated by Next.js middleware; `/api/videos/*`, `/api/speaking/calls*`, and `/api/dash/*` require a session cookie (`401` without it).
 - Agent guidance: [`AGENTS.md`](AGENTS.md)
