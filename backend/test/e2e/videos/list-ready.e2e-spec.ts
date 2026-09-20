@@ -27,7 +27,6 @@ describe("Videos list ready playback (e2e)", () => {
 					status: "ready",
 					playable: true,
 					processingStep: "completed",
-					queuePosition: null,
 					dashManifestUrl: `/api/dash/${videoId}/manifest`,
 				}),
 			]),

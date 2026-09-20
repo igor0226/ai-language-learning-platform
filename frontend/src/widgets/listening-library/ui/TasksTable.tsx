@@ -148,9 +148,6 @@ export function TasksTable({
 												video.status === "processing" ? (
 													<span className="tasksStatusDetail">
 														{getProcessingStepLabel(video.processingStep)}
-														{video.queuePosition != null
-															? ` · Queue #${video.queuePosition}`
-															: null}
 													</span>
 												) : null}
 											</div>

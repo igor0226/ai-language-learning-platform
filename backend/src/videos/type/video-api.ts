@@ -16,7 +16,6 @@ export type VideoListItem = {
 	updatedAt: string;
 	failureReason: string | null;
 	processingStep: ProcessingStep;
-	queuePosition: number | null;
 	sourceLanguage: string;
 	explanationLanguage: string;
 	languageLevel: VideoRecord["languageLevel"];
@@ -29,7 +28,6 @@ export type VideoStatusForApi = {
 	playable: boolean;
 	chunkCount: number;
 	processingStep: ProcessingStep;
-	queuePosition: number | null;
 	processingHistory: ProcessingHistoryEvent[];
 	sourceLanguage: string;
 	explanationLanguage: string;

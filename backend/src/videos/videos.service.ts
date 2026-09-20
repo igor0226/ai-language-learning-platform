@@ -19,7 +19,6 @@ import type {
 	VideoRetryForApi,
 	VideoStatusForApi,
 } from "./type/video-api";
-import { getQueuePosition } from "./utils/queue-position";
 
 @Injectable()
 export class VideosService {
@@ -31,7 +30,6 @@ export class VideosService {
 
 	async listVideosForApi(userId: string): Promise<VideoListItem[]> {
 		const videos = await this.videoRepository.listVideosByUserId(userId);
-		const allVideos = await this.videoRepository.listVideos();
 		const histories = await Promise.all(
 			videos.map((video) => this.processingHistory.getHistory(video.id)),
 		);
@@ -47,7 +45,6 @@ export class VideosService {
 			updatedAt: video.updatedAt,
 			failureReason: video.failureReason,
 			processingStep: histories[index].currentStep,
-			queuePosition: getQueuePosition(video, allVideos),
 			sourceLanguage: video.sourceLanguage,
 			explanationLanguage: video.explanationLanguage,
 			languageLevel: video.languageLevel,
@@ -83,7 +80,6 @@ export class VideosService {
 	}): Promise<VideoStatusForApi> {
 		const { videoId } = input;
 		const video = await this.getOwnedVideoRecord(input);
-		const allVideos = await this.videoRepository.listVideos();
 		const history = await this.processingHistory.getHistory(videoId);
 
 		return {
@@ -93,7 +89,6 @@ export class VideosService {
 			playable: video.status === "ready",
 			chunkCount: video.segmentCount,
 			processingStep: history.currentStep,
-			queuePosition: getQueuePosition(video, allVideos),
 			processingHistory: history.events,
 			sourceLanguage: video.sourceLanguage,
 			explanationLanguage: video.explanationLanguage,

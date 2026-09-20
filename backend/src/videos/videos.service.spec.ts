@@ -14,7 +14,6 @@ describe("VideosService", () => {
 	let service: VideosService;
 	const videoRepository = {
 		getVideoById: vi.fn(async (): Promise<VideoRecord | null> => video),
-		listVideos: vi.fn(async (): Promise<VideoRecord[]> => [video]),
 		updateVideo: vi.fn(async (_id: string, patch: Partial<VideoRecord>) => ({
 			...video,
 			...patch,
