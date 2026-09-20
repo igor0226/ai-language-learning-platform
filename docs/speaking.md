@@ -39,7 +39,7 @@ Routes:
 
 Call flow:
 
-- Start a call from `/speaking`; the call page `POST`s Nest `/api/speaking/calls` with a stable anonymous `userId` from `localStorage` (`getAnonymousUserId()`), `sourceLanguage`/`explanationLanguage` `"English"`, `languageLevel` parsed from the topic (first CEFR token), and a `topic` string (`title` + `description`) for the agent prompt only. `/speaking` loads history from `GET /api/speaking/calls?userId=`.
+- Start a call from `/speaking`; the call page `POST`s Nest `/api/speaking/calls` via `authFetch()` with `sourceLanguage`/`explanationLanguage` `"English"`, `languageLevel` parsed from the topic (first CEFR token), and a `topic` string (`title` + `description`) for the agent prompt only. `/speaking` loads history from `GET /api/speaking/calls` (session-scoped).
 - The response `{ callId, token, livekitUrl }` is used with `livekit-client` `Room.connect`. The browser publishes the microphone and plays the agent's remote audio track.
 - Compose LiveKit must be **v1.9.11+** (repo uses `livekit/livekit-server:v1.13.6`). `livekit-client` 2.17+ connects via `/rtc/v1`; older servers only expose `/rtc` and the browser shows `404 /rtc/v1/validate`.
 - End call `POST`s `/api/speaking/calls/:id/end` then returns to `/speaking`.

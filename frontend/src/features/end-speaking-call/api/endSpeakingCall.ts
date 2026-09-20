@@ -1,17 +1,9 @@
-import { apiUrl } from "@/shared/api";
+import { authFetch } from "@/shared/api/auth-fetch";
 
-export async function endSpeakingCall(input: {
-	callId: string;
-	userId: string;
-}): Promise<void> {
-	const response = await fetch(
-		apiUrl(`/api/speaking/calls/${input.callId}/end`),
-		{
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ userId: input.userId }),
-		},
-	);
+export async function endSpeakingCall(callId: string): Promise<void> {
+	const response = await authFetch(`/api/speaking/calls/${callId}/end`, {
+		method: "POST",
+	});
 	if (!response.ok) {
 		throw new Error(`Failed to end call (${response.status})`);
 	}

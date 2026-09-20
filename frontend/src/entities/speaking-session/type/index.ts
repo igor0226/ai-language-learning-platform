@@ -70,7 +70,6 @@ export type ConnectionStep =
 	| "ready";
 
 export type CreateCallRequest = {
-	userId: string;
 	sourceLanguage: string;
 	languageLevel: LanguageLevel;
 	explanationLanguage?: string;

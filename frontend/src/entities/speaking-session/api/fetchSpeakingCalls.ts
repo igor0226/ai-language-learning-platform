@@ -2,16 +2,12 @@ import type { CallHistoryItem, SpeakingCall } from "../type";
 
 import { languageLevelSchema } from "@llp/contracts";
 
-import { apiUrl } from "@/shared/api";
+import { authFetch } from "@/shared/api/auth-fetch";
 import { isRecord } from "@/shared/lib";
 import { mapCallHistoryItem } from "../utils/map-call-history-item";
 
-export async function fetchSpeakingCalls(
-	userId: string,
-): Promise<SpeakingCall[]> {
-	const response = await fetch(
-		apiUrl(`/api/speaking/calls?userId=${encodeURIComponent(userId)}`),
-	);
+export async function fetchSpeakingCalls(): Promise<SpeakingCall[]> {
+	const response = await authFetch("/api/speaking/calls");
 	if (!response.ok) {
 		throw new Error("Failed to load speaking sessions");
 	}
