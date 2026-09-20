@@ -17,7 +17,7 @@ Nest.js app under `src/` with feature modules:
 - `models/` — TypeORM entity declarations (`Video`, `ProcessingHistory`, `ProcessingLock`, `TeacherCall`, `User`)
 - `database/` — TypeORM wiring, migrations, backfill script
 
-`main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
+`main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`, shutdown hooks, and `forceCloseConnections` so Compose `start:dev` watch restarts can unbind the port. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
 
 Store module-bound utility functions under each module's `utils/` directory (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`). Do not blend helpers into service files. Store substantial type declarations under `type/` (e.g. `storage/type/`, `speaking/type/`). Do not keep type-only files in `utils/`.
 
@@ -28,7 +28,7 @@ Speaking JSON/query fields are validated with Zod (`ZodValidationPipe` + schemas
 ## Tech stack
 
 - Nest.js + TypeScript
-- SWC for Nest emit (`nest build` / `nest start`); `tsc --noEmit` for type checking (`npm run typecheck`, and forked in parallel on `start:dev`)
+- SWC for Nest emit (`nest build` / `nest start`); `tsc --noEmit` for type checking (`npm run typecheck`, and forked in parallel on `start:dev`). Watch uses `--no-shell` so Nest CLI can kill the Node process on reload (avoids `EADDRINUSE` on `:3001` in Docker).
 - Pino via `nestjs-pino` (pretty in non-production)
 - PostgreSQL + TypeORM (`@nestjs/typeorm`, `typeorm`, `pg`)
 - S3-compatible object storage via AWS SDK v3 (`@aws-sdk/client-s3`, `@aws-sdk/lib-storage`); MinIO locally, AWS S3 in production

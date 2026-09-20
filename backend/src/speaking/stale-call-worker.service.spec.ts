@@ -2,8 +2,9 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { StaleCallWorkerService } from "./stale-call-worker.service";
 
-const { start, cronJob } = vi.hoisted(() => ({
+const { start, stop, cronJob } = vi.hoisted(() => ({
 	start: vi.fn(),
+	stop: vi.fn(),
 	cronJob: vi.fn(),
 }));
 
@@ -15,6 +16,10 @@ vi.mock("cron", () => ({
 
 		start() {
 			start();
+		}
+
+		stop() {
+			stop();
 		}
 	},
 }));
@@ -57,5 +62,16 @@ describe("StaleCallWorkerService", () => {
 		expect(cronJob).toHaveBeenCalled();
 		expect(start).toHaveBeenCalled();
 		await vi.waitFor(() => expect(cleanup.sweep).toHaveBeenCalled());
+	});
+
+	it("stops the scheduler on module destroy", () => {
+		process.env.SPEAKING_STALE_CALL_CRON_ENABLED = "true";
+		const worker = new StaleCallWorkerService(
+			logger as never,
+			cleanup as never,
+		);
+		worker.onModuleInit();
+		worker.onModuleDestroy();
+		expect(stop).toHaveBeenCalled();
 	});
 });

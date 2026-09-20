@@ -1,13 +1,18 @@
-import { Injectable, type OnModuleInit } from "@nestjs/common";
+import {
+	Injectable,
+	type OnModuleDestroy,
+	type OnModuleInit,
+} from "@nestjs/common";
 import { CronJob } from "cron";
 import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
 import { JobsService } from "./jobs.service";
 
 @Injectable()
-export class ProcessingWorkerService implements OnModuleInit {
+export class ProcessingWorkerService implements OnModuleDestroy, OnModuleInit {
 	private started = false;
 	private tickLock = false;
+	private job: CronJob | undefined;
 
 	constructor(
 		@InjectPinoLogger(ProcessingWorkerService.name)
@@ -17,6 +22,10 @@ export class ProcessingWorkerService implements OnModuleInit {
 
 	onModuleInit(): void {
 		this.ensureStarted();
+	}
+
+	onModuleDestroy(): void {
+		this.job?.stop();
 	}
 
 	private async runWorkerTick(): Promise<void> {
@@ -57,11 +66,11 @@ export class ProcessingWorkerService implements OnModuleInit {
 
 		const cronExpression = process.env.VIDEO_PROCESSOR_CRON ?? "*/15 * * * * *";
 		this.logger.info({ cronExpression }, "starting cron scheduler");
-		const job = new CronJob(cronExpression, () => {
+		this.job = new CronJob(cronExpression, () => {
 			void this.runWorkerTick();
 		});
 
-		job.start();
+		this.job.start();
 		this.started = true;
 		this.logger.info("scheduler started");
 		this.logger.info("running immediate startup tick");
