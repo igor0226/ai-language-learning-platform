@@ -19,8 +19,7 @@ const MAX_UPLOAD_BYTES = 500 * 1024 * 1024;
 export default function ListeningUploadPage() {
 	const queryClient = useQueryClient();
 	const router = useRouter();
-	const { uploadVideo, uploadProgress, isUploading, uploadError } =
-		useVideoUpload();
+	const { uploadVideo, uploadProgress, isUploading } = useVideoUpload();
 
 	const [title, setTitle] = useState("");
 	const [sourceLanguage, setSourceLanguage] = useState("");
@@ -104,8 +103,6 @@ export default function ListeningUploadPage() {
 						<Progress value={uploadProgress} className="newVideoProgress" />
 					</div>
 				) : null}
-
-				{uploadError ? <p className="newVideoError">{uploadError}</p> : null}
 
 				<div className="newVideoActions">
 					<Button type="submit" disabled={isUploading || !canSubmit}>

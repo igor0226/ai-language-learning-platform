@@ -37,9 +37,6 @@ export function useRetryVideo(videoId: string) {
 				queryClient.invalidateQueries({ queryKey: ["videos"] }),
 			]);
 		},
-		onError: (error: Error) => {
-			toast.error(error.message);
-		},
 	});
 
 	return {

@@ -6,10 +6,6 @@
 	@apply grid gap-4;
 }
 
-.tasksPageError {
-	@apply m-0 text-sm text-destructive;
-}
-
 .tasksDetailContent {
 	@apply grid max-w-5xl gap-4;
 }

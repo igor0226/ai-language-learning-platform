@@ -22,10 +22,6 @@
 	@apply h-1.5;
 }
 
-.newVideoError {
-	@apply m-0 text-sm text-destructive;
-}
-
 .newVideoActions {
 	@apply flex justify-start;
 }
