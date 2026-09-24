@@ -36,7 +36,7 @@ export type CreateVideoInput = {
 	originalFileName: string;
 	mimeType: string;
 	sizeBytes: number;
-	fileBuffer: Buffer;
+	localFilePath: string;
 	sourceLanguage: string;
 	explanationLanguage: string;
 	languageLevel: LanguageLevel;

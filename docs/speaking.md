@@ -44,6 +44,7 @@ Call flow:
 - Compose LiveKit must be **v1.9.11+** (repo uses `livekit/livekit-server:v1.13.6`). `livekit-client` 2.17+ connects via `/rtc/v1`; older servers only expose `/rtc` and the browser shows `404 /rtc/v1/validate`.
 - End call `POST`s `/api/speaking/calls/:id/end` then returns to `/speaking`.
 - Teacher facial emotions arrive on the LiveKit data topic `teacher-emotion` (`{ emotion, intensity?, source }`). The live call applies them to `TeacherFace` as SVG root classes (`emotion-*`, `intensity-*`; intensity defaults to `1`). Speech visemes (`speech-quiet|normal|loud`) come from an `AnalyserNode` on the teacher's LiveKit `MediaStream` (RMS 0–100), not from the emotion payload. The launcher and connecting views keep `staticMotion`.
-- Transcript and vocabulary panels still use fixtures.
+- Transcript still uses fixtures. Saved vocabulary is stored in the browser (`language_studio_vocabulary_v1`) via the global **Vocabulary Notebook** sheet (header button on non-call routes). The in-call saved-phrases panel reads and writes the same list.
+- Discussion topics on `/speaking` can be created, edited, and deleted (custom topics only for delete). The full topic list is persisted locally (`language_studio_custom_topics_v1`). The live call page resolves `?topic=` against that list so edited or custom scenarios reach the agent prompt.
 
 Media signaling uses `wss://media.llp-test.com` in Compose. See [`local-dev.md`](local-dev.md).

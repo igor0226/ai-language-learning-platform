@@ -1,16 +1,29 @@
 "use client";
 
-import { useState } from "react";
+import { toast } from "sonner";
 
-import { SPEAKING_TOPICS, useSpeakingCalls } from "@/entities/speaking-session";
+import { useSpeakingCalls } from "@/entities/speaking-session";
+import { useSpeakingTopics } from "@/features/manage-speaking-topics";
 import { useStartCall } from "@/features/start-call";
 import { CallHistoryList, StartCallCard } from "@/widgets/call-launcher";
 import { AppPageHeader } from "@/widgets/page-header";
 
 export default function SpeakingLauncherPage() {
 	const startCall = useStartCall();
-	const [selectedTopicId, setSelectedTopicId] = useState(SPEAKING_TOPICS[0].id);
+	const {
+		topics,
+		selectedTopicId,
+		selectedTopic,
+		setSelectedTopicId,
+		createTopic,
+		updateTopic,
+		deleteTopic,
+	} = useSpeakingTopics();
 	const { calls, isLoading, errorMessage } = useSpeakingCalls();
+
+	if (!selectedTopic) {
+		return null;
+	}
 
 	return (
 		<main className="speakingPage">
@@ -22,9 +35,16 @@ export default function SpeakingLauncherPage() {
 				]}
 			/>
 			<StartCallCard
-				topics={SPEAKING_TOPICS}
+				topics={topics}
+				selectedTopic={selectedTopic}
 				selectedTopicId={selectedTopicId}
 				onTopicSelect={setSelectedTopicId}
+				onCreateTopic={(form) => {
+					const created = createTopic(form);
+					toast.success(`Topic "${created.title}" created and selected`);
+				}}
+				onUpdateTopic={updateTopic}
+				onDeleteTopic={deleteTopic}
 				onStartCall={() => startCall(selectedTopicId)}
 			/>
 			<CallHistoryList

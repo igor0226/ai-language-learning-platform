@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { createReadStream } from "node:fs";
 
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -61,7 +62,7 @@ export class VideoRepositoryService {
 
 		await this.blobStorage.writeUploadFile(
 			sourceRelativePath,
-			input.fileBuffer,
+			createReadStream(input.localFilePath),
 		);
 		await this.videoRepository.save(record);
 		await this.processingHistory.initHistory(videoId);

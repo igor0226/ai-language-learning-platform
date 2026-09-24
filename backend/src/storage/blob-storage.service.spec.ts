@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { Readable } from "node:stream";
 
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
@@ -26,6 +27,15 @@ describe("BlobStorageService", () => {
 		const contents = "[Script Info]\nTitle: test\n";
 
 		await service.writeText(relativePath, contents);
+
+		expect(await service.readText(relativePath)).toBe(contents);
+	});
+
+	it("writes and reads a stream via writeUploadFile", async () => {
+		const relativePath = `${testPrefix}/stream/upload.txt`;
+		const contents = "streamed-bytes";
+
+		await service.writeUploadFile(relativePath, Readable.from([contents]));
 
 		expect(await service.readText(relativePath)).toBe(contents);
 	});

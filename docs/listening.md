@@ -2,7 +2,7 @@
 
 ## Product flow
 
-1. Upload via Nest `POST /api/videos/upload` with source file and language settings → record created as `pending`.
+1. Upload via Nest `POST /api/videos/upload` with source file and language settings → Multer writes the file to disk under `MEDIA_WORKSPACE_ROOT/http-uploads`, then the backend streams it to object storage → record created as `pending`.
 2. Backend worker transcribes speech to text with word/segment timestamps.
 3. AI analyzes the transcript and flags tricky phrases for language learners (`gpt-5.6-luna`).
 4. AI generates brief explanations in the explanation language (included in phrase detection output for now).

@@ -6,8 +6,8 @@ import { Suspense } from "react";
 import {
 	formatSpeakingTopicText,
 	parseCefrLevel,
-	SPEAKING_TOPICS,
 } from "@/entities/speaking-session";
+import { useSpeakingTopics } from "@/features/manage-speaking-topics";
 import {
 	CallConnectedView,
 	CallConnectingView,
@@ -18,9 +18,9 @@ function LiveCallContent() {
 	const params = useParams<{ callId: string }>();
 	const searchParams = useSearchParams();
 	const router = useRouter();
-	const topicId = searchParams?.get("topic") ?? SPEAKING_TOPICS[0].id;
-	const topic =
-		SPEAKING_TOPICS.find((item) => item.id === topicId) ?? SPEAKING_TOPICS[0];
+	const { resolveTopic } = useSpeakingTopics();
+	const topicId = searchParams?.get("topic") ?? "";
+	const topic = resolveTopic(topicId);
 	const {
 		step,
 		phase,

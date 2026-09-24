@@ -15,6 +15,11 @@ Backend: each Nest module has its own `utils/` and, when types take space, `type
 
 Frontend: entity/slice types that occupy space live in `type/` (e.g. `entities/video/type/`), not in `utils/` or mixed into `model/` type dumps.
 
+## Control flow in UI code
+
+- Do not nest ternary operators (`a ? b : c ? d : e`). Use `if`/`else`, early returns, or a small helper instead.
+- A single ternary for a simple binary choice is fine (e.g. `checked ? "yes" : "no"`).
+
 ## Communication
 
 **Hard rule:** Ask questions if something from the user's instruction seems not clear enough.

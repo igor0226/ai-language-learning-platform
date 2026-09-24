@@ -54,6 +54,8 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 
 **Hard rule:** do not call `useQuery` or `useInfiniteQuery` in pages or widgets. Each query lives in a dedicated hook under the owning entity or feature (`api/` or `model/`). Pages and widgets only consume those hooks. `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, and `useSpeakingCalls` are the current examples. The same applies to mutations (`useRetryVideo`).
 
+**Client errors:** React Query and upload XHR failures surface as Sonner toasts via global `QueryCache` / `MutationCache` handlers in `src/app/providers.tsx` (`notifyClientError`). The login OAuth redirect error stays an in-page `Alert`. Videos and speaking-calls tables show skeleton loading rows and a simple “Couldn’t load data.” placeholder when the first fetch fails; cached rows stay visible if a later poll fails.
+
 ## Tech stack
 
 - Next.js 14 App Router, React 18, TypeScript
@@ -65,6 +67,7 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 
 ## UI / styling
 
+- Do not nest ternary operators in JSX or render helpers; use early returns or a small helper function (see [`conventions.md`](conventions.md)).
 - Prefer ready-made `src/shared/ui/*` before building custom controls.
 - **Hard rule:** prioritize Tailwind theme tokens over hardcoded hex/rgb for colors and spacing.
 - Theme tokens are defined in `:root` and mapped in `tailwind.config.js` (e.g. `background`, `foreground`, `card`, `border`, `muted-foreground`, `destructive`, `ring`).

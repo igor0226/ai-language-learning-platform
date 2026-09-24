@@ -81,7 +81,7 @@ Blob artifacts are stored in an S3-compatible bucket using the same object keys 
 - `S3_ENDPOINT` — MinIO URL locally (`http://localhost:9000` on host, `http://minio:9000` in Compose); omit for AWS S3
 - `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`
 - `S3_FORCE_PATH_STYLE` — `true` for MinIO (default when `S3_ENDPOINT` is set)
-- `MEDIA_WORKSPACE_ROOT` — local scratch dir for FFmpeg steps (download inputs → process → upload outputs)
+- `MEDIA_WORKSPACE_ROOT` — local scratch dir for FFmpeg steps (download inputs → process → upload outputs) and temporary HTTP upload files under `http-uploads/`. Pipeline and upload writes stream to S3/MinIO via `BlobStorageService` (no full-file buffering in Node).
 
 Object keys (unchanged from the former filesystem layout):
 
