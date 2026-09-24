@@ -4,6 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 import { UserAccountMenu } from "@/widgets/user-menu";
+import {
+	VocabularyDrawer,
+	VocabularyHeaderButton,
+} from "@/widgets/vocabulary-drawer";
 import { AppNavLinks } from "./AppNavLinks";
 import "./AppShell.css";
 
@@ -38,11 +42,15 @@ export function AppShell({ children }: AppShellProps) {
 						</Link>
 						<AppNavLinks pathname={pathname} className="appShellNav" />
 					</div>
-					<UserAccountMenu />
+					<div className="flex items-center gap-2">
+						<VocabularyHeaderButton />
+						<UserAccountMenu />
+					</div>
 				</div>
 				<AppNavLinks pathname={pathname} className="appShellMobileNav" />
 			</header>
 			<div className="appShellMain">{children}</div>
+			<VocabularyDrawer />
 		</div>
 	);
 }

@@ -6,7 +6,8 @@ export type CallTopic = {
 	level: string;
 	description: string;
 	suggestedDurationMins: number;
-	tags: string[];
+	isCustom?: boolean;
+	createdAt?: string;
 };
 
 export type SpeakingCallStatus =

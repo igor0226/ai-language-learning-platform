@@ -1,4 +1,6 @@
-.studioPage {
+/* Light studio tokens — also applied to Radix portals (rendered on body). */
+.studioPage,
+.studioOverlaySurface {
 	--background: 0 0% 100%;
 	--foreground: 0 0% 9%;
 	--card: 0 0% 100%;
@@ -16,8 +18,14 @@
 	--border: 0 0% 90%;
 	--input: 0 0% 90%;
 	--ring: 0 0% 9%;
+}
 
+.studioPage {
 	@apply min-h-screen bg-background text-foreground;
+}
+
+.studioOverlaySurface {
+	@apply border border-border bg-background text-foreground shadow-2xl;
 }
 
 .callPage {

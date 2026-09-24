@@ -12,7 +12,6 @@ export const SPEAKING_TOPICS: CallTopic[] = [
 		level: "B1-B2",
 		description: "Have a simple conversation about life, work, and hobbies.",
 		suggestedDurationMins: 10,
-		tags: ["Everyday", "Life"],
 	},
 	{
 		id: "topic-1",
@@ -21,7 +20,6 @@ export const SPEAKING_TOPICS: CallTopic[] = [
 		description:
 			"Practice answering complex behavioral and technical architecture questions in a professional setting.",
 		suggestedDurationMins: 15,
-		tags: ["Professional", "Tech", "Fluency"],
 	},
 	{
 		id: "topic-3",
@@ -30,7 +28,6 @@ export const SPEAKING_TOPICS: CallTopic[] = [
 		description:
 			"Formulate coherent argumentative theses and defend viewpoints with sophisticated transitions.",
 		suggestedDurationMins: 20,
-		tags: ["Academic", "Debate"],
 	},
 ];
 

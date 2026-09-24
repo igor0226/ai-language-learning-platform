@@ -1,16 +1,13 @@
 "use client";
 
 import type { EmotionIntensity, TeacherEmotion } from "@llp/contracts";
-import type {
-	CallControlState,
-	SavedPhrase,
-} from "@/entities/speaking-session";
+import type { CallControlState } from "@/entities/speaking-session";
 
 import { useState } from "react";
 
-import { SAVED_PHRASES } from "@/entities/speaking-session";
 import { DEFAULT_TEACHER_FACE_INTENSITY } from "@/entities/teacher";
 import { saveCallPhrase } from "@/features/save-call-phrase";
+import { useVocabulary } from "@/features/vocabulary-notebook";
 import { CallStage } from "./CallStage";
 import { CallStatusBar } from "./CallStatusBar";
 import { EndCallDialog } from "./EndCallDialog";
@@ -45,8 +42,7 @@ export function CallConnectedView({
 	const sessionSeconds = useSessionTimer();
 	const [controls, setControls] = useState(INITIAL_CONTROLS);
 	const [showEndModal, setShowEndModal] = useState(false);
-	const [savedPhrases, setSavedPhrases] =
-		useState<SavedPhrase[]>(SAVED_PHRASES);
+	const { savedPhrases, addPhrase } = useVocabulary();
 	const [newPhrase, setNewPhrase] = useState("");
 
 	useCallShortcuts(setControls, () => setShowEndModal(true), onToggleMute);
@@ -86,7 +82,10 @@ export function CallConnectedView({
 							if (!next) {
 								return;
 							}
-							setSavedPhrases(next.phrases);
+							const added = next.phrases[0];
+							if (added) {
+								addPhrase(added);
+							}
 							setNewPhrase(next.input);
 						}}
 					/>
