@@ -6,6 +6,7 @@ import {
 	ProcessingLock,
 	TeacherCall,
 	User,
+	UserVocabularyPhrase,
 	Video,
 } from "../models";
 import { BlobStorageService } from "./blob-storage.service";
@@ -19,6 +20,7 @@ import {
 	S3_CONFIG,
 } from "./s3-client.provider";
 import { UserRepositoryService } from "./user-repository.service";
+import { VocabularyRepositoryService } from "./vocabulary-repository.service";
 import { VideoRepositoryService } from "./video-repository.service";
 
 @Global()
@@ -30,6 +32,7 @@ import { VideoRepositoryService } from "./video-repository.service";
 			ProcessingLock,
 			TeacherCall,
 			User,
+			UserVocabularyPhrase,
 		]),
 	],
 	providers: [
@@ -47,6 +50,7 @@ import { VideoRepositoryService } from "./video-repository.service";
 		VideoRepositoryService,
 		CallRepositoryService,
 		UserRepositoryService,
+		VocabularyRepositoryService,
 	],
 	exports: [
 		BlobStorageService,
@@ -55,6 +59,7 @@ import { VideoRepositoryService } from "./video-repository.service";
 		VideoRepositoryService,
 		CallRepositoryService,
 		UserRepositoryService,
+		VocabularyRepositoryService,
 	],
 })
 export class StorageModule {}

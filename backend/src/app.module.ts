@@ -9,6 +9,7 @@ import { DashModule } from "./dash/dash.module";
 import { ProcessingModule } from "./processing/processing.module";
 import { SpeakingModule } from "./speaking/speaking.module";
 import { StorageModule } from "./storage";
+import { VocabularyModule } from "./vocabulary/vocabulary.module";
 import { VideosModule } from "./videos/videos.module";
 
 @Module({
@@ -36,6 +37,7 @@ import { VideosModule } from "./videos/videos.module";
 		StorageModule,
 		VideosModule,
 		SpeakingModule,
+		VocabularyModule,
 		DashModule,
 		ProcessingModule,
 	],

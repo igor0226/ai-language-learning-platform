@@ -11,10 +11,11 @@ Nest.js app under `src/` with feature modules:
 - `auth/` — Google OAuth + Postgres session cookie (`llp.sid`); `/api/auth/*` routes
 - `videos/` — session-gated list/upload/status HTTP API (`videos.userId` owner scope)
 - `speaking/` — AI teacher call HTTP API (create/end/status) + LiveKit token/room/dispatch + agent worker (`src/speaking/agent/`)
+- `vocabulary/` — session-gated CRUD for user vocabulary phrases (`user_vocabulary_phrases`)
 - `processing/` — cron worker, jobs, FFmpeg DASH generation, audio extraction, Whisper transcription, phrase detection, explanation clip generation, video composition
 - `dash/` — manifest rewrite + segment serving
 - `storage/` — `BlobStorageService` (S3/MinIO object keys) + Postgres-backed repositories/services
-- `models/` — TypeORM entity declarations (`Video`, `ProcessingHistory`, `ProcessingLock`, `TeacherCall`, `User`)
+- `models/` — TypeORM entity declarations (`Video`, `ProcessingHistory`, `ProcessingLock`, `TeacherCall`, `User`, `UserVocabularyPhrase`)
 - `database/` — TypeORM wiring, migrations, backfill script
 
 `main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`, shutdown hooks, and `forceCloseConnections` so Compose `start:dev` watch restarts can unbind the port. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
@@ -25,7 +26,7 @@ Store module-bound utility functions under each module's `utils/` directory (e.g
 
 Speaking JSON fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
 
-**Auth gate:** `/api/videos/*`, `/api/speaking/calls*`, and `/api/dash/*` require `AuthenticatedGuard` (session cookie) and owner scope where applicable. `POST /api/speaking/livekit/webhook` stays public.
+**Auth gate:** `/api/videos/*`, `/api/speaking/calls*`, `/api/vocabulary/*`, and `/api/dash/*` require `AuthenticatedGuard` (session cookie) and owner scope where applicable. `POST /api/speaking/livekit/webhook` stays public.
 
 ## Tech stack
 
@@ -50,6 +51,7 @@ In Docker Compose, backend uses `POSTGRES_HOST=postgres`. Host dev defaults to `
 
 - `videos` — video metadata (`VideoRecord` fields, required `userId` FK to `users`)
 - `teacher_calls` — speaking-skill AI teacher call records (`userId` FK to `users`)
+- `user_vocabulary_phrases` — per-user vocabulary notebook entries (`userId` FK to `users`, cascade delete)
 - `processing_history` — per-video step history (`currentStep`, `events` jsonb)
 - `processing_locks` — worker concurrency guard (row insert = acquire, PK = one lock per video)
 

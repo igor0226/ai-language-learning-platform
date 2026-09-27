@@ -102,6 +102,37 @@ export type CreateTeacherCallInput = {
 	explanationLanguage?: string;
 };
 
+export type VocabularyPhraseRecord = {
+	id: string;
+	userId: string;
+	term: string;
+	phonetic: string;
+	cefr: LanguageLevel;
+	definition: string;
+	exampleSentence: string | null;
+	savedAt: string;
+	updatedAt: string;
+};
+
+export type CreateVocabularyPhraseInput = {
+	userId: string;
+	term: string;
+	phonetic?: string;
+	cefr: LanguageLevel;
+	definition: string;
+	exampleSentence?: string;
+	savedAt?: string;
+};
+
+export type UpdateVocabularyPhraseInput = {
+	term?: string;
+	phonetic?: string;
+	cefr?: LanguageLevel;
+	definition?: string;
+	exampleSentence?: string | null;
+	savedAt?: string;
+};
+
 export type VideoProcessingHistory = {
 	videoId: string;
 	currentStep: ProcessingStep;
