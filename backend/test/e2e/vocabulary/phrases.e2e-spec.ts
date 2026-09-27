@@ -53,7 +53,6 @@ describe("Vocabulary phrases (e2e)", () => {
 		expect(created.body).toMatchObject({
 			term: "Break the ice",
 			cefr: "B2",
-			phonetic: "/.../",
 		});
 
 		const phraseId = created.body.id as string;

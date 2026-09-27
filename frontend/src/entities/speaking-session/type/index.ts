@@ -49,16 +49,6 @@ export type TranscriptSegment = {
 	highlightedTerms?: string[];
 };
 
-export type SavedPhrase = {
-	id: string;
-	term: string;
-	phonetic: string;
-	cefr: LanguageLevel;
-	definition: string;
-	exampleSentence?: string;
-	savedAt: string;
-};
-
 export type CallControlState = {
 	isMuted: boolean;
 	isPanelOpen: boolean;

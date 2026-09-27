@@ -1,12 +1,13 @@
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { VocabularyPhrase } from "@llp/contracts";
 
+import { formatVocabularySavedAt } from "@/features/vocabulary-notebook";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { ScrollArea } from "@/shared/ui/scroll-area";
 
 type VocabularyPanelProps = {
-	phrases: SavedPhrase[];
+	phrases: VocabularyPhrase[];
 	newPhrase: string;
 	onNewPhraseChange: (value: string) => void;
 	onSavePhrase: (term: string) => void;
@@ -36,8 +37,8 @@ export function VocabularyPanel({
 									<div className="text-xs font-bold">{phrase.term}</div>
 									<Badge variant="secondary">{phrase.cefr}</Badge>
 								</div>
-								<div className="font-mono text-[11px] text-muted-foreground">
-									{phrase.phonetic} · Saved at {phrase.savedAt}
+								<div className="text-[11px] text-muted-foreground">
+									Saved {formatVocabularySavedAt(phrase.savedAt)}
 								</div>
 								<p className="text-xs leading-normal">{phrase.definition}</p>
 							</div>

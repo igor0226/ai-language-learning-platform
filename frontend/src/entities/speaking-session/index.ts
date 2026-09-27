@@ -5,7 +5,6 @@ export type {
 	ConnectionStep,
 	CreateCallRequest,
 	CreateCallResponse,
-	SavedPhrase,
 	SpeakingCall,
 	SpeakingCallStatus,
 	TranscriptSegment,
@@ -16,7 +15,6 @@ export { useSpeakingCalls } from "./api/useSpeakingCalls";
 export {
 	CONNECTION_ERRORS,
 	CONNECTION_STEPS,
-	SAVED_PHRASES,
 	SPEAKING_TOPICS,
 	TRANSCRIPT_FIXTURE,
 } from "./model/fixtures";

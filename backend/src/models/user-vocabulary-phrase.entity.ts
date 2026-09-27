@@ -16,9 +16,6 @@ export class UserVocabularyPhrase implements VocabularyPhraseRecord {
 	term!: string;
 
 	@Column({ type: "varchar" })
-	phonetic!: string;
-
-	@Column({ type: "varchar" })
 	cefr!: LanguageLevel;
 
 	@Column({ type: "text" })

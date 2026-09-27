@@ -1,38 +1,23 @@
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { VocabularyPhrase } from "@llp/contracts";
 
-export function saveCallPhrase(
+export type CallPhraseSaveResult =
+	| { kind: "empty" }
+	| { kind: "duplicate" }
+	| { kind: "ready"; term: string };
+
+export function prepareCallPhraseSave(
 	term: string,
-	sessionSeconds: number,
-	existing: SavedPhrase[],
-): { phrases: SavedPhrase[]; input: string } | null {
+	existing: VocabularyPhrase[],
+): CallPhraseSaveResult {
 	const trimmed = term.trim();
 	if (!trimmed) {
-		return null;
+		return { kind: "empty" };
 	}
-	const duplicate = existing.find(
+	const duplicate = existing.some(
 		(phrase) => phrase.term.toLowerCase() === trimmed.toLowerCase(),
 	);
 	if (duplicate) {
-		return { phrases: existing, input: "" };
+		return { kind: "duplicate" };
 	}
-	const minutes = Math.floor(sessionSeconds / 60)
-		.toString()
-		.padStart(2, "0");
-	const seconds = Math.floor(sessionSeconds % 60)
-		.toString()
-		.padStart(2, "0");
-	return {
-		input: "",
-		phrases: [
-			{
-				id: `p-${Date.now()}`,
-				term: trimmed,
-				phonetic: "/.../",
-				cefr: "B2",
-				definition: "Contextual vocabulary captured during live AI discussion.",
-				savedAt: `${minutes}:${seconds}`,
-			},
-			...existing,
-		],
-	};
+	return { kind: "ready", term: trimmed };
 }

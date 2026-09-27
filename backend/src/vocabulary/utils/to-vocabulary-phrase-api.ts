@@ -8,7 +8,6 @@ export function toVocabularyPhraseApi(
 	return {
 		id: record.id,
 		term: record.term,
-		phonetic: record.phonetic,
 		cefr: record.cefr,
 		definition: record.definition,
 		exampleSentence: record.exampleSentence ?? undefined,

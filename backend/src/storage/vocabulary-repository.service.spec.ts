@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 import { VocabularyRepositoryService } from "./vocabulary-repository.service";
 
 describe("VocabularyRepositoryService", () => {
-	it("creates a phrase with defaults for phonetic and savedAt", async () => {
+	it("creates a phrase with default savedAt", async () => {
 		const saved: unknown[] = [];
 		const repository = {
 			save: vi.fn(async (record: unknown) => {
@@ -24,7 +24,6 @@ describe("VocabularyRepositoryService", () => {
 		});
 
 		expect(created.term).toBe("Paradigm shift");
-		expect(created.phonetic).toBe("/.../");
 		expect(created.exampleSentence).toBeNull();
 		expect(saved).toHaveLength(1);
 	});

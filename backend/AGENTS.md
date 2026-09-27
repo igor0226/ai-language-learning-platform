@@ -11,6 +11,7 @@ Run with Docker Compose from repo root; see [`docs/local-dev.md`](../docs/local-
 - Functions must not receive more than 2 parameters; group extras in an object.
 - Before commit: `npm run lint:fix`
 - Before commit: `npm run typecheck && npm run lint && npm run test && npm run test:e2e`
+- Agent Shell: backend Vitest/e2e need full permissions — see [`docs/local-dev.md`](../docs/local-dev.md#cursor-agent-shell).
 
 ## Read next
 

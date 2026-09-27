@@ -1,11 +1,10 @@
-import type { LanguageLevel } from "@llp/contracts";
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { LanguageLevel, VocabularyPhrase } from "@llp/contracts";
 
 export function filterSavedPhrases(
-	phrases: SavedPhrase[],
+	phrases: VocabularyPhrase[],
 	searchQuery: string,
 	selectedLevel: string,
-): SavedPhrase[] {
+): VocabularyPhrase[] {
 	const query = searchQuery.trim().toLowerCase();
 	return phrases.filter((phrase) => {
 		const matchesQuery =

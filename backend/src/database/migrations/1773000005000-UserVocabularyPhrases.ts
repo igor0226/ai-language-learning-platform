@@ -9,7 +9,6 @@ export class UserVocabularyPhrases1773000005000 implements MigrationInterface {
 				"id" uuid NOT NULL,
 				"userId" uuid NOT NULL,
 				"term" character varying NOT NULL,
-				"phonetic" character varying NOT NULL,
 				"cefr" character varying NOT NULL,
 				"definition" text NOT NULL,
 				"exampleSentence" text,
@@ -31,13 +30,6 @@ export class UserVocabularyPhrases1773000005000 implements MigrationInterface {
 	}
 
 	public async down(queryRunner: QueryRunner): Promise<void> {
-		await queryRunner.query(`
-			ALTER TABLE "user_vocabulary_phrases"
-			DROP CONSTRAINT "FK_user_vocabulary_phrases_userId"
-		`);
-		await queryRunner.query(`
-			DROP INDEX "IDX_user_vocabulary_phrases_userId_savedAt"
-		`);
-		await queryRunner.query(`DROP TABLE "user_vocabulary_phrases"`);
+		await queryRunner.query(`DROP TABLE IF EXISTS "user_vocabulary_phrases"`);
 	}
 }

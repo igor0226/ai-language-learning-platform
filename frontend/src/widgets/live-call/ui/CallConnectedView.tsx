@@ -6,7 +6,7 @@ import type { CallControlState } from "@/entities/speaking-session";
 import { useState } from "react";
 
 import { DEFAULT_TEACHER_FACE_INTENSITY } from "@/entities/teacher";
-import { saveCallPhrase } from "@/features/save-call-phrase";
+import { prepareCallPhraseSave } from "@/features/save-call-phrase";
 import { useVocabulary } from "@/features/vocabulary-notebook";
 import { CallStage } from "./CallStage";
 import { CallStatusBar } from "./CallStatusBar";
@@ -78,15 +78,19 @@ export function CallConnectedView({
 						newPhrase={newPhrase}
 						onNewPhraseChange={setNewPhrase}
 						onSavePhrase={(term) => {
-							const next = saveCallPhrase(term, sessionSeconds, savedPhrases);
-							if (!next) {
+							const result = prepareCallPhraseSave(term, savedPhrases);
+							if (result.kind !== "ready") {
+								if (result.kind === "duplicate") {
+									setNewPhrase("");
+								}
 								return;
 							}
-							const added = next.phrases[0];
-							if (added) {
-								addPhrase(added);
-							}
-							setNewPhrase(next.input);
+							void addPhrase({
+								term: result.term,
+								cefr: "B2",
+								definition:
+									"Contextual vocabulary captured during live AI discussion.",
+							}).then(() => setNewPhrase(""));
 						}}
 					/>
 				) : null}

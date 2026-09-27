@@ -21,6 +21,14 @@ Package validation steps:
 - Frontend: see [`frontend/AGENTS.md`](../frontend/AGENTS.md)
 - Backend: see [`backend/AGENTS.md`](../backend/AGENTS.md)
 
+### AI agent shell
+
+The agent **Shell** runs in a sandbox by default. Backend Vitest (unit and e2e) uses Vite’s env loader and reads `backend/.env` at startup. If that file is blocked, tests fail immediately with `EPERM: operation not permitted, open '.../backend/.env'`.
+
+**Agents:** when running `npm run test` or `npm run test:e2e` in the `backend` workspace (including long chains that include those steps), invoke Shell with **`required_permissions: ["all"]`**. Lint and typecheck usually work in the sandbox; e2e also needs Postgres reachable like a normal host run.
+
+Humans running the same commands in a local terminal are unaffected.
+
 ## Local HTTPS (Compose + Caddy)
 
 - App: `https://app.llp-test.com` serves Next.js and proxies `/api/*` to Nest on the same origin (session cookies + SSR auth checks).

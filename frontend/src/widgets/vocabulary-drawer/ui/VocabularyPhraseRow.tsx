@@ -1,12 +1,13 @@
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { VocabularyPhrase } from "@llp/contracts";
 
 import { Check, Copy, Pencil, Trash2 } from "lucide-react";
 
+import { formatVocabularySavedAt } from "@/features/vocabulary-notebook";
 import { Badge } from "@/shared/ui/badge";
 import { Button } from "@/shared/ui/button";
 
 type VocabularyPhraseRowProps = {
-	phrase: SavedPhrase;
+	phrase: VocabularyPhrase;
 	isCopied: boolean;
 	isDeleting: boolean;
 	onCopy: () => void;
@@ -58,8 +59,8 @@ export function VocabularyPhraseRow({
 								<span className="text-sm font-bold">{phrase.term}</span>
 								<Badge variant="secondary">{phrase.cefr}</Badge>
 							</div>
-							<p className="mt-0.5 font-mono text-[11px] text-muted-foreground">
-								{phrase.phonetic} · Saved at {phrase.savedAt}
+							<p className="mt-0.5 text-[11px] text-muted-foreground">
+								Saved {formatVocabularySavedAt(phrase.savedAt)}
 							</p>
 						</div>
 						<div className="flex shrink-0 gap-0.5">

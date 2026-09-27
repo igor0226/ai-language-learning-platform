@@ -1,1 +1,4 @@
-export { saveCallPhrase } from "./lib/saveCallPhrase";
+export {
+	type CallPhraseSaveResult,
+	prepareCallPhraseSave,
+} from "./lib/saveCallPhrase";

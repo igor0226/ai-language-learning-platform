@@ -1,6 +1,6 @@
 "use client";
 
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { VocabularyPhrase } from "@llp/contracts";
 
 import { BookMarked, Plus, Search, X } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
@@ -29,16 +29,14 @@ import { VocabularyPhraseRow } from "./VocabularyPhraseRow";
 
 const emptyAddForm = (): PhraseFormValues => ({
 	term: "",
-	phonetic: "",
 	cefr: "B2",
 	definition: "",
 	example: "",
 });
 
-function phraseToForm(phrase: SavedPhrase): PhraseFormValues {
+function phraseToForm(phrase: VocabularyPhrase): PhraseFormValues {
 	return {
 		term: phrase.term,
-		phonetic: phrase.phonetic,
 		cefr: phrase.cefr,
 		definition: phrase.definition,
 		example: phrase.exampleSentence ?? "",
@@ -48,6 +46,8 @@ function phraseToForm(phrase: SavedPhrase): PhraseFormValues {
 export function VocabularyDrawer() {
 	const {
 		savedPhrases,
+		isPhrasesLoading,
+		phrasesErrorMessage,
 		isDrawerOpen,
 		closeDrawer,
 		addPhrase,
@@ -99,17 +99,21 @@ export function VocabularyDrawer() {
 			setAddFormError("Please enter a definition.");
 			return;
 		}
-		addPhrase({
+		void addPhrase({
 			term: addForm.term,
-			phonetic: addForm.phonetic || "/.../",
 			cefr: addForm.cefr,
 			definition: addForm.definition,
 			exampleSentence: addForm.example || undefined,
-		});
-		setAddForm(emptyAddForm());
-		setAddFormError("");
-		setIsAddFormOpen(false);
-		toast.success("Word saved to notebook");
+		})
+			.then(() => {
+				setAddForm(emptyAddForm());
+				setAddFormError("");
+				setIsAddFormOpen(false);
+				toast.success("Word saved to notebook");
+			})
+			.catch(() => {
+				toast.error("Could not save word. Try again.");
+			});
 	};
 
 	const submitEdit = (id: string) => {
@@ -121,16 +125,32 @@ export function VocabularyDrawer() {
 			setEditFormError("Definition cannot be empty.");
 			return;
 		}
-		updatePhrase(id, {
+		const example = editForm.example.trim();
+		void updatePhrase(id, {
 			term: editForm.term.trim(),
-			phonetic: editForm.phonetic.trim() || "/.../",
 			cefr: editForm.cefr,
 			definition: editForm.definition.trim(),
-			exampleSentence: editForm.example.trim() || undefined,
-		});
-		setEditingId(null);
-		setEditFormError("");
-		toast.success("Entry updated");
+			exampleSentence: example.length > 0 ? example : null,
+		})
+			.then(() => {
+				setEditingId(null);
+				setEditFormError("");
+				toast.success("Entry updated");
+			})
+			.catch(() => {
+				toast.error("Could not update entry. Try again.");
+			});
+	};
+
+	const confirmDelete = (id: string) => {
+		void deletePhrase(id)
+			.then(() => {
+				setDeletingId(null);
+				toast.success("Entry removed");
+			})
+			.catch(() => {
+				toast.error("Could not delete entry. Try again.");
+			});
 	};
 
 	return (
@@ -234,7 +254,15 @@ export function VocabularyDrawer() {
 
 				<ScrollArea className="flex-1">
 					<div className="space-y-3 p-4">
-						{filteredPhrases.length === 0 ? (
+						{isPhrasesLoading ? (
+							<p className="py-12 text-center text-xs text-muted-foreground">
+								Loading your vocabulary…
+							</p>
+						) : phrasesErrorMessage ? (
+							<p className="py-12 text-center text-xs text-destructive">
+								{phrasesErrorMessage}
+							</p>
+						) : filteredPhrases.length === 0 ? (
 							<EmptyState
 								hasFilters={Boolean(searchQuery) || selectedLevel !== "all"}
 								onClearFilters={() => {
@@ -275,11 +303,7 @@ export function VocabularyDrawer() {
 										}}
 										onRequestDelete={() => setDeletingId(phrase.id)}
 										onCancelDelete={() => setDeletingId(null)}
-										onConfirmDelete={() => {
-											deletePhrase(phrase.id);
-											setDeletingId(null);
-											toast.success("Entry removed");
-										}}
+										onConfirmDelete={() => confirmDelete(phrase.id)}
 									/>
 								);
 							})

@@ -64,7 +64,6 @@ export class VocabularyRepositoryService {
 			id: randomUUID(),
 			userId: input.userId,
 			term: input.term.trim(),
-			phonetic: input.phonetic?.trim() || "/.../",
 			cefr: input.cefr,
 			definition: input.definition.trim(),
 			exampleSentence: input.exampleSentence?.trim() || null,
@@ -91,7 +90,6 @@ export class VocabularyRepositoryService {
 		const updated: VocabularyPhraseRecord = {
 			...existing,
 			term: input.patch.term?.trim() ?? existing.term,
-			phonetic: input.patch.phonetic?.trim() ?? existing.phonetic,
 			cefr: input.patch.cefr ?? existing.cefr,
 			definition: input.patch.definition?.trim() ?? existing.definition,
 			exampleSentence:

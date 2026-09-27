@@ -1,32 +1,44 @@
 "use client";
 
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type {
+	CreateVocabularyPhraseBody,
+	UpdateVocabularyPhraseBody,
+	VocabularyPhrase,
+} from "@llp/contracts";
 
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
 	createContext,
 	useCallback,
 	useContext,
-	useEffect,
 	useMemo,
 	useState,
 } from "react";
 
-import { buildPhraseEntry, type PhraseInput } from "../lib/build-phrase-entry";
-import { copyTextToClipboard } from "../lib/copy-text";
+import { useAuthSession } from "@/entities/session";
 import {
-	loadSavedPhrases,
-	persistSavedPhrases,
-} from "../lib/vocabulary-storage";
+	createVocabularyPhrase,
+	deleteVocabularyPhrase,
+	fetchVocabularyPhrases,
+	updateVocabularyPhrase,
+} from "../api/vocabulary-phrases";
+import { copyTextToClipboard } from "../lib/copy-text";
+
+export function vocabularyPhrasesQueryKey(userId: string | undefined) {
+	return ["vocabulary-phrases", userId] as const;
+}
 
 type VocabularyContextValue = {
-	savedPhrases: SavedPhrase[];
+	savedPhrases: VocabularyPhrase[];
+	isPhrasesLoading: boolean;
+	phrasesErrorMessage: string | null;
 	isDrawerOpen: boolean;
 	openDrawer: () => void;
 	closeDrawer: () => void;
 	toggleDrawer: () => void;
-	addPhrase: (phrase: PhraseInput) => SavedPhrase;
-	updatePhrase: (id: string, updates: Partial<Omit<SavedPhrase, "id">>) => void;
-	deletePhrase: (id: string) => void;
+	addPhrase: (body: CreateVocabularyPhraseBody) => Promise<VocabularyPhrase>;
+	updatePhrase: (id: string, body: UpdateVocabularyPhraseBody) => Promise<void>;
+	deletePhrase: (id: string) => Promise<void>;
 	copyPhrase: (text: string) => Promise<boolean>;
 };
 
@@ -39,14 +51,17 @@ export function VocabularyProvider({
 }: {
 	children: React.ReactNode;
 }) {
-	const [savedPhrases, setSavedPhrases] = useState<SavedPhrase[]>(() =>
-		loadSavedPhrases(),
-	);
-	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+	const { data: user } = useAuthSession();
+	const queryClient = useQueryClient();
+	const queryKey = vocabularyPhrasesQueryKey(user?.id);
 
-	useEffect(() => {
-		persistSavedPhrases(savedPhrases);
-	}, [savedPhrases]);
+	const phrasesQuery = useQuery({
+		queryKey,
+		queryFn: fetchVocabularyPhrases,
+		enabled: Boolean(user?.id),
+	});
+
+	const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
 	const openDrawer = useCallback(() => setIsDrawerOpen(true), []);
 	const closeDrawer = useCallback(() => setIsDrawerOpen(false), []);
@@ -55,35 +70,49 @@ export function VocabularyProvider({
 		[],
 	);
 
-	const addPhrase = useCallback((phrase: PhraseInput) => {
-		const entry = buildPhraseEntry(phrase);
-		setSavedPhrases((previous) => [entry, ...previous]);
-		return entry;
-	}, []);
+	const invalidatePhrases = useCallback(async () => {
+		await queryClient.invalidateQueries({ queryKey });
+	}, [queryClient, queryKey]);
 
-	const updatePhrase = useCallback(
-		(id: string, updates: Partial<Omit<SavedPhrase, "id">>) => {
-			setSavedPhrases((previous) =>
-				previous.map((item) =>
-					item.id === id ? { ...item, ...updates } : item,
-				),
-			);
+	const addPhrase = useCallback(
+		async (body: CreateVocabularyPhraseBody) => {
+			const created = await createVocabularyPhrase(body);
+			await invalidatePhrases();
+			return created;
 		},
-		[],
+		[invalidatePhrases],
 	);
 
-	const deletePhrase = useCallback((id: string) => {
-		setSavedPhrases((previous) => previous.filter((item) => item.id !== id));
-	}, []);
+	const updatePhrase = useCallback(
+		async (id: string, body: UpdateVocabularyPhraseBody) => {
+			await updateVocabularyPhrase(id, body);
+			await invalidatePhrases();
+		},
+		[invalidatePhrases],
+	);
+
+	const deletePhrase = useCallback(
+		async (id: string) => {
+			await deleteVocabularyPhrase(id);
+			await invalidatePhrases();
+		},
+		[invalidatePhrases],
+	);
 
 	const copyPhrase = useCallback(
 		(text: string) => copyTextToClipboard(text),
 		[],
 	);
 
+	const savedPhrases = phrasesQuery.data ?? [];
+	const phrasesErrorMessage =
+		phrasesQuery.error instanceof Error ? phrasesQuery.error.message : null;
+
 	const value = useMemo(
 		() => ({
 			savedPhrases,
+			isPhrasesLoading: Boolean(user?.id) && phrasesQuery.isPending,
+			phrasesErrorMessage,
 			isDrawerOpen,
 			openDrawer,
 			closeDrawer,
@@ -95,6 +124,9 @@ export function VocabularyProvider({
 		}),
 		[
 			savedPhrases,
+			user?.id,
+			phrasesQuery.isPending,
+			phrasesErrorMessage,
 			isDrawerOpen,
 			openDrawer,
 			closeDrawer,

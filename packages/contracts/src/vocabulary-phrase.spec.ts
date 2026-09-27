@@ -11,7 +11,6 @@ describe("vocabularyPhraseSchema", () => {
 		const parsed = vocabularyPhraseSchema.parse({
 			id: "550e8400-e29b-41d4-a716-446655440000",
 			term: "Paradigm shift",
-			phonetic: "/ˈpær.ə.daɪm/",
 			cefr: "C1",
 			definition: "A fundamental change in approach.",
 			exampleSentence: "Cloud computing was a paradigm shift.",

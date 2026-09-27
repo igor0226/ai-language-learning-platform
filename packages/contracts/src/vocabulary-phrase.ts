@@ -5,7 +5,6 @@ import { languageLevelInputSchema, languageLevelSchema } from "./language-level"
 export const vocabularyPhraseSchema = z.object({
 	id: z.string().uuid(),
 	term: z.string(),
-	phonetic: z.string(),
 	cefr: languageLevelSchema,
 	definition: z.string(),
 	exampleSentence: z.string().optional(),
@@ -27,7 +26,6 @@ const optionalTrimmedString = z.preprocess(
 
 export const createVocabularyPhraseBodySchema = z.object({
 	term: z.string().trim().min(1),
-	phonetic: optionalTrimmedString,
 	cefr: languageLevelInputSchema,
 	definition: z.string().trim().min(1),
 	exampleSentence: optionalTrimmedString,
@@ -41,7 +39,6 @@ export type CreateVocabularyPhraseBody = z.infer<
 export const updateVocabularyPhraseBodySchema = z
 	.object({
 		term: z.string().trim().min(1).optional(),
-		phonetic: z.string().trim().min(1).optional(),
 		cefr: languageLevelInputSchema.optional(),
 		definition: z.string().trim().min(1).optional(),
 		exampleSentence: z.union([z.string().trim().min(1), z.null()]).optional(),
@@ -50,7 +47,6 @@ export const updateVocabularyPhraseBodySchema = z
 	.refine(
 		(body) =>
 			body.term !== undefined ||
-			body.phonetic !== undefined ||
 			body.cefr !== undefined ||
 			body.definition !== undefined ||
 			body.exampleSentence !== undefined ||

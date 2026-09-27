@@ -15,7 +15,6 @@ import { Textarea } from "@/shared/ui/textarea";
 
 export type PhraseFormValues = {
 	term: string;
-	phonetic: string;
 	cefr: LanguageLevel;
 	definition: string;
 	example: string;
@@ -57,24 +56,13 @@ export function VocabularyPhraseForm({
 					onSubmit();
 				}}
 			>
-				<div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-					<div className="space-y-1">
-						<Label className="text-[11px]">Word or phrase *</Label>
-						<Input
-							value={values.term}
-							onChange={(event) => onChange({ term: event.target.value })}
-							placeholder="e.g. Paradigm shift"
-						/>
-					</div>
-					<div className="space-y-1">
-						<Label className="text-[11px]">Phonetic</Label>
-						<Input
-							value={values.phonetic}
-							onChange={(event) => onChange({ phonetic: event.target.value })}
-							className="font-mono text-xs"
-							placeholder="/ˈpær.ə.daɪm/"
-						/>
-					</div>
+				<div className="space-y-1">
+					<Label className="text-[11px]">Word or phrase *</Label>
+					<Input
+						value={values.term}
+						onChange={(event) => onChange({ term: event.target.value })}
+						placeholder="e.g. Paradigm shift"
+					/>
 				</div>
 				<div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
 					<div className="space-y-1">

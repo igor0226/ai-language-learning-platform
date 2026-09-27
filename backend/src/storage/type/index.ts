@@ -106,7 +106,6 @@ export type VocabularyPhraseRecord = {
 	id: string;
 	userId: string;
 	term: string;
-	phonetic: string;
 	cefr: LanguageLevel;
 	definition: string;
 	exampleSentence: string | null;
@@ -117,7 +116,6 @@ export type VocabularyPhraseRecord = {
 export type CreateVocabularyPhraseInput = {
 	userId: string;
 	term: string;
-	phonetic?: string;
 	cefr: LanguageLevel;
 	definition: string;
 	exampleSentence?: string;
@@ -126,7 +124,6 @@ export type CreateVocabularyPhraseInput = {
 
 export type UpdateVocabularyPhraseInput = {
 	term?: string;
-	phonetic?: string;
 	cefr?: LanguageLevel;
 	definition?: string;
 	exampleSentence?: string | null;

@@ -1,9 +1,4 @@
-import type {
-	CallTopic,
-	ConnectionStep,
-	SavedPhrase,
-	TranscriptSegment,
-} from "../type";
+import type { CallTopic, ConnectionStep, TranscriptSegment } from "../type";
 
 export const SPEAKING_TOPICS: CallTopic[] = [
 	{
@@ -74,26 +69,5 @@ export const TRANSCRIPT_FIXTURE: TranscriptSegment[] = [
 		text: "Splendid! Could you describe how you managed consistency versus latency in your most recent cloud pipeline?",
 		timestamp: "00:32",
 		highlightedTerms: ["consistency", "latency"],
-	},
-];
-
-export const SAVED_PHRASES: SavedPhrase[] = [
-	{
-		id: "v-1",
-		term: "Trade-off",
-		phonetic: "/ˈtreɪd.ɒf/",
-		cefr: "B2",
-		definition:
-			"A balance achieved between two desirable but incompatible features; a compromise.",
-		savedAt: "14:25",
-	},
-	{
-		id: "v-2",
-		term: "Latency",
-		phonetic: "/ˈleɪ.tən.si/",
-		cefr: "C1",
-		definition:
-			"The delay before a transfer of data begins following an instruction for its transfer.",
-		savedAt: "14:26",
 	},
 ];

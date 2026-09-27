@@ -27,7 +27,6 @@ export class VocabularyService {
 		const record = await this.vocabularyRepository.createPhrase({
 			userId: input.userId,
 			term: input.body.term,
-			phonetic: input.body.phonetic,
 			cefr: input.body.cefr,
 			definition: input.body.definition,
 			exampleSentence: input.body.exampleSentence,

@@ -1,9 +1,9 @@
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { VocabularyPhrase } from "@llp/contracts";
 
 import { VocabularyPanel } from "./VocabularyPanel";
 
 type StudyDrawerProps = {
-	phrases: SavedPhrase[];
+	phrases: VocabularyPhrase[];
 	newPhrase: string;
 	onNewPhraseChange: (value: string) => void;
 	onSavePhrase: (term: string) => void;
