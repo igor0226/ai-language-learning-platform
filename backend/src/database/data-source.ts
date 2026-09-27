@@ -7,6 +7,7 @@ import {
 	ProcessingLock,
 	TeacherCall,
 	User,
+	UserCallTopic,
 	UserVocabularyPhrase,
 	Video,
 } from "../models";
@@ -22,6 +23,7 @@ export function createAppDataSource(): DataSource {
 			ProcessingLock,
 			TeacherCall,
 			User,
+			UserCallTopic,
 			UserVocabularyPhrase,
 		],
 		migrations: [path.join(__dirname, "migrations", "*.{ts,js}")],

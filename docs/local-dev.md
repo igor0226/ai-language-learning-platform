@@ -21,6 +21,13 @@ Package validation steps:
 - Frontend: see [`frontend/AGENTS.md`](../frontend/AGENTS.md)
 - Backend: see [`backend/AGENTS.md`](../backend/AGENTS.md)
 
+**Agents — host verification order** (after `nvm use`, repo root unless noted):
+
+1. If `packages/contracts` changed: `npm run build -w @llp/contracts`
+2. In the workspace you changed: `npm run lint:fix` then `npm run typecheck && npm run lint && npm run test` (backend: add `npm run test:e2e` with Shell `required_permissions: ["all"]`)
+
+Run `lint:fix` before `lint` when new files were added; check-only lint often fails on formatting alone.
+
 ### AI agent shell
 
 The agent **Shell** runs in a sandbox by default. Backend Vitest (unit and e2e) uses Vite’s env loader and reads `backend/.env` at startup. If that file is blocked, tests fail immediately with `EPERM: operation not permitted, open '.../backend/.env'`.

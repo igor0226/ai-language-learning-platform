@@ -130,6 +130,44 @@ export type UpdateVocabularyPhraseInput = {
 	savedAt?: string;
 };
 
+export type UserCallTopicKind = "custom" | "override" | "hidden";
+
+export type UserCallTopicRecord = {
+	userId: string;
+	topicId: string;
+	kind: UserCallTopicKind;
+	title: string | null;
+	level: string | null;
+	description: string | null;
+	suggestedDurationMins: number | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type UpsertUserCallTopicOverrideInput = {
+	userId: string;
+	topicId: string;
+	title: string;
+	level: string;
+	description: string;
+	suggestedDurationMins: number;
+};
+
+export type CreateUserCallTopicCustomInput = {
+	userId: string;
+	title: string;
+	level: string;
+	description: string;
+	suggestedDurationMins: number;
+};
+
+export type UpdateCallTopicContentPatch = {
+	title?: string;
+	level?: string;
+	description?: string;
+	suggestedDurationMins?: number;
+};
+
 export type VideoProcessingHistory = {
 	videoId: string;
 	currentStep: ProcessingStep;

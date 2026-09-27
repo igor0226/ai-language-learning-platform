@@ -6,9 +6,11 @@ import {
 	ProcessingLock,
 	TeacherCall,
 	User,
+	UserCallTopic,
 	UserVocabularyPhrase,
 	Video,
 } from "../models";
+import { CallTopicRepositoryService } from "./call-topic-repository.service";
 import { BlobStorageService } from "./blob-storage.service";
 import { CallRepositoryService } from "./call-repository.service";
 import { ProcessingHistoryService } from "./processing-history.service";
@@ -32,6 +34,7 @@ import { VideoRepositoryService } from "./video-repository.service";
 			ProcessingLock,
 			TeacherCall,
 			User,
+			UserCallTopic,
 			UserVocabularyPhrase,
 		]),
 	],
@@ -51,6 +54,7 @@ import { VideoRepositoryService } from "./video-repository.service";
 		CallRepositoryService,
 		UserRepositoryService,
 		VocabularyRepositoryService,
+		CallTopicRepositoryService,
 	],
 	exports: [
 		BlobStorageService,
@@ -60,6 +64,7 @@ import { VideoRepositoryService } from "./video-repository.service";
 		CallRepositoryService,
 		UserRepositoryService,
 		VocabularyRepositoryService,
+		CallTopicRepositoryService,
 	],
 })
 export class StorageModule {}

@@ -4,6 +4,14 @@
 
 **Hard rule:** Shared wire types, enums, and Zod schemas live only in [`packages/contracts`](../packages/contracts). Frontend and backend import them from `@llp/contracts`. Do not redeclare or re-export those contracts in app modules. If a new consumer needs the same values, extend that package.
 
+**Build before downstream typecheck:** `@llp/contracts` publishes `main` / `types` from `dist/`. Its own `npm run typecheck` and `npm run test` use `src/` and can pass while backend or frontend still fail with missing exports. After changing contracts, run from the repo root:
+
+```bash
+npm run build -w @llp/contracts
+```
+
+Then run `typecheck` in `backend/` or `frontend/`. Docker Compose images pick up contract changes on rebuild; see [`local-dev.md`](local-dev.md).
+
 ## Code organization
 
 - Keep files under 300 lines. If not possible, ask.

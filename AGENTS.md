@@ -9,6 +9,8 @@ Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend
 - In the Cursor agent **Shell**, run backend `npm run test` / `npm run test:e2e` with **`required_permissions: ["all"]`** (Vitest loads `backend/.env`; the default sandbox returns `EPERM`). See [`docs/local-dev.md`](docs/local-dev.md#cursor-agent-shell).
 - Never run `docker compose down -v` (wipes `postgres_data` and `minio_data`).
 - Shared wire types, enums, and Zod schemas live only in [`packages/contracts`](packages/contracts) — import from `@llp/contracts`; do not redeclare in app modules.
+- After any edit under `packages/contracts`, run `npm run build -w @llp/contracts` from the repo root **before** backend or frontend `typecheck` (workspaces consume `dist/`, not `src/`).
+- When verifying a package after adding or changing files, run that package’s `lint:fix` **before** `lint` in the same session (Biome check-only fails on unformatted new files).
 
 ## Read next
 

@@ -6,6 +6,7 @@ import {
 	ProcessingLock,
 	TeacherCall,
 	User,
+	UserCallTopic,
 	UserVocabularyPhrase,
 	Video,
 } from "../models";
@@ -23,6 +24,7 @@ import { getPostgresConfig } from "./utils/postgres-config";
 					ProcessingLock,
 					TeacherCall,
 					User,
+					UserCallTopic,
 					UserVocabularyPhrase,
 				],
 				synchronize: false,

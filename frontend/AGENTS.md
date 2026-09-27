@@ -11,8 +11,8 @@ Run with Docker Compose from repo root; see [`docs/local-dev.md`](../docs/local-
 - Do not call `useQuery`, `useMutation`, or `useInfiniteQuery` in pages or widgets; use dedicated hooks under entity/feature `api/`. Do not copy server lists into Zustand or context — share endpoints via the same TanStack Query hook and query key.
 - Do not add client-side vocabulary writes on the live call until the teacher agent exposes a vocabulary tool.
 - Prioritize Tailwind theme tokens over hardcoded hex/rgb for colors and spacing.
-- Before commit: `npm run lint:fix`
-- Before commit: `npm run typecheck && npm run lint && npm run test`
+- If this task touched `packages/contracts`, from repo root first: `npm run build -w @llp/contracts`.
+- Before commit (in `frontend/`): `npm run lint:fix && npm run typecheck && npm run lint && npm run test` — do not run `typecheck` on frontend until contracts are rebuilt when exports changed.
 
 ## Read next
 
