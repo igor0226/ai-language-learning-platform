@@ -52,7 +52,9 @@ A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pag
 
 Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated routes (`/api/videos/*`, `/api/speaking/calls*`, `/api/auth/*`) use `authFetch()` with `credentials: "include"`. Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback uses `apiUrl()` for the manifest `src` and dash.js `setXHRWithCredentialsForType("default", true)` in `onProviderChange` so manifest and segment requests include the session cookie. UI route auth is enforced by [`frontend/middleware.ts`](../frontend/middleware.ts) at the project root (not `src/` — required because of the empty root `pages/` directory). Middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
 
-**Hard rule:** do not call `useQuery` or `useInfiniteQuery` in pages or widgets. Each query lives in a dedicated hook under the owning entity or feature (`api/` or `model/`). Pages and widgets only consume those hooks. `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, and `useSpeakingCalls` are the current examples. The same applies to mutations (`useRetryVideo`).
+**Hard rule:** do not call `useQuery`, `useMutation`, or `useInfiniteQuery` in pages or widgets. Each query or mutation lives in a dedicated hook under the owning slice’s `api/` (fetch helpers stay there too). Pages and widgets only consume those hooks. Multiple widgets share one endpoint by calling the same hook and query key (e.g. `useVocabularyPhrases`). Do not copy server lists into Zustand or React context. Examples: `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, `useSpeakingCalls`, `useVocabularyPhrases`, `useRetryVideo`.
+
+**Client UI state:** cross-widget UI flags (e.g. vocabulary notebook drawer open/close) live in Zustand stores under the owning feature’s `model/` (`useVocabularyDrawer` / `vocabulary-drawer-store.ts`). Do not use React context for app UI state. Library providers (`QueryClientProvider`, Radix) stay as-is.
 
 **Client errors:** React Query and upload XHR failures surface as Sonner toasts via global `QueryCache` / `MutationCache` handlers in `src/app/providers.tsx` (`notifyClientError`). The login OAuth redirect error stays an in-page `Alert`. Videos and speaking-calls tables show skeleton loading rows and a simple “Couldn’t load data.” placeholder when the first fetch fails; cached rows stay visible if a later poll fails.
 
@@ -60,6 +62,7 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 
 - Next.js 14 App Router, React 18, TypeScript
 - TanStack Query
+- Zustand (global client UI state only; not server/cache data)
 - Vidstack (`@vidstack/react`) + dash.js for DASH playback
 - shadcn-style UI primitives (manually wired)
 - Tailwind CSS + Biome (lint/format)

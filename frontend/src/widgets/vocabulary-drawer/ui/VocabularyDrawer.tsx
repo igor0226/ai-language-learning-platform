@@ -7,8 +7,13 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import {
+	copyTextToClipboard,
 	filterSavedPhrases,
-	useVocabulary,
+	useCreateVocabularyPhrase,
+	useDeleteVocabularyPhrase,
+	useUpdateVocabularyPhrase,
+	useVocabularyDrawer,
+	useVocabularyPhrases,
 	VOCABULARY_CEFR_LEVELS,
 } from "@/features/vocabulary-notebook";
 import { Button } from "@/shared/ui/button";
@@ -44,17 +49,15 @@ function phraseToForm(phrase: VocabularyPhrase): PhraseFormValues {
 }
 
 export function VocabularyDrawer() {
+	const { isDrawerOpen, closeDrawer } = useVocabularyDrawer();
 	const {
-		savedPhrases,
-		isPhrasesLoading,
-		phrasesErrorMessage,
-		isDrawerOpen,
-		closeDrawer,
-		addPhrase,
-		updatePhrase,
-		deletePhrase,
-		copyPhrase,
-	} = useVocabulary();
+		phrases: savedPhrases,
+		isLoading: isPhrasesLoading,
+		errorMessage: phrasesErrorMessage,
+	} = useVocabularyPhrases();
+	const { createPhrase } = useCreateVocabularyPhrase();
+	const { updatePhrase } = useUpdateVocabularyPhrase();
+	const { deletePhrase } = useDeleteVocabularyPhrase();
 
 	const [searchQuery, setSearchQuery] = useState("");
 	const [selectedLevel, setSelectedLevel] = useState("all");
@@ -83,7 +86,7 @@ export function VocabularyDrawer() {
 	}, [isDrawerOpen]);
 
 	const handleCopyTerm = async (id: string, text: string) => {
-		const success = await copyPhrase(text);
+		const success = await copyTextToClipboard(text);
 		if (success) {
 			setCopiedId(id);
 			window.setTimeout(() => setCopiedId(null), 2000);
@@ -99,7 +102,7 @@ export function VocabularyDrawer() {
 			setAddFormError("Please enter a definition.");
 			return;
 		}
-		void addPhrase({
+		void createPhrase({
 			term: addForm.term,
 			cefr: addForm.cefr,
 			definition: addForm.definition,

@@ -6,8 +6,7 @@ import type { CallControlState } from "@/entities/speaking-session";
 import { useState } from "react";
 
 import { DEFAULT_TEACHER_FACE_INTENSITY } from "@/entities/teacher";
-import { prepareCallPhraseSave } from "@/features/save-call-phrase";
-import { useVocabulary } from "@/features/vocabulary-notebook";
+import { useVocabularyPhrases } from "@/features/vocabulary-notebook";
 import { CallStage } from "./CallStage";
 import { CallStatusBar } from "./CallStatusBar";
 import { EndCallDialog } from "./EndCallDialog";
@@ -42,8 +41,7 @@ export function CallConnectedView({
 	const sessionSeconds = useSessionTimer();
 	const [controls, setControls] = useState(INITIAL_CONTROLS);
 	const [showEndModal, setShowEndModal] = useState(false);
-	const { savedPhrases, addPhrase } = useVocabulary();
-	const [newPhrase, setNewPhrase] = useState("");
+	const { phrases, isLoading: isPhrasesLoading } = useVocabularyPhrases();
 
 	useCallShortcuts(setControls, () => setShowEndModal(true), onToggleMute);
 
@@ -73,31 +71,12 @@ export function CallConnectedView({
 					onEndCall={() => setShowEndModal(true)}
 				/>
 				{controls.isPanelOpen ? (
-					<StudyDrawer
-						phrases={savedPhrases}
-						newPhrase={newPhrase}
-						onNewPhraseChange={setNewPhrase}
-						onSavePhrase={(term) => {
-							const result = prepareCallPhraseSave(term, savedPhrases);
-							if (result.kind !== "ready") {
-								if (result.kind === "duplicate") {
-									setNewPhrase("");
-								}
-								return;
-							}
-							void addPhrase({
-								term: result.term,
-								cefr: "B2",
-								definition:
-									"Contextual vocabulary captured during live AI discussion.",
-							}).then(() => setNewPhrase(""));
-						}}
-					/>
+					<StudyDrawer phrases={phrases} isLoading={isPhrasesLoading} />
 				) : null}
 			</div>
 			<EndCallDialog
 				open={showEndModal}
-				savedCount={savedPhrases.length}
+				savedCount={phrases.length}
 				onContinue={() => setShowEndModal(false)}
 				onConfirm={onEndCall}
 			/>
