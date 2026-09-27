@@ -74,7 +74,7 @@ npm run db:backfill
 
 Reads legacy `videos/records/*.json` and `videos/history/*.json` from the repo-root `videos/` directory (or `STORAGE_ROOT` if set), applies legacy defaults for missing language fields, and inserts into Postgres. Safe to re-run only if tables are empty/truncated.
 
-**Tests** — unit/e2e suites that boot `AppModule` use `@testcontainers/postgresql` and a MinIO testcontainer (see `test/postgres-test-setup.ts`, `test/minio-test-setup.ts`). E2e global setup runs migrations before the suite.
+**Tests** — unit/e2e suites that boot `AppModule` use `@testcontainers/postgresql` and a MinIO testcontainer (see `test/postgres-test-setup.ts`, `test/minio-test-setup.ts`). E2e global setup runs migrations before the suite. The container image is `alpine/minio` because community `quay.io/minio/minio` no longer allows anonymous pulls, and AIStor refuses S3 calls without a license. Unit-test global setup starts that container before Vitest collects files, so a failed pull shows up as “No test files found” plus a Docker error.
 
 ## Object storage (MinIO / S3)
 
