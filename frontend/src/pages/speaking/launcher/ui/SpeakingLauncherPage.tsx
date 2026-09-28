@@ -18,12 +18,10 @@ export default function SpeakingLauncherPage() {
 		createTopic,
 		updateTopic,
 		deleteTopic,
+		isLoading: isTopicsLoading,
+		errorMessage: topicsErrorMessage,
 	} = useSpeakingTopics();
 	const { calls, isLoading, errorMessage } = useSpeakingCalls();
-
-	if (!selectedTopic) {
-		return null;
-	}
 
 	return (
 		<main className="speakingPage">
@@ -34,19 +32,32 @@ export default function SpeakingLauncherPage() {
 					{ label: "Speaking" },
 				]}
 			/>
-			<StartCallCard
-				topics={topics}
-				selectedTopic={selectedTopic}
-				selectedTopicId={selectedTopicId}
-				onTopicSelect={setSelectedTopicId}
-				onCreateTopic={(form) => {
-					const created = createTopic(form);
-					toast.success(`Topic "${created.title}" created and selected`);
-				}}
-				onUpdateTopic={updateTopic}
-				onDeleteTopic={deleteTopic}
-				onStartCall={() => startCall(selectedTopicId)}
-			/>
+			{isTopicsLoading ? (
+				<p className="text-sm text-muted-foreground">Loading topics…</p>
+			) : null}
+			{topicsErrorMessage ? (
+				<p className="text-sm text-destructive">Couldn&apos;t load topics.</p>
+			) : null}
+			{!isTopicsLoading && !topicsErrorMessage ? (
+				<StartCallCard
+					topics={topics}
+					selectedTopic={selectedTopic}
+					selectedTopicId={selectedTopicId}
+					onTopicSelect={setSelectedTopicId}
+					onCreateTopic={async (form) => {
+						const created = await createTopic(form);
+						toast.success(`Topic "${created.title}" created and selected`);
+					}}
+					onUpdateTopic={updateTopic}
+					onDeleteTopic={deleteTopic}
+					onStartCall={() => {
+						if (!selectedTopicId) {
+							return;
+						}
+						startCall(selectedTopicId);
+					}}
+				/>
+			) : null}
 			<CallHistoryList
 				calls={calls}
 				isLoading={isLoading}

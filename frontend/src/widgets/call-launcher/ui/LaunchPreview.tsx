@@ -1,4 +1,4 @@
-import type { CallTopic } from "@/entities/speaking-session";
+import type { CallTopic } from "@llp/contracts";
 
 import { Play } from "lucide-react";
 
@@ -7,7 +7,7 @@ import { Button } from "@/shared/ui/button";
 import { Card, CardContent } from "@/shared/ui/card";
 
 type LaunchPreviewProps = {
-	topic: CallTopic;
+	topic: CallTopic | null;
 	onStartCall: () => void;
 };
 
@@ -26,12 +26,12 @@ export function LaunchPreview({ topic, onStartCall }: LaunchPreviewProps) {
 						<div className="flex justify-between">
 							<span className="text-muted-foreground">Selected Topic:</span>
 							<span className="max-w-[180px] truncate font-semibold">
-								{topic.title}
+								{topic?.title ?? "None selected"}
 							</span>
 						</div>
 						<div className="flex justify-between">
 							<span className="text-muted-foreground">Target Level:</span>
-							<span className="font-semibold">{topic.level}</span>
+							<span className="font-semibold">{topic?.level ?? "—"}</span>
 						</div>
 					</div>
 				</div>
@@ -39,6 +39,7 @@ export function LaunchPreview({ topic, onStartCall }: LaunchPreviewProps) {
 					type="button"
 					className="mt-6 w-full"
 					onClick={onStartCall}
+					disabled={!topic}
 					aria-label="Start speaking call"
 				>
 					<Play className="mr-2 h-3.5 w-3.5 fill-current" />

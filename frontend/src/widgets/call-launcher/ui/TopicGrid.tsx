@@ -1,6 +1,6 @@
 "use client";
 
-import type { CallTopic } from "@/entities/speaking-session";
+import type { CallTopic } from "@llp/contracts";
 
 import {
 	Check,

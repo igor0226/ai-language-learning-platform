@@ -1,6 +1,6 @@
 "use client";
 
-import type { CallTopic } from "@/entities/speaking-session";
+import type { CallTopic } from "@llp/contracts";
 import type { TopicFormState } from "@/features/manage-speaking-topics";
 
 import { useState } from "react";
@@ -14,12 +14,12 @@ import { TopicGrid } from "./TopicGrid";
 
 type StartCallCardProps = {
 	topics: CallTopic[];
-	selectedTopic: CallTopic;
+	selectedTopic: CallTopic | null;
 	selectedTopicId: string;
 	onTopicSelect: (id: string) => void;
-	onCreateTopic: (form: TopicFormState) => void;
-	onUpdateTopic: (id: string, form: TopicFormState) => void;
-	onDeleteTopic: (id: string) => void;
+	onCreateTopic: (form: TopicFormState) => Promise<void>;
+	onUpdateTopic: (id: string, form: TopicFormState) => Promise<void>;
+	onDeleteTopic: (id: string) => Promise<void>;
 	onStartCall: () => void;
 };
 
@@ -46,17 +46,20 @@ export function StartCallCard({
 		setDialogOpen(true);
 	};
 
-	const handleSaveTopic = (form: TopicFormState, editingId: string | null) => {
+	const handleSaveTopic = async (
+		form: TopicFormState,
+		editingId: string | null,
+	) => {
 		if (editingId) {
-			onUpdateTopic(editingId, form);
+			await onUpdateTopic(editingId, form);
 			toast.success("Topic updated");
 			return;
 		}
-		onCreateTopic(form);
+		await onCreateTopic(form);
 	};
 
-	const handleDeleteTopic = (id: string) => {
-		onDeleteTopic(id);
+	const handleDeleteTopic = async (id: string) => {
+		await onDeleteTopic(id);
 		toast.success("Topic deleted");
 	};
 

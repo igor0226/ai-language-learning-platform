@@ -1,6 +1,6 @@
 "use client";
 
-import type { CallTopic } from "@/entities/speaking-session";
+import type { CallTopic } from "@llp/contracts";
 
 import { useEffect, useState } from "react";
 
@@ -35,7 +35,7 @@ type TopicFormDialogProps = {
 	open: boolean;
 	editingTopic: CallTopic | null;
 	onOpenChange: (open: boolean) => void;
-	onSave: (form: TopicFormState, editingId: string | null) => void;
+	onSave: (form: TopicFormState, editingId: string | null) => Promise<void>;
 };
 
 export function TopicFormDialog({
@@ -46,6 +46,7 @@ export function TopicFormDialog({
 }: TopicFormDialogProps) {
 	const [form, setForm] = useState<TopicFormState>(emptyTopicForm());
 	const [formError, setFormError] = useState("");
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	useEffect(() => {
 		if (!open) {
@@ -59,15 +60,20 @@ export function TopicFormDialog({
 		setFormError("");
 	}, [open, editingTopic]);
 
-	const handleSubmit = (event: React.FormEvent) => {
+	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		const error = validateTopicForm(form);
 		if (error) {
 			setFormError(error);
 			return;
 		}
-		onSave(form, editingTopic?.id ?? null);
-		onOpenChange(false);
+		setIsSubmitting(true);
+		try {
+			await onSave(form, editingTopic?.id ?? null);
+			onOpenChange(false);
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -160,10 +166,11 @@ export function TopicFormDialog({
 							type="button"
 							variant="ghost"
 							onClick={() => onOpenChange(false)}
+							disabled={isSubmitting}
 						>
 							Cancel
 						</Button>
-						<Button type="submit">
+						<Button type="submit" disabled={isSubmitting}>
 							{editingTopic ? "Save changes" : "Create & select topic"}
 						</Button>
 					</DialogFooter>

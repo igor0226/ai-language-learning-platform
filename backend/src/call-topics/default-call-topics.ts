@@ -12,7 +12,7 @@ export type DefaultCallTopicCatalogEntry = {
 	createdAt: string;
 };
 
-/** Shared preset library — same ids/order as frontend SPEAKING_TOPICS fixtures. */
+/** Shared preset library for the speaking launcher (catalog presets). */
 export const DEFAULT_CALL_TOPIC_CATALOG: DefaultCallTopicCatalogEntry[] = [
 	{
 		id: "topic-2",

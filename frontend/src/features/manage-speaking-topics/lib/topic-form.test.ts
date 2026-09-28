@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
 import {
-	createCustomTopic,
-	updateTopicFromForm,
+	formToCreateBody,
+	formToUpdateBody,
 	validateTopicForm,
 } from "./topic-form";
 
@@ -18,22 +18,25 @@ describe("topic form helpers", () => {
 		).toBeTruthy();
 	});
 
-	it("creates and updates custom topics", () => {
-		const created = createCustomTopic({
+	it("maps form state to API bodies", () => {
+		const createBody = formToCreateBody({
 			title: "My topic",
 			level: "B1-B2",
 			duration: 12,
 			description: "Practice desc",
 		});
-		expect(created.isCustom).toBe(true);
+		expect(createBody.title).toBe("My topic");
+		expect(createBody.level).toBe("B1-B2");
+		expect(createBody.suggestedDurationMins).toBe(12);
 
-		const updated = updateTopicFromForm(created, {
+		const updateBody = formToUpdateBody({
 			title: "Updated",
 			level: "B2-C1",
 			duration: 20,
 			description: "New desc",
 		});
-		expect(updated.title).toBe("Updated");
-		expect(updated.level).toBe("B2-C1");
+		expect(updateBody.title).toBe("Updated");
+		expect(updateBody.level).toBe("B2-C1");
+		expect(updateBody.suggestedDurationMins).toBe(20);
 	});
 });

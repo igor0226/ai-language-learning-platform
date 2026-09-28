@@ -1,69 +1,72 @@
 "use client";
 
-import type { CallTopic } from "@/entities/speaking-session";
+import type { CallTopic } from "@llp/contracts";
 
 import { useCallback, useEffect, useState } from "react";
 
-import {
-	createCustomTopic,
-	type TopicFormState,
-	updateTopicFromForm,
-} from "../lib/topic-form";
+import { useCreateSpeakingTopic } from "../api/useCreateSpeakingTopic";
+import { useDeleteSpeakingTopic } from "../api/useDeleteSpeakingTopic";
+import { useSpeakingTopicsQuery } from "../api/useSpeakingTopicsQuery";
+import { useUpdateSpeakingTopic } from "../api/useUpdateSpeakingTopic";
 import {
 	findTopicById,
-	loadSpeakingTopics,
-	persistSpeakingTopics,
-} from "../lib/topics-storage";
+	formToCreateBody,
+	formToUpdateBody,
+	type TopicFormState,
+} from "../lib/topic-form";
 
 export function useSpeakingTopics() {
-	const [topics, setTopics] = useState<CallTopic[]>(() => loadSpeakingTopics());
-	const [selectedTopicId, setSelectedTopicId] = useState<string>(
-		() => loadSpeakingTopics()[0]?.id ?? "",
-	);
+	const { topics, isLoading, errorMessage } = useSpeakingTopicsQuery();
+	const { createTopic: createTopicMutation } = useCreateSpeakingTopic();
+	const { updateTopic: updateTopicMutation } = useUpdateSpeakingTopic();
+	const { deleteTopic: deleteTopicMutation } = useDeleteSpeakingTopic();
+
+	const [selectedTopicId, setSelectedTopicId] = useState("");
 
 	useEffect(() => {
-		persistSpeakingTopics(topics);
-	}, [topics]);
-
-	useEffect(() => {
+		if (topics.length === 0) {
+			setSelectedTopicId("");
+			return;
+		}
 		if (!topics.some((topic) => topic.id === selectedTopicId)) {
 			setSelectedTopicId(topics[0]?.id ?? "");
 		}
 	}, [topics, selectedTopicId]);
 
-	const createTopic = useCallback((form: TopicFormState) => {
-		const topic = createCustomTopic(form);
-		setTopics((previous) => [topic, ...previous]);
-		setSelectedTopicId(topic.id);
-		return topic;
-	}, []);
+	const createTopic = useCallback(
+		async (form: TopicFormState) => {
+			const created = await createTopicMutation(formToCreateBody(form));
+			setSelectedTopicId(created.id);
+			return created;
+		},
+		[createTopicMutation],
+	);
 
-	const updateTopic = useCallback((id: string, form: TopicFormState) => {
-		setTopics((previous) =>
-			previous.map((topic) => {
-				if (topic.id !== id) {
-					return topic;
-				}
-				return updateTopicFromForm(topic, form);
-			}),
-		);
-	}, []);
+	const updateTopic = useCallback(
+		async (id: string, form: TopicFormState) => {
+			await updateTopicMutation(id, formToUpdateBody(form));
+		},
+		[updateTopicMutation],
+	);
 
-	const deleteTopic = useCallback((id: string) => {
-		setTopics((previous) => {
-			const updated = previous.filter((topic) => topic.id !== id);
+	const deleteTopic = useCallback(
+		async (id: string) => {
+			await deleteTopicMutation(id);
 			setSelectedTopicId((current) => {
 				if (current !== id) {
 					return current;
 				}
-				return updated[0]?.id ?? "";
+				const remaining = topics.filter((topic) => topic.id !== id);
+				return remaining[0]?.id ?? "";
 			});
-			return updated;
-		});
-	}, []);
+		},
+		[deleteTopicMutation, topics],
+	);
 
 	const resolveTopic = useCallback(
-		(id: string) => findTopicById(topics, id) ?? topics[0],
+		(id: string): CallTopic | undefined => {
+			return findTopicById(topics, id);
+		},
 		[topics],
 	);
 
@@ -79,5 +82,7 @@ export function useSpeakingTopics() {
 		updateTopic,
 		deleteTopic,
 		resolveTopic,
+		isLoading,
+		errorMessage,
 	};
 }

@@ -1,17 +1,19 @@
-import type { CallTopic } from "@/entities/speaking-session";
+import {
+	CALL_TOPIC_LEVELS,
+	type CallTopic,
+	type CallTopicLevel,
+	type CreateCallTopicBody,
+	type UpdateCallTopicBody,
+} from "@llp/contracts";
 
-/** CEFR bands shown in the topic form (matches default speaking scenarios). */
-export const TOPIC_LEVEL_OPTIONS: string[] = [
-	"A2-B1",
-	"B1-B2",
-	"B2-C1",
-	"C1-C2",
-];
+export const TOPIC_LEVEL_OPTIONS: readonly CallTopicLevel[] = CALL_TOPIC_LEVELS;
 
-export function resolveTopicLevelOptions(currentLevel: string): string[] {
+export function resolveTopicLevelOptions(
+	currentLevel: string,
+): readonly CallTopicLevel[] {
 	const trimmed = currentLevel.trim();
-	if (trimmed && !TOPIC_LEVEL_OPTIONS.includes(trimmed)) {
-		return [trimmed, ...TOPIC_LEVEL_OPTIONS];
+	if (trimmed && !TOPIC_LEVEL_OPTIONS.includes(trimmed as CallTopicLevel)) {
+		return [trimmed as CallTopicLevel, ...TOPIC_LEVEL_OPTIONS];
 	}
 	return TOPIC_LEVEL_OPTIONS;
 }
@@ -33,33 +35,25 @@ export function validateTopicForm(form: TopicFormState): string | null {
 	return null;
 }
 
-export function createCustomTopic(form: TopicFormState): CallTopic {
+export function formToCreateBody(form: TopicFormState): CreateCallTopicBody {
+	const level = (form.level.trim() || "B1-B2") as CallTopicLevel;
 	return {
-		id: `topic-custom-${Date.now()}`,
 		title: form.title.trim(),
-		level: form.level.trim() || "B1-B2",
+		level,
 		description: form.description.trim(),
 		suggestedDurationMins: Number(form.duration) || 15,
-		isCustom: true,
-		createdAt: new Date().toLocaleDateString("en-US", {
-			month: "short",
-			day: "numeric",
-			year: "numeric",
-		}),
 	};
 }
 
-export function updateTopicFromForm(
-	existing: CallTopic,
-	form: TopicFormState,
-): CallTopic {
+export function formToUpdateBody(form: TopicFormState): UpdateCallTopicBody {
+	const level = form.level.trim()
+		? (form.level.trim() as CallTopicLevel)
+		: undefined;
 	return {
-		...existing,
 		title: form.title.trim(),
-		level: form.level.trim() || existing.level,
+		level,
 		description: form.description.trim(),
-		suggestedDurationMins:
-			Number(form.duration) || existing.suggestedDurationMins,
+		suggestedDurationMins: Number(form.duration) || undefined,
 	};
 }
 
@@ -78,3 +72,10 @@ export const emptyTopicForm = (): TopicFormState => ({
 	duration: 15,
 	description: "",
 });
+
+export function findTopicById(
+	topics: CallTopic[],
+	id: string,
+): CallTopic | undefined {
+	return topics.find((topic) => topic.id === id);
+}

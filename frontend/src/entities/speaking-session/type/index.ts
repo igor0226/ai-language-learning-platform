@@ -1,15 +1,5 @@
 import type { LanguageLevel } from "@llp/contracts";
 
-export type CallTopic = {
-	id: string;
-	title: string;
-	level: string;
-	description: string;
-	suggestedDurationMins: number;
-	isCustom?: boolean;
-	createdAt?: string;
-};
-
 export type SpeakingCallStatus =
 	| "connecting"
 	| "in_progress"

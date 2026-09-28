@@ -1,30 +1,4 @@
-import type { CallTopic, ConnectionStep, TranscriptSegment } from "../type";
-
-export const SPEAKING_TOPICS: CallTopic[] = [
-	{
-		id: "topic-2",
-		title: "A simple conversation about life, work, and hobbies",
-		level: "B1-B2",
-		description: "Have a simple conversation about life, work, and hobbies.",
-		suggestedDurationMins: 10,
-	},
-	{
-		id: "topic-1",
-		title: "Job Interview: Technical & Product Communication",
-		level: "B2-C1",
-		description:
-			"Practice answering complex behavioral and technical architecture questions in a professional setting.",
-		suggestedDurationMins: 15,
-	},
-	{
-		id: "topic-3",
-		title: "Academic Debate: Technological Automation & Ethics",
-		level: "C1-C2",
-		description:
-			"Formulate coherent argumentative theses and defend viewpoints with sophisticated transitions.",
-		suggestedDurationMins: 20,
-	},
-];
+import type { ConnectionStep, TranscriptSegment } from "../type";
 
 export const CONNECTION_STEPS: Array<{
 	id: ConnectionStep;
