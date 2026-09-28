@@ -41,37 +41,12 @@ export function CallHistoryList({
 					</div>
 					<CallHistoryFilterChips filter={filter} onChange={setFilter} />
 				</div>
-				{historyBody({
-					isLoading,
-					errorMessage,
-					visibleCalls,
-				})}
+				<CallHistoryTable
+					calls={visibleCalls}
+					isLoading={isLoading}
+					isError={Boolean(errorMessage)}
+				/>
 			</CardContent>
 		</Card>
 	);
-}
-
-function historyBody(input: {
-	isLoading: boolean;
-	errorMessage?: string | null;
-	visibleCalls: SpeakingCall[];
-}) {
-	if (input.isLoading) {
-		return (
-			<p className="text-sm text-muted-foreground">
-				Loading speaking sessions…
-			</p>
-		);
-	}
-	if (input.errorMessage) {
-		return <p className="text-sm text-destructive">{input.errorMessage}</p>;
-	}
-	if (input.visibleCalls.length === 0) {
-		return (
-			<p className="text-sm text-muted-foreground">
-				No speaking sessions recorded yet. Start your first call above.
-			</p>
-		);
-	}
-	return <CallHistoryTable calls={input.visibleCalls} />;
 }

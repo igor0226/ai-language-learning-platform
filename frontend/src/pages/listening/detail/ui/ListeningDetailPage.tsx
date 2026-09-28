@@ -16,22 +16,15 @@ export default function ListeningDetailPage() {
 	const params = useParams<{ id: string }>();
 	const videoId = params?.id ?? "";
 	const { retryVideo, isRetrying } = useRetryVideo(videoId);
-	const { videos, error: videosError } = useVideos();
-	const {
-		status: statusData,
-		isLoading: isStatusLoading,
-		error: statusError,
-	} = useVideoStatus(videoId);
+	const { videos } = useVideos();
+	const { status: statusData, isLoading: isStatusLoading } =
+		useVideoStatus(videoId);
 
 	const selectedVideo = useMemo(
 		() => videos.find((video) => video.id === videoId) ?? null,
 		[videoId, videos],
 	);
 
-	const pageError =
-		(videosError as Error | null)?.message ??
-		(statusError as Error | null)?.message ??
-		null;
 	const languageSummary = buildLanguageSummary(statusData, selectedVideo);
 
 	return (
@@ -65,8 +58,6 @@ export default function ListeningDetailPage() {
 					onRetry={() => retryVideo()}
 					isRetrying={isRetrying}
 				/>
-
-				{pageError ? <p className="tasksPageError">{pageError}</p> : null}
 			</section>
 		</main>
 	);

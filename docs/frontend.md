@@ -1,10 +1,6 @@
 # Frontend
 
-Next.js frontend for the **Language Learning Platform**. Today's routes implement the **Listening** skill (task list, upload form, DASH playback). The target information architecture adds Dashboard, Speaking, Writing, and Reading surfaces.
-
-Run the app with Docker Compose from the repo root (`docker compose up --build`); see [`local-dev.md`](local-dev.md). Host installs are `npm install` from the repo root (npm workspaces).
-
-**Hard rule:** Import shared types, enums, and Zod schemas from `@llp/contracts`. Do not redeclare or re-export them in frontend modules.
+Next.js frontend for the **Language Learning Platform**. Local dev: [`local-dev.md`](local-dev.md). Skill status and roadmap: [`product.md`](product.md). Package hard rules: [`frontend/AGENTS.md`](../frontend/AGENTS.md).
 
 ## Routes
 
@@ -21,7 +17,7 @@ Run the app with Docker Compose from the repo root (`docker compose up --build`)
 
 **Current routes** (implemented today):
 
-- `/login` — Google sign-in (the only public UI route; middleware default-denies all others)
+- `/login` — Google sign-in (only public UI route; see [`auth.md`](auth.md))
 - `/` — redirect to `/dashboard`
 - `/dashboard` — progress overview
 - `/listening` — video library
@@ -42,22 +38,23 @@ The UI is organized under `src/`:
 - `src/entities` — business models and entity UI
 - `src/shared` — UI kit, lib, API helpers, config
 
-Import only downward (pages → widgets → features → entities → shared). Each slice exposes a public `index.ts` with named exports (no `export *`). Import shadcn primitives as `@/shared/ui/button`. Prefer `@/` over `../../` and deeper when importing across slices; keep `./` and one-level `../` within the same slice.
-
-Substantial type declarations live in a slice `type/` directory (e.g. `entities/video/type/`). Do not mix large type blocks into `utils/` or `model/`. Tiny local types such as component props may stay colocated.
+Import only downward (pages → widgets → features → entities → shared). Each slice exposes a public `index.ts` with named exports (no `export *`). Import shadcn primitives as `@/shared/ui/button`. Prefer `@/` over `../../` and deeper when importing across slices; keep `./` and one-level `../` within the same slice. File layout (`utils/`, `type/`): [`conventions.md`](conventions.md).
 
 A root `pages/README.md` exists so Next.js does not treat `src/pages` as the Pages Router.
 
 ## Data fetching
 
-Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated routes (`/api/videos/*`, `/api/speaking/calls*`, `/api/auth/*`) use `authFetch()` with `credentials: "include"`. Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback uses `apiUrl()` for the manifest `src` and dash.js `setXHRWithCredentialsForType("default", true)` in `onProviderChange` so manifest and segment requests include the session cookie. UI route auth is enforced by [`frontend/middleware.ts`](../frontend/middleware.ts) at the project root (not `src/` — required because of the empty root `pages/` directory). Middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`).
+Client data fetching uses TanStack Query (poll list/status). Nest API base URL comes from `src/shared/api` (`apiUrl()`). Session-gated API calls use `authFetch()` with `credentials: "include"` (see [`auth.md`](auth.md)). Video upload uses `XMLHttpRequest` with `withCredentials: true`. DASH playback uses `apiUrl()` for the manifest `src` and dash.js `setXHRWithCredentialsForType("default", true)` in `onProviderChange` so manifest and segment requests include the session cookie. UI route gate and middleware: [`auth.md`](auth.md).
 
-**Hard rule:** do not call `useQuery` or `useInfiniteQuery` in pages or widgets. Each query lives in a dedicated hook under the owning entity or feature (`api/` or `model/`). Pages and widgets only consume those hooks. `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, and `useSpeakingCalls` are the current examples. The same applies to mutations (`useRetryVideo`).
+TanStack Query hook placement and Zustand rules: [`frontend/AGENTS.md`](../frontend/AGENTS.md). Examples: `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, `useSpeakingCalls`, `useVocabularyPhrases`, `useRetryVideo`.
+
+**Client errors:** React Query and upload XHR failures surface as Sonner toasts via global `QueryCache` / `MutationCache` handlers in `src/app/providers.tsx` (`notifyClientError`). The login OAuth redirect error stays an in-page `Alert`. Videos and speaking-calls tables show skeleton loading rows and a simple “Couldn’t load data.” placeholder when the first fetch fails; cached rows stay visible if a later poll fails.
 
 ## Tech stack
 
 - Next.js 14 App Router, React 18, TypeScript
 - TanStack Query
+- Zustand (global client UI state only; not server/cache data)
 - Vidstack (`@vidstack/react`) + dash.js for DASH playback
 - shadcn-style UI primitives (manually wired)
 - Tailwind CSS + Biome (lint/format)
@@ -65,8 +62,8 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 
 ## UI / styling
 
+- Do not nest ternary operators in JSX or render helpers; use early returns or a small helper function (see [`conventions.md`](conventions.md)).
 - Prefer ready-made `src/shared/ui/*` before building custom controls.
-- **Hard rule:** prioritize Tailwind theme tokens over hardcoded hex/rgb for colors and spacing.
 - Theme tokens are defined in `:root` and mapped in `tailwind.config.js` (e.g. `background`, `foreground`, `card`, `border`, `muted-foreground`, `destructive`, `ring`).
 - In TSX, use utilities (`bg-card`, `text-muted-foreground`, `gap-2`, `p-4`).
 - Colocate CSS with components; do not dump styles into a single global file.
@@ -95,13 +92,6 @@ Conventions:
 
 Example utility test: `src/shared/lib/format.test.ts`.
 Example component test: `src/shared/ui/button.test.tsx`.
-
-## Validation
-
-From `frontend/`:
-
-- **Hard rule:** before commit, `npm run lint:fix`
-- **Hard rule:** `npm run typecheck && npm run lint && npm run test`
 
 ## Related docs
 

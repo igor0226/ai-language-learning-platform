@@ -5,6 +5,7 @@ import type { LanguageLevel } from "@llp/contracts";
 import { useCallback, useState } from "react";
 
 import { apiUrl } from "@/shared/api";
+import { notifyClientError } from "@/shared/lib";
 
 export type UploadVideoInput = {
 	title: string;
@@ -17,12 +18,10 @@ export type UploadVideoInput = {
 export function useVideoUpload() {
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [isUploading, setIsUploading] = useState(false);
-	const [uploadError, setUploadError] = useState<string | null>(null);
 
 	const uploadVideo = useCallback((input: UploadVideoInput) => {
 		const validationError = validateUpload(input);
 		if (validationError) {
-			setUploadError(validationError.message);
 			return Promise.reject(validationError);
 		}
 
@@ -33,23 +32,16 @@ export function useVideoUpload() {
 		formData.set("explanationLanguage", input.explanationLanguage.trim());
 		formData.set("languageLevel", input.languageLevel);
 
-		setUploadError(null);
 		setIsUploading(true);
 		setUploadProgress(0);
 
-		return postUpload(
-			formData,
-			setUploadProgress,
-			setIsUploading,
-			setUploadError,
-		);
+		return postUpload(formData, setUploadProgress, setIsUploading);
 	}, []);
 
 	return {
 		uploadVideo,
 		uploadProgress,
 		isUploading,
-		uploadError,
 	};
 }
 
@@ -76,7 +68,6 @@ function postUpload(
 	formData: FormData,
 	setUploadProgress: (value: number) => void,
 	setIsUploading: (value: boolean) => void,
-	setUploadError: (value: string) => void,
 ): Promise<string> {
 	return new Promise((resolve, reject) => {
 		const xhr = new XMLHttpRequest();
@@ -89,14 +80,16 @@ function postUpload(
 		};
 		xhr.onerror = () => {
 			setIsUploading(false);
-			setUploadError("Upload failed due to a network issue.");
-			reject(new Error("Network error"));
+			const error = new Error("Upload failed due to a network issue.");
+			notifyClientError({ error, id: "video-upload" });
+			reject(error);
 		};
 		xhr.onload = () => {
 			setIsUploading(false);
 			if (xhr.status < 200 || xhr.status >= 300) {
-				setUploadError(xhr.responseText || "Upload failed.");
-				reject(new Error("Upload failed"));
+				const error = new Error(xhr.responseText || "Upload failed.");
+				notifyClientError({ error, id: "video-upload" });
+				reject(error);
 				return;
 			}
 			const responsePayload = JSON.parse(xhr.responseText) as { id: string };

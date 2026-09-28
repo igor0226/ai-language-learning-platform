@@ -1,3 +1,7 @@
+import { randomUUID } from "node:crypto";
+import { mkdir, unlink } from "node:fs/promises";
+import path from "node:path";
+
 import { parseLanguageLevel } from "@llp/contracts";
 import {
 	Body,
@@ -14,12 +18,15 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import type { Response } from "express";
-import { memoryStorage } from "multer";
+import { diskStorage } from "multer";
 
 import { AuthenticatedGuard } from "@/auth/authenticated.guard";
 import type { AuthenticatedRequest } from "@/auth/type/express-request";
 import { getAuthenticatedUser } from "@/auth/utils/get-authenticated-user";
+import { resolveMediaWorkspaceRoot } from "@/processing/shared/utils/resolve-media-workspace-root";
 import { VideosService } from "./videos.service";
+
+const uploadTempDir = path.join(resolveMediaWorkspaceRoot(), "http-uploads");
 
 @Controller("videos")
 @UseGuards(AuthenticatedGuard)
@@ -77,7 +84,16 @@ export class VideosController {
 	@Post("upload")
 	@UseInterceptors(
 		FileInterceptor("file", {
-			storage: memoryStorage(),
+			storage: diskStorage({
+				destination: (_req, _file, callback) => {
+					void mkdir(uploadTempDir, { recursive: true })
+						.then(() => callback(null, uploadTempDir))
+						.catch((error: Error) => callback(error, uploadTempDir));
+				},
+				filename: (_req, _file, callback) => {
+					callback(null, `${randomUUID()}.mp4`);
+				},
+			}),
 			limits: { fileSize: 1024 * 1024 * 1024 },
 		}),
 	)
@@ -90,13 +106,16 @@ export class VideosController {
 		@Req() request: AuthenticatedRequest,
 		@Res() res: Response,
 	) {
+		let tempFilePath: string | undefined;
 		try {
-			if (typeof title !== "string" || !title.trim()) {
-				return res.status(400).send("Video name is required");
-			}
-
 			if (!file) {
 				return res.status(400).send("Video file is required");
+			}
+
+			tempFilePath = file.path;
+
+			if (typeof title !== "string" || !title.trim()) {
+				return res.status(400).send("Video name is required");
 			}
 
 			if (typeof sourceLanguage !== "string" || !sourceLanguage.trim()) {
@@ -132,7 +151,7 @@ export class VideosController {
 				originalFileName: originalName,
 				mimeType: file.mimetype || "application/octet-stream",
 				sizeBytes: file.size,
-				fileBuffer: file.buffer,
+				localFilePath: file.path,
 				sourceLanguage: sourceLanguage.trim(),
 				explanationLanguage: explanationLanguage.trim(),
 				languageLevel: parsedLevel,
@@ -150,6 +169,10 @@ export class VideosController {
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "Upload failed";
 			return res.status(500).send(message);
+		} finally {
+			if (tempFilePath) {
+				await unlink(tempFilePath).catch(() => undefined);
+			}
 		}
 	}
 }

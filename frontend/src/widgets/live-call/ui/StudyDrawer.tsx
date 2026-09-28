@@ -1,20 +1,13 @@
-import type { SavedPhrase } from "@/entities/speaking-session";
+import type { VocabularyPhrase } from "@llp/contracts";
 
 import { VocabularyPanel } from "./VocabularyPanel";
 
 type StudyDrawerProps = {
-	phrases: SavedPhrase[];
-	newPhrase: string;
-	onNewPhraseChange: (value: string) => void;
-	onSavePhrase: (term: string) => void;
+	phrases: VocabularyPhrase[];
+	isLoading?: boolean;
 };
 
-export function StudyDrawer({
-	phrases,
-	newPhrase,
-	onNewPhraseChange,
-	onSavePhrase,
-}: StudyDrawerProps) {
+export function StudyDrawer({ phrases, isLoading }: StudyDrawerProps) {
 	return (
 		<aside className="callDrawer" aria-label="Saved phrases">
 			<div className="flex h-full flex-col">
@@ -24,12 +17,7 @@ export function StudyDrawer({
 						{phrases.length}
 					</span>
 				</div>
-				<VocabularyPanel
-					phrases={phrases}
-					newPhrase={newPhrase}
-					onNewPhraseChange={onNewPhraseChange}
-					onSavePhrase={onSavePhrase}
-				/>
+				<VocabularyPanel phrases={phrases} isLoading={isLoading} />
 			</div>
 		</aside>
 	);

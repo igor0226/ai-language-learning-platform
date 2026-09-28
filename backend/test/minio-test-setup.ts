@@ -16,10 +16,12 @@ export async function startMinioForTests(): Promise<void> {
 		return;
 	}
 
-	// Docker Hub minio/minio is no longer publicly pullable; use the last official Quay image.
+	// Community quay.io/minio/minio rejects anonymous pulls. This image is still public.
+	// It runs as a non-root user that cannot write /data, so start it as root.
 	container = await new GenericContainer(
-		"quay.io/minio/minio:RELEASE.2025-09-07T16-13-09Z",
+		"alpine/minio:RELEASE.2025-10-15T17-29-55Z",
 	)
+		.withUser("0:0")
 		.withExposedPorts(9000)
 		.withEnvironment({
 			MINIO_ROOT_USER: MINIO_USER,

@@ -6,16 +6,25 @@
 	@apply grid grid-cols-1 gap-8 lg:grid-cols-12;
 }
 
-.topicGrid {
-	@apply grid grid-cols-1 gap-3 sm:grid-cols-3;
+.topicCarousel {
+	@apply flex gap-3 overflow-x-auto scroll-smooth pb-2 pt-1;
+	scrollbar-width: none;
 }
 
-.topicCard {
-	@apply cursor-pointer rounded-xl border border-border p-4 text-left transition-colors hover:border-foreground/40;
+.topicCarousel::-webkit-scrollbar {
+	display: none;
 }
 
-.topicCardSelected {
-	@apply border-foreground bg-muted/80;
+.topicCarouselCard {
+	@apply flex h-[185px] w-[260px] shrink-0 cursor-pointer snap-start flex-col justify-between rounded-xl border border-border p-4 text-left transition-colors hover:border-foreground/40 sm:w-[275px];
+}
+
+.topicCarouselCardSelected {
+	@apply border-foreground bg-muted/80 ring-1 ring-foreground;
+}
+
+.topicCarouselAdd {
+	@apply flex h-[185px] w-[200px] shrink-0 snap-start flex-col items-center justify-center rounded-xl border border-dashed border-border bg-muted/30 p-4 text-center transition-colors hover:border-foreground/40 hover:bg-muted/50;
 }
 
 .micMeter {

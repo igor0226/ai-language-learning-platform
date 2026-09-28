@@ -1,16 +1,12 @@
 "use client";
 
 import type { EmotionIntensity, TeacherEmotion } from "@llp/contracts";
-import type {
-	CallControlState,
-	SavedPhrase,
-} from "@/entities/speaking-session";
+import type { CallControlState } from "@/entities/speaking-session";
 
 import { useState } from "react";
 
-import { SAVED_PHRASES } from "@/entities/speaking-session";
 import { DEFAULT_TEACHER_FACE_INTENSITY } from "@/entities/teacher";
-import { saveCallPhrase } from "@/features/save-call-phrase";
+import { useVocabularyPhrases } from "@/features/vocabulary-notebook";
 import { CallStage } from "./CallStage";
 import { CallStatusBar } from "./CallStatusBar";
 import { EndCallDialog } from "./EndCallDialog";
@@ -45,9 +41,7 @@ export function CallConnectedView({
 	const sessionSeconds = useSessionTimer();
 	const [controls, setControls] = useState(INITIAL_CONTROLS);
 	const [showEndModal, setShowEndModal] = useState(false);
-	const [savedPhrases, setSavedPhrases] =
-		useState<SavedPhrase[]>(SAVED_PHRASES);
-	const [newPhrase, setNewPhrase] = useState("");
+	const { phrases, isLoading: isPhrasesLoading } = useVocabularyPhrases();
 
 	useCallShortcuts(setControls, () => setShowEndModal(true), onToggleMute);
 
@@ -77,24 +71,12 @@ export function CallConnectedView({
 					onEndCall={() => setShowEndModal(true)}
 				/>
 				{controls.isPanelOpen ? (
-					<StudyDrawer
-						phrases={savedPhrases}
-						newPhrase={newPhrase}
-						onNewPhraseChange={setNewPhrase}
-						onSavePhrase={(term) => {
-							const next = saveCallPhrase(term, sessionSeconds, savedPhrases);
-							if (!next) {
-								return;
-							}
-							setSavedPhrases(next.phrases);
-							setNewPhrase(next.input);
-						}}
-					/>
+					<StudyDrawer phrases={phrases} isLoading={isPhrasesLoading} />
 				) : null}
 			</div>
 			<EndCallDialog
 				open={showEndModal}
-				savedCount={savedPhrases.length}
+				savedCount={phrases.length}
 				onContinue={() => setShowEndModal(false)}
 				onConfirm={onEndCall}
 			/>

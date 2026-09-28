@@ -27,7 +27,7 @@ export default function ListeningLibraryPage() {
 	const [pageIndex, setPageIndex] = useState(0);
 	const [pageSize, setPageSize] = useState(10);
 
-	const { videos, error: videosError } = useVideos();
+	const { videos, isLoading, isError } = useVideos();
 	const filteredVideos = useMemo(
 		() =>
 			videos.filter(
@@ -84,6 +84,8 @@ export default function ListeningLibraryPage() {
 					onSelectedIdsChange={setSelectedIds}
 					focusedId={focusedId}
 					onFocusedIdChange={setFocusedId}
+					isLoading={isLoading}
+					isError={isError}
 					emptyLabel={
 						videos.length === 0
 							? "No tasks yet. Add one to get started."
@@ -102,10 +104,6 @@ export default function ListeningLibraryPage() {
 						setPageIndex(0);
 					}}
 				/>
-
-				{videosError ? (
-					<p className="tasksPageError">{(videosError as Error).message}</p>
-				) : null}
 			</section>
 		</main>
 	);

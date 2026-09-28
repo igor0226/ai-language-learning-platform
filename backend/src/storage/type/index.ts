@@ -36,7 +36,7 @@ export type CreateVideoInput = {
 	originalFileName: string;
 	mimeType: string;
 	sizeBytes: number;
-	fileBuffer: Buffer;
+	localFilePath: string;
 	sourceLanguage: string;
 	explanationLanguage: string;
 	languageLevel: LanguageLevel;
@@ -100,6 +100,72 @@ export type CreateTeacherCallInput = {
 	sourceLanguage: string;
 	languageLevel: LanguageLevel;
 	explanationLanguage?: string;
+};
+
+export type VocabularyPhraseRecord = {
+	id: string;
+	userId: string;
+	term: string;
+	cefr: LanguageLevel;
+	definition: string;
+	exampleSentence: string | null;
+	savedAt: string;
+	updatedAt: string;
+};
+
+export type CreateVocabularyPhraseInput = {
+	userId: string;
+	term: string;
+	cefr: LanguageLevel;
+	definition: string;
+	exampleSentence?: string;
+	savedAt?: string;
+};
+
+export type UpdateVocabularyPhraseInput = {
+	term?: string;
+	cefr?: LanguageLevel;
+	definition?: string;
+	exampleSentence?: string | null;
+	savedAt?: string;
+};
+
+export type UserCallTopicKind = "custom" | "override" | "hidden";
+
+export type UserCallTopicRecord = {
+	userId: string;
+	topicId: string;
+	kind: UserCallTopicKind;
+	title: string | null;
+	level: string | null;
+	description: string | null;
+	suggestedDurationMins: number | null;
+	createdAt: string;
+	updatedAt: string;
+};
+
+export type UpsertUserCallTopicOverrideInput = {
+	userId: string;
+	topicId: string;
+	title: string;
+	level: string;
+	description: string;
+	suggestedDurationMins: number;
+};
+
+export type CreateUserCallTopicCustomInput = {
+	userId: string;
+	title: string;
+	level: string;
+	description: string;
+	suggestedDurationMins: number;
+};
+
+export type UpdateCallTopicContentPatch = {
+	title?: string;
+	level?: string;
+	description?: string;
+	suggestedDurationMins?: number;
 };
 
 export type VideoProcessingHistory = {

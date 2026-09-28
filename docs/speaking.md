@@ -14,6 +14,24 @@ Live 1-on-1 AI teacher calls via self-hosted LiveKit (`livekit` in Compose) plus
 
 Speaking JSON/query fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts`.
 
+### Call topics API
+
+Owner-scoped discussion scenarios for the speaking launcher. Presets live once in code (`call-topics/default-call-topics.ts`); per-user rows in `user_call_topics` are sparse overlays only (`custom`, `override`, `hidden`) so untouched defaults are not copied per user. Request/response shapes and Zod schemas: `@llp/contracts` (`callTopicSchema`, `createCallTopicBodySchema`, `updateCallTopicBodySchema`).
+
+- `GET /api/speaking/topics` — `{ topics: CallTopic[] }`; new users see three catalog presets with zero DB rows (custom topics first, then catalog order)
+- `POST /api/speaking/topics` — create custom topic; body `{ title, level, description, suggestedDurationMins? }` (duration defaults to 15); returns `CallTopic` (`201`)
+- `PATCH /api/speaking/topics/:id` — partial update; at least one field required; catalog edits store an `override` snapshot; reverting to catalog text removes the override row; `404` if not in the user's library
+- `DELETE /api/speaking/topics/:id` — `204`; deletes custom rows or tombstones a catalog preset for that user only; `404` if missing or already hidden
+
+### Vocabulary notebook API
+
+Owner-scoped phrases for the logged-in user (`user_vocabulary_phrases`). Request/response shapes and Zod schemas: `@llp/contracts` (`vocabularyPhraseSchema`, `createVocabularyPhraseBodySchema`, `updateVocabularyPhraseBodySchema`).
+
+- `GET /api/vocabulary/phrases` — `{ phrases: VocabularyPhrase[] }`, newest `savedAt` first
+- `POST /api/vocabulary/phrases` — create; body `{ term, cefr, definition, exampleSentence?, savedAt? }`; returns `VocabularyPhrase`
+- `PATCH /api/vocabulary/phrases/:id` — partial update; at least one field required; `404` if missing or not owned
+- `DELETE /api/vocabulary/phrases/:id` — `204`; `404` if missing or not owned
+
 ## Backend env
 
 - `LIVEKIT_URL` (browser-facing)
@@ -44,6 +62,7 @@ Call flow:
 - Compose LiveKit must be **v1.9.11+** (repo uses `livekit/livekit-server:v1.13.6`). `livekit-client` 2.17+ connects via `/rtc/v1`; older servers only expose `/rtc` and the browser shows `404 /rtc/v1/validate`.
 - End call `POST`s `/api/speaking/calls/:id/end` then returns to `/speaking`.
 - Teacher facial emotions arrive on the LiveKit data topic `teacher-emotion` (`{ emotion, intensity?, source }`). The live call applies them to `TeacherFace` as SVG root classes (`emotion-*`, `intensity-*`; intensity defaults to `1`). Speech visemes (`speech-quiet|normal|loud`) come from an `AnalyserNode` on the teacher's LiveKit `MediaStream` (RMS 0–100), not from the emotion payload. The launcher and connecting views keep `staticMotion`.
-- Transcript and vocabulary panels still use fixtures.
+- Transcript still uses fixtures. The vocabulary notebook (app shell drawer) loads and mutates phrases via `/api/vocabulary/phrases` (session cookie). The live call side panel lists the same notebook read-only; it does not create or update phrases (the teacher agent has no vocabulary tool yet). Wire types and Zod schemas live in `@llp/contracts` (`VocabularyPhrase`, create/update body schemas).
+- Discussion topics on `/speaking` load and mutate via `GET/POST/PATCH/DELETE /api/speaking/topics` (session cookie). Delete control in the UI is shown only for custom topics; the API also supports hiding catalog presets. The live call page resolves `?topic=` against the same fetched list so edited or custom scenarios reach the agent prompt.
 
 Media signaling uses `wss://media.llp-test.com` in Compose. See [`local-dev.md`](local-dev.md).

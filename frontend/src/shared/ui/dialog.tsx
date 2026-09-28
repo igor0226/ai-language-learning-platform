@@ -3,6 +3,10 @@ import { X } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/shared/lib/utils";
+import {
+	radixOverlayEnterExit,
+	radixSurfaceEnterExit,
+} from "./radix-content-motion";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
@@ -16,7 +20,8 @@ const DialogOverlay = React.forwardRef<
 	<DialogPrimitive.Overlay
 		ref={ref}
 		className={cn(
-			"fixed inset-0 z-50 bg-black/80 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+			"fixed inset-0 z-50 bg-black/80",
+			radixOverlayEnterExit,
 			className,
 		)}
 		{...props}
@@ -33,7 +38,8 @@ const DialogContent = React.forwardRef<
 		<DialogPrimitive.Content
 			ref={ref}
 			className={cn(
-				"fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out sm:rounded-lg",
+				"fixed inset-0 z-50 m-auto grid h-fit w-full max-w-lg gap-4 border border-border bg-background p-6 shadow-2xl duration-200 sm:rounded-lg",
+				radixSurfaceEnterExit,
 				className,
 			)}
 			{...props}

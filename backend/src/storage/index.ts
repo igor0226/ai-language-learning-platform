@@ -1,10 +1,12 @@
 export { BlobStorageService } from "./blob-storage.service";
 export { CallRepositoryService } from "./call-repository.service";
+export { VocabularyRepositoryService } from "./vocabulary-repository.service";
 export { ProcessingHistoryService } from "./processing-history.service";
 export { ProcessingLockService } from "./processing-lock.service";
 export { StorageModule } from "./storage.module";
 export type {
 	CreateTeacherCallInput,
+	CreateVocabularyPhraseInput,
 	CreateVideoInput,
 	LanguageLevel,
 	ProcessingEventStatus,
@@ -12,6 +14,8 @@ export type {
 	ProcessingStep,
 	TeacherCallRecord,
 	TeacherCallStatus,
+	UpdateVocabularyPhraseInput,
+	VocabularyPhraseRecord,
 	VideoProcessingHistory,
 	VideoProcessingStatus,
 	VideoRecord,

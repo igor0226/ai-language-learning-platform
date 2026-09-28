@@ -6,6 +6,8 @@ import {
 	ProcessingLock,
 	TeacherCall,
 	User,
+	UserCallTopic,
+	UserVocabularyPhrase,
 	Video,
 } from "../models";
 import { getPostgresConfig } from "./utils/postgres-config";
@@ -16,7 +18,15 @@ import { getPostgresConfig } from "./utils/postgres-config";
 			useFactory: () => ({
 				type: "postgres" as const,
 				...getPostgresConfig(),
-				entities: [Video, ProcessingHistory, ProcessingLock, TeacherCall, User],
+				entities: [
+					Video,
+					ProcessingHistory,
+					ProcessingLock,
+					TeacherCall,
+					User,
+					UserCallTopic,
+					UserVocabularyPhrase,
+				],
 				synchronize: false,
 				autoLoadEntities: false,
 			}),

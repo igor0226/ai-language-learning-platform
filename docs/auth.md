@@ -1,6 +1,10 @@
 # Auth
 
-Google OAuth via Nest with Postgres-backed session cookie `llp.sid`. Next.js middleware gates UI routes. Nest `/api/videos/*`, `/api/speaking/calls*`, and `/api/dash/*` require the session cookie (`401` without it). DASH routes are also owner-scoped (`404` for another user's video). The LiveKit webhook stays public.
+Google OAuth via Nest with Postgres-backed session cookie `llp.sid`. Next.js middleware gates UI routes.
+
+**Nest session gate (`AuthenticatedGuard`):** `/api/videos/*`, `/api/speaking/calls*`, `/api/speaking/topics*`, `/api/vocabulary/*`, and `/api/dash/*` require the session cookie (`401` without it). List, status, retry, playback-phrases, DASH manifest/segments, speaking calls, topics, and vocabulary routes are **owner-scoped** to the logged-in user's `userId` where applicable (`404` when missing or owned by another user). Upload and create endpoints stamp `userId` from the session.
+
+**Public Nest routes:** `POST /api/speaking/livekit/webhook` (LiveKit reconciliation); auth OAuth/callback/me/logout as listed below.
 
 ## Backend routes
 

@@ -1,5 +1,5 @@
-import { createWriteStream } from "node:fs";
-import { mkdir, mkdtemp, readdir, readFile, rm, stat } from "node:fs/promises";
+import { createReadStream, createWriteStream } from "node:fs";
+import { mkdir, mkdtemp, readdir, rm, stat } from "node:fs/promises";
 import path from "node:path";
 import { pipeline } from "node:stream/promises";
 
@@ -49,8 +49,8 @@ export class MediaWorkspace {
 	}
 
 	async upload(input: { localPath: string; key: string }): Promise<void> {
-		const buffer = await readFile(input.localPath);
-		await this.blobStorage.writeUploadFile(input.key, buffer);
+		const stream = createReadStream(input.localPath);
+		await this.blobStorage.writeUploadFile(input.key, stream);
 	}
 
 	async uploadDir(input: { localDir: string; prefix: string }): Promise<void> {

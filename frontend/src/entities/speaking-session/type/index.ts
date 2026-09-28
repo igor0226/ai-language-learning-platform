@@ -1,14 +1,5 @@
 import type { LanguageLevel } from "@llp/contracts";
 
-export type CallTopic = {
-	id: string;
-	title: string;
-	level: string;
-	description: string;
-	suggestedDurationMins: number;
-	tags: string[];
-};
-
 export type SpeakingCallStatus =
 	| "connecting"
 	| "in_progress"
@@ -46,16 +37,6 @@ export type TranscriptSegment = {
 	text: string;
 	timestamp: string;
 	highlightedTerms?: string[];
-};
-
-export type SavedPhrase = {
-	id: string;
-	term: string;
-	phonetic: string;
-	cefr: LanguageLevel;
-	definition: string;
-	exampleSentence?: string;
-	savedAt: string;
 };
 
 export type CallControlState = {

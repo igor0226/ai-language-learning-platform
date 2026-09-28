@@ -1,6 +1,7 @@
 export { computeInputLevel } from "./audio/compute-input-level";
 export { createAudioContext } from "./audio/create-audio-context";
 export { startLevelPolling } from "./audio/start-level-polling";
+export { createQueryClient } from "./create-query-client";
 export { focusAdjacentButton } from "./focus-adjacent";
 export {
 	formatBytes,
@@ -15,4 +16,5 @@ export {
 	logTeacherEmotionMismatch,
 	type TeacherEmotionMismatch,
 } from "./log-teacher-emotion";
+export { notifyClientError } from "./notify-client-error";
 export { cn } from "./utils";

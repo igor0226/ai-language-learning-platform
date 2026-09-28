@@ -13,6 +13,8 @@ export function useVideos() {
 
 	return {
 		videos: query.data?.videos ?? [],
+		isLoading: query.isPending,
+		isError: query.isError,
 		error: query.error,
 	};
 }

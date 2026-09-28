@@ -67,16 +67,31 @@ export class BlobStorageService {
 
 	async writeUploadFile(
 		relativePath: string,
-		fileBuffer: Buffer,
+		body: Buffer | Readable,
 	): Promise<void> {
 		const key = normalizeObjectKey(relativePath);
-		if (fileBuffer.length >= MULTIPART_THRESHOLD_BYTES) {
+
+		if (!Buffer.isBuffer(body)) {
 			const upload = new Upload({
 				client: this.s3Client,
 				params: {
 					Bucket: this.s3Config.bucket,
 					Key: key,
-					Body: fileBuffer,
+					Body: body,
+				},
+				queueSize: 1,
+			});
+			await upload.done();
+			return;
+		}
+
+		if (body.length >= MULTIPART_THRESHOLD_BYTES) {
+			const upload = new Upload({
+				client: this.s3Client,
+				params: {
+					Bucket: this.s3Config.bucket,
+					Key: key,
+					Body: body,
 				},
 			});
 			await upload.done();
@@ -87,7 +102,7 @@ export class BlobStorageService {
 			new PutObjectCommand({
 				Bucket: this.s3Config.bucket,
 				Key: key,
-				Body: fileBuffer,
+				Body: body,
 			}),
 		);
 	}

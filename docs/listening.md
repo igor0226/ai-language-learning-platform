@@ -2,7 +2,7 @@
 
 ## Product flow
 
-1. Upload via Nest `POST /api/videos/upload` with source file and language settings → record created as `pending`.
+1. Upload via Nest `POST /api/videos/upload` with source file and language settings → Multer writes the file to disk under `MEDIA_WORKSPACE_ROOT/http-uploads`, then the backend streams it to object storage → record created as `pending`.
 2. Backend worker transcribes speech to text with word/segment timestamps.
 3. AI analyzes the transcript and flags tricky phrases for language learners (`gpt-5.6-luna`).
 4. AI generates brief explanations in the explanation language (included in phrase detection output for now).
@@ -14,25 +14,7 @@
 
 ## Artifacts (S3/MinIO)
 
-Target blob outputs (same key layout as the former repo-root `videos/` tree):
-
-- `uploads/<videoId>/` — source upload
-- `transcripts/<videoId>/transcript.json` — timed transcript (word/segment timestamps)
-- `explanations/<videoId>/phrases.json` — detected tricky phrases (word indexes + explanations)
-- `explanations/<videoId>/` — TTS audio clips, slide assets
-- `enriched/<videoId>/` — composed destination video (pre-DASH)
-- `dash/<videoId>/` — streamable DASH output (enriched video, not raw source)
-
-Additional pipeline keys (see [`backend.md`](backend.md)):
-
-- `audio/<videoId>/track.mp3` — extracted mono MP3 for transcription
-- `explanations/<videoId>/clips.json` — manifest of rendered explanation clips
-- `explanations/<videoId>/clips/<nnn>.speech.mp3|mp3|ass|mp4` — per-phrase TTS, combined audio, ASS subtitles, rendered clip
-- `assets/listen-again/<language>.mp3` — cached per-language "Let's listen once again!" TTS
-- `enriched/<videoId>/output.mp4` — composed destination video
-- `enriched/<videoId>/playback-phrases.json` — playback phrase timings for the API
-
-Video metadata lives in PostgreSQL. Legacy `videos/records/*.json` may still exist locally for one-time backfill only.
+Pipeline stages write under the object-key layout documented in [`backend.md`](backend.md#object-storage-minio--s3) (`uploads/`, `audio/`, `transcripts/`, `explanations/`, `enriched/`, `dash/`, shared `assets/listen-again/`). Video metadata lives in PostgreSQL. Legacy `videos/records/*.json` may still exist locally for one-time backfill only.
 
 ## Upload language fields
 
@@ -74,11 +56,11 @@ Processing steps tracked in history: `queued`, `audio_extract`, `transcribing`, 
 - Keep the worker idempotent and lock-safe (avoid duplicate processing).
 - Return explicit failure reasons for processing errors.
 - Do not break `VideoRecord` or entity schemas without TypeORM migrations.
-- Never read or write pipeline blobs except through `BlobStorageService` (S3 keys). FFmpeg steps may use disposable local workspaces under `MEDIA_WORKSPACE_ROOT` via `MediaWorkspaceService`.
+- Blob I/O: [`backend/AGENTS.md`](../backend/AGENTS.md).
 
 ## Video API
 
-All video and DASH HTTP routes require the session cookie (`llp.sid`). List, status, retry, playback-phrases, and DASH manifest/segment serving are scoped to the logged-in user's `userId` on the video record (`404` when missing or owned by another user). Upload stamps `userId` from the session.
+Session and owner scope: [`auth.md`](auth.md).
 
 - `GET /api/videos` — each item includes `processingStep`
 - `GET /api/videos/:id/status` — adds `processingHistory` (full event log) plus `processingStep`
@@ -96,7 +78,6 @@ All video and DASH HTTP routes require the session cookie (`llp.sid`). List, sta
 
 ## DASH (backend)
 
-- Session-gated and owner-scoped like other video routes.
 - Serve manifests at `/api/dash/<videoId>/manifest.mpd`.
 - `DashService` rewrites served MPDs at read time to inject `<BaseURL>/api/dash/<videoId>/segment/</BaseURL>` before each `<SegmentTemplate>`; segment bytes are streamed from object storage through the backend.
 - Preserve `manifest.mpd` route + `/segment/` asset path conventions.
