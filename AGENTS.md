@@ -11,6 +11,8 @@ Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend
 - Shared wire types, enums, and Zod schemas live only in [`packages/contracts`](packages/contracts) — import from `@llp/contracts`; do not redeclare in app modules.
 - After any edit under `packages/contracts`, run `npm run build -w @llp/contracts` from the repo root **before** backend or frontend `typecheck` (workspaces consume `dist/`, not `src/`).
 - When verifying a package after adding or changing files, run that package’s `lint:fix` **before** `lint` in the same session (Biome check-only fails on unformatted new files).
+- When you change product behavior, update the matching canonical doc in the same change — see [`docs/README.md`](docs/README.md) (ownership table + checklist). Do not copy rules or procedures across layers; link instead.
+- After large doc changes or before refactors, run the **audit-agent-instructions** skill (see [`docs/README.md`](docs/README.md#periodic-quality-review)) to review duplication and drift.
 
 ## Read next
 
@@ -26,16 +28,4 @@ Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend
 | Nest modules / DB / storage | [`docs/backend.md`](docs/backend.md) |
 | Maintain or add agent docs | [`docs/README.md`](docs/README.md) |
 
-## Quick start
-
-```bash
-cp backend/.env.example backend/.env   # OPENAI_API_KEY, Google OAuth, SESSION_SECRET
-npm run dev:https-setup                # one-time mkcert + /etc/hosts
-docker compose up --build              # https://app.llp-test.com
-```
-
-Stale container `node_modules` or Next cache: `npm run dev:reset-packages` then rebuild. See [`docs/local-dev.md`](docs/local-dev.md).
-
-## Doc maintenance
-
-After implementing a feature, update the matching `docs/*.md`. If none fits, create `docs/<kebab-topic>.md` and add it to all three `AGENTS.md` indexes and [`docs/README.md`](docs/README.md). Keep `AGENTS.md` files as indexes under 80 lines — no how-tos here.
+Local dev: [`docs/local-dev.md`](docs/local-dev.md). Doc authoring and maintenance: [`docs/README.md`](docs/README.md).

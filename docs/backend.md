@@ -1,8 +1,6 @@
 # Backend
 
-Nest.js backend for the **Language Learning Platform**. Today's modules implement the **Listening** skill (video upload, transcription, phrase detection, explanation clips, video composition, DASH playback). Planned modules will add Speaking (WebRTC signaling and session persistence), Writing (composition feedback), and Reading (comprehension practice).
-
-Run the app with Docker Compose from the repo root (`docker compose up --build`); see [`local-dev.md`](local-dev.md). Compose starts **postgres**, **minio**, **backend**, and **frontend**. FFmpeg is in the backend image when using Compose. The backend runs migrations on boot (`npm run migration:run`) before `start:dev`. Never run `docker compose down -v` (it wipes `postgres_data` and `minio_data`).
+Nest.js backend for the **Language Learning Platform**. Local dev: [`local-dev.md`](local-dev.md). Skill status: [`product.md`](product.md). Package hard rules: [`backend/AGENTS.md`](../backend/AGENTS.md).
 
 ## Modules
 
@@ -21,13 +19,13 @@ Nest.js app under `src/` with feature modules:
 
 `main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`, shutdown hooks, and `forceCloseConnections` so Compose `start:dev` watch restarts can unbind the port. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
 
-Store module-bound utility functions under each module's `utils/` directory (e.g. `storage/utils/`, `videos/utils/`, `processing/utils/`). Do not blend helpers into service files. Store substantial type declarations under `type/` (e.g. `storage/type/`, `speaking/type/`). Do not keep type-only files in `utils/`.
+Module layout (`utils/`, `type/`): [`conventions.md`](conventions.md).
 
 `@/` maps to `src/` (see [`tsconfig.json`](../backend/tsconfig.json) `paths`). Prefer `@/` over `../../` and deeper when importing from another module under `src/`; keep `./` and one-level `../` within the same module.
 
 Speaking JSON fields are validated with Zod (`ZodValidationPipe` + schemas in `speaking/utils/http-schemas.ts`). Shared enums and schemas come from `@llp/contracts` — do not redeclare or re-export them here. Video upload stays on manual plain-text 400s.
 
-**Auth gate:** `/api/videos/*`, `/api/speaking/calls*`, `/api/speaking/topics*`, `/api/vocabulary/*`, and `/api/dash/*` require `AuthenticatedGuard` (session cookie) and owner scope where applicable. `POST /api/speaking/livekit/webhook` stays public.
+Session-gated routes and owner scope: [`auth.md`](auth.md).
 
 ## Tech stack
 
@@ -106,16 +104,6 @@ Metadata (`VideoRecord`, processing history, worker locks) is in **PostgreSQL**.
 
 - Override level with `LOG_LEVEL` (default `debug` non-prod, `info` prod).
 - Automatic HTTP access logs skip DASH segment routes to avoid spam.
-
-## Validation
-
-From `backend/`:
-
-- **Hard rule:** Never read or write pipeline blobs except through `BlobStorageService`. FFmpeg steps use `MediaWorkspaceService` temp dirs. Tests may seed objects via `BlobStorageService`.
-- **Hard rule:** if you see that the changes suggested by the user may require changing the frontend files as well, never change them without asking for the user's permission.
-- **Hard rule:** functions should not receive more than 2 parameters. If the function's logic requires so, pass the paramaters grouped in an object.
-- **Hard rule:** before commit, `npm run lint:fix`
-- **Hard rule:** `npm run typecheck && npm run lint && npm run test && npm run test:e2e`
 
 ## Related docs
 

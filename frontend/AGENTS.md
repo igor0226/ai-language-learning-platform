@@ -1,8 +1,6 @@
 # Frontend Agent Notes
 
-Next.js frontend for the **Language Learning Platform**. Read parent [`AGENTS.md`](../AGENTS.md) first. Detailed docs: [`docs/README.md`](../docs/README.md).
-
-Run with Docker Compose from repo root; see [`docs/local-dev.md`](../docs/local-dev.md).
+Next.js frontend for the **Language Learning Platform**. Read parent [`AGENTS.md`](../AGENTS.md) first. Topic docs and authoring rules: [`docs/README.md`](../docs/README.md).
 
 ## Hard rules (always)
 
@@ -13,11 +11,3 @@ Run with Docker Compose from repo root; see [`docs/local-dev.md`](../docs/local-
 - Prioritize Tailwind theme tokens over hardcoded hex/rgb for colors and spacing.
 - If this task touched `packages/contracts`, from repo root first: `npm run build -w @llp/contracts`.
 - Before commit (in `frontend/`): `npm run lint:fix && npm run typecheck && npm run lint && npm run test` — do not run `typecheck` on frontend until contracts are rebuilt when exports changed.
-
-## Read next
-
-See in the parent [`AGENTS.md`](../AGENTS.md).
-
-## Doc maintenance
-
-See in the parent [`AGENTS.md`](../AGENTS.md).
