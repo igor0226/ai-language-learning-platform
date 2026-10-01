@@ -5,9 +5,9 @@ import {
 	type EmotionPublisher,
 	normalizeEmotionMessage,
 	publishEmotion,
-} from "./emotion";
+} from "./publish-emotion";
 
-describe("emotion", () => {
+describe("publishEmotion", () => {
 	it("normalizes valid emotions and intensity", () => {
 		expect(
 			normalizeEmotionMessage({

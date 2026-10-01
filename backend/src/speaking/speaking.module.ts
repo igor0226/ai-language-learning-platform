@@ -1,5 +1,10 @@
 import { Module } from "@nestjs/common";
 
+import { VocabularyModule } from "@/vocabulary/vocabulary.module";
+
+import { AgentApiGuard } from "./agent-api.guard";
+import { AgentSpeakingController } from "./agent-speaking.controller";
+import { AgentSpeakingVocabularyService } from "./agent-speaking-vocabulary.service";
 import { AgentDispatchService } from "./agent-dispatch.service";
 import { LivekitRoomService } from "./livekit-room.service";
 import { LivekitTokenService } from "./livekit-token.service";
@@ -10,8 +15,11 @@ import { StaleCallCleanupService } from "./stale-call-cleanup.service";
 import { StaleCallWorkerService } from "./stale-call-worker.service";
 
 @Module({
-	controllers: [SpeakingController],
+	imports: [VocabularyModule],
+	controllers: [SpeakingController, AgentSpeakingController],
 	providers: [
+		AgentApiGuard,
+		AgentSpeakingVocabularyService,
 		SpeakingService,
 		LivekitTokenService,
 		LivekitRoomService,

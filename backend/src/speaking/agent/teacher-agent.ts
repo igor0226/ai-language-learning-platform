@@ -1,6 +1,6 @@
-import { type JobContext, defineAgent, llm, voice } from "@livekit/agents";
+import { type JobContext, defineAgent, voice } from "@livekit/agents";
 import * as openai from "@livekit/agents-plugin-openai";
-import { z } from "zod";
+import type { VocabularyPhrase } from "@llp/contracts";
 
 import {
 	buildGreetingInstructions,
@@ -11,42 +11,53 @@ import {
 	buildTeacherVad,
 	resolveSttModel,
 } from "../utils/teacher-turn-config";
-import { emotionIntensitySchema, teacherEmotionSchema } from "@llp/contracts";
 
-import { publishEmotion, requireEmotionPublisher } from "./emotion";
-import { parseTeacherJobMetadata } from "./parse-job-metadata";
 import { ReactionController } from "./reaction-controller";
-
-const emotionToolSchema = z.object({
-	emotion: teacherEmotionSchema,
-	intensity: emotionIntensitySchema.optional(),
-});
+import { createAddVocabularyTool } from "./tools/add-vocabulary";
+import type { TeacherNotebook } from "./tools/teacher-notebook";
+import { createSetEmotionTool } from "./tools/set-emotion";
+import { parseTeacherJobMetadata } from "./utils/parse-job-metadata";
+import { requireEmotionPublisher } from "./utils/publish-emotion";
+import { fetchCallVocabulary } from "./utils/speaking-api-client";
 
 export default defineAgent({
 	entry: async (ctx: JobContext) => {
 		const metadata = parseTeacherJobMetadata(ctx.job.metadata);
-		const instructions = buildTeacherInstructions(metadata);
+		let vocabularyPhrases: VocabularyPhrase[] = [];
+		try {
+			vocabularyPhrases = await fetchCallVocabulary({
+				callId: metadata.callId,
+			});
+		} catch {
+			vocabularyPhrases = [];
+		}
+
+		const instructionInput = {
+			...metadata,
+			vocabularyPhrases,
+		};
+		const instructions = buildTeacherInstructions(instructionInput);
 		await ctx.connect();
 		const publisher = requireEmotionPublisher(ctx.room.localParticipant);
 		const reactions = new ReactionController(publisher);
 
-		const setEmotion = llm.tool({
-			description:
-				"Silently update the teacher's on-screen facial emotion before speaking. Never mention this tool, the emotion name, or your face in spoken audio.",
-			parameters: emotionToolSchema,
-			execute: async ({ emotion, intensity }) => {
-				await publishEmotion({
-					publisher,
-					message: { emotion, intensity, source: "reply" },
-				});
-				return "ok";
-			},
+		const notebook: TeacherNotebook = {
+			instructionInput,
+			agentRef: { current: null },
+		};
+
+		const setEmotion = createSetEmotionTool(publisher);
+		const addVocabulary = createAddVocabularyTool({
+			publisher,
+			callId: metadata.callId,
+			notebook,
 		});
 
 		const agent = new voice.Agent({
 			instructions,
-			tools: { set_emotion: setEmotion },
+			tools: { set_emotion: setEmotion, add_vocabulary: addVocabulary },
 		});
+		notebook.agentRef.current = agent;
 
 		const vad = buildTeacherVad();
 		const session = new voice.AgentSession({
@@ -83,7 +94,7 @@ export default defineAgent({
 
 		await session.start({ agent, room: ctx.room });
 		await session.generateReply({
-			instructions: buildGreetingInstructions(metadata),
+			instructions: buildGreetingInstructions(instructionInput),
 		});
 	},
 });

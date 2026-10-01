@@ -13,9 +13,8 @@ describe("teacher instructions", () => {
 		});
 		expect(instructions).toContain("practicing English at CEFR level B1");
 		expect(instructions).not.toContain("practice scenario");
-		expect(instructions).toContain(
-			"Never mention tools, set_emotion, facial expressions, emotions, intensity, or voice processing.",
-		);
+		expect(instructions).toContain("add_vocabulary");
+		expect(instructions).toContain("vocabulary deck is empty");
 		expect(instructions).toContain(
 			"At the start of every spoken reply, call set_emotion before you speak.",
 		);

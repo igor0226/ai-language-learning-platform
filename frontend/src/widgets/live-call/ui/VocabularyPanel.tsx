@@ -23,8 +23,9 @@ export function VocabularyPanel({
 						</p>
 					) : phrases.length === 0 ? (
 						<p className="text-xs text-muted-foreground">
-							No saved phrases in your notebook yet. Add words from the
-							vocabulary sheet on other pages.
+							No saved phrases yet. Your teacher can add words during the call,
+							or you can save them from the vocabulary sheet elsewhere in the
+							app.
 						</p>
 					) : (
 						phrases.map((phrase) => (

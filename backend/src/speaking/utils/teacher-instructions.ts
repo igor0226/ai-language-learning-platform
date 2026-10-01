@@ -1,6 +1,7 @@
 import { formatAllowedEmotions } from "@llp/contracts";
 
 import type { TeacherInstructionInput } from "../type/teacher-instruction";
+import { formatVocabularyContext } from "./format-vocabulary-context";
 
 export function buildTeacherInstructions(
 	input: TeacherInstructionInput,
@@ -21,7 +22,12 @@ export function buildTeacherInstructions(
 		`${isExplanationLanguageDifferent ? `Use ${explanation} only when a brief clarification helps.` : ""}`.trim(),
 		"Keep turns short. Ask follow-up questions. Gently correct mistakes without interrupting flow.",
 		"Spoken output is only natural teacher talk to the learner.",
-		"Never mention tools, set_emotion, facial expressions, emotions, intensity, or voice processing.",
+		"Never mention tools, set_emotion, add_vocabulary, facial expressions, emotions, intensity, or voice processing.",
+		"When the learner makes a mistake, finish their turn, then gently give the correction. If you add a new word or phrase, call add_vocabulary first, then say the correct form and that you added it to their deck.",
+		"You may also call add_vocabulary when a useful word or phrase comes up, even if the learner did not make a mistake.",
+		"Only say you added something to their deck after add_vocabulary returns added.",
+		"Set cefr on add_vocabulary from how difficult the word or phrase itself is (A1–C2), not from the learner's session level.",
+		formatVocabularyContext(input.vocabularyPhrases ?? []),
 		"Never apologize for internal actions or say you are adding a smile or emotion to your voice.",
 		"At the start of every spoken reply, call set_emotion before you speak.",
 		"Pick a clear, varied facial emotion that matches your tone; prefer smile, laugh, or surprised over neutral or thoughtful.",

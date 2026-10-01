@@ -8,6 +8,10 @@ http://app.llp-test.com {
 app.llp-test.com {
 	tls /certs/llp-test.com.pem /certs/llp-test.com-key.pem
 
+	handle /api/agent/* {
+		respond 404
+	}
+
 	handle /api/* {
 		reverse_proxy backend:3001
 	}

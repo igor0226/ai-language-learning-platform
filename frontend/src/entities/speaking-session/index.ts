@@ -20,3 +20,4 @@ export { formatSpeakingCallStatus } from "./utils/format-speaking-call-status";
 export { formatSpeakingTopicText } from "./utils/format-speaking-topic-text";
 export { parseCefrLevel } from "./utils/parse-cefr-level";
 export { parseEmotionMessage } from "./utils/parse-emotion-message";
+export { parseVocabularyMessage } from "./utils/parse-vocabulary-message";
