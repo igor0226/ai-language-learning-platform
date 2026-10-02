@@ -16,9 +16,25 @@ describe("teacher instructions", () => {
 		expect(instructions).toContain("add_vocabulary");
 		expect(instructions).toContain("vocabulary deck is empty");
 		expect(instructions).toContain(
-			"At the start of every spoken reply, call set_emotion before you speak.",
+			"If the learner asks to save, add, remember, or put a word or phrase in their deck",
 		);
+		expect(instructions).toContain("Do not stop after set_emotion");
+		expect(instructions).toContain("already_in_deck");
+		expect(instructions).toContain("not_saved");
+		expect(instructions).toContain(
+			"Do not call add_vocabulary for a word or phrase the learner already used correctly.",
+		);
+		expect(instructions).toContain("Do not say it was added earlier");
+		expect(instructions).not.toContain(
+			"even if the learner did not make a mistake",
+		);
+		expect(instructions).toContain(
+			"During each spoken reply, call set_emotion in the same turn as your answer",
+		);
+		expect(instructions).not.toContain("before you speak");
 		expect(instructions).toContain("Prefer intensity 2 or 3");
+		expect(instructions).toContain("Never stall");
+		expect(instructions).toContain("will be ready to continue");
 		expect(
 			buildGreetingInstructions({
 				sourceLanguage: "English",
@@ -33,6 +49,18 @@ describe("teacher instructions", () => {
 		).toContain(
 			"Do not mention set_emotion, tools, or facial expressions in your spoken greeting.",
 		);
+		expect(
+			buildGreetingInstructions({
+				sourceLanguage: "English",
+				languageLevel: "B1",
+			}),
+		).toContain("Greet them immediately");
+		expect(
+			buildGreetingInstructions({
+				sourceLanguage: "English",
+				languageLevel: "B1",
+			}),
+		).not.toContain("Call set_emotion first");
 	});
 
 	it("mixes the topic into system and greeting instructions", () => {

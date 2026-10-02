@@ -1,10 +1,15 @@
 import { llm } from "@livekit/agents";
-import { languageLevelInputSchema } from "@llp/contracts";
+import {
+	type AgentAddVocabularyBody,
+	type AgentAddVocabularyResult,
+	languageLevelInputSchema,
+} from "@llp/contracts";
 import { z } from "zod";
 
+import { normalizeVocabularyTerm } from "../../utils/normalize-vocabulary-term";
 import { buildTeacherInstructions } from "../../utils/teacher-instructions";
-import { publishVocabulary } from "../utils/publish-vocabulary";
 import type { EmotionPublisher } from "../utils/publish-emotion";
+import { publishVocabulary } from "../utils/publish-vocabulary";
 import { addCallVocabulary } from "../utils/speaking-api-client";
 import type { TeacherNotebook } from "./teacher-notebook";
 
@@ -22,37 +27,74 @@ export function createAddVocabularyTool(input: {
 }) {
 	return llm.tool({
 		description:
-			"Save a new word or phrase to the learner's vocabulary deck. Call before saying you added it. Skip if the term is already in the deck context.",
+			"Save a word or phrase to the learner's vocabulary deck. Call only when correcting a mistake or when the learner explicitly asks to save a term. Do not call it for a term the learner already used correctly. Skip terms already in the deck context.",
 		parameters: addVocabularyToolSchema,
-		execute: async ({ term, cefr, definition, exampleSentence }) => {
-			const result = await addCallVocabulary({
+		execute: async ({ term, cefr, definition, exampleSentence }, { ctx }) => {
+			const existing = findDeckTerm(input.notebook, term);
+			if (existing) {
+				return { status: "already_in_deck" as const, term: existing };
+			}
+			const result = await savePhrase({
 				callId: input.callId,
 				body: { term, cefr, definition, exampleSentence },
 			});
-			if (result.status === "already_in_deck") {
-				return result;
+			await ctx.update(result);
+			if (result.status === "added") {
+				await rememberSavedPhrase({
+					publisher: input.publisher,
+					notebook: input.notebook,
+					phrase: result.phrase,
+				});
 			}
-			const phrases = [
-				...(input.notebook.instructionInput.vocabularyPhrases ?? []),
-				result.phrase,
-			];
-			input.notebook.instructionInput.vocabularyPhrases = phrases;
-			await publishVocabulary({
-				publisher: input.publisher,
-				message: {
-					term: result.phrase.term,
-					cefr: result.phrase.cefr,
-					definition: result.phrase.definition,
-					exampleSentence: result.phrase.exampleSentence,
-				},
-			});
-			const agent = input.notebook.agentRef.current;
-			if (agent) {
-				await agent.updateInstructions(
-					buildTeacherInstructions(input.notebook.instructionInput),
-				);
-			}
-			return result;
+			return undefined;
 		},
 	});
+}
+
+function findDeckTerm(
+	notebook: TeacherNotebook,
+	term: string,
+): string | undefined {
+	const normalized = normalizeVocabularyTerm(term);
+	return notebook.instructionInput.vocabularyPhrases?.find(
+		(phrase) => normalizeVocabularyTerm(phrase.term) === normalized,
+	)?.term;
+}
+
+async function savePhrase(input: {
+	callId: string;
+	body: AgentAddVocabularyBody;
+}): Promise<AgentAddVocabularyResult | { status: "not_saved"; term: string }> {
+	try {
+		return await addCallVocabulary(input);
+	} catch (error) {
+		return { status: "not_saved", term: input.body.term.trim() };
+	}
+}
+
+async function rememberSavedPhrase(input: {
+	publisher: EmotionPublisher;
+	notebook: TeacherNotebook;
+	phrase: Extract<AgentAddVocabularyResult, { status: "added" }>["phrase"];
+}): Promise<void> {
+	input.notebook.instructionInput.vocabularyPhrases = [
+		...(input.notebook.instructionInput.vocabularyPhrases ?? []),
+		input.phrase,
+	];
+	await publishVocabulary({
+		publisher: input.publisher,
+		message: {
+			term: input.phrase.term,
+			cefr: input.phrase.cefr,
+			definition: input.phrase.definition,
+			exampleSentence: input.phrase.exampleSentence,
+		},
+	});
+	const agent = input.notebook.agentRef.current;
+	if (!agent) {
+		return;
+	}
+	await agent.updateInstructions(
+		buildTeacherInstructions(input.notebook.instructionInput),
+	);
 }

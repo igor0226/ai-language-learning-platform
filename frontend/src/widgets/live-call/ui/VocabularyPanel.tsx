@@ -14,8 +14,8 @@ export function VocabularyPanel({
 	isLoading = false,
 }: VocabularyPanelProps) {
 	return (
-		<div className="flex flex-1 flex-col">
-			<ScrollArea className="flex-1">
+		<div className="min-h-0 flex-1">
+			<ScrollArea className="h-full">
 				<div className="space-y-3 p-4">
 					{isLoading ? (
 						<p className="text-xs text-muted-foreground">
