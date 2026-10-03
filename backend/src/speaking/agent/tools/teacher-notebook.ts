@@ -1,8 +1,17 @@
-import type { voice } from "@livekit/agents";
-
 import type { TeacherInstructionInput } from "../../type/teacher-instruction";
 
 export type TeacherNotebook = {
 	instructionInput: TeacherInstructionInput;
-	agentRef: { current: voice.Agent | null };
+	pendingTerms: Set<string>;
+	settledTerms: Set<string>;
 };
+
+export function createTeacherNotebook(
+	instructionInput: TeacherInstructionInput,
+): TeacherNotebook {
+	return {
+		instructionInput,
+		pendingTerms: new Set(),
+		settledTerms: new Set(),
+	};
+}

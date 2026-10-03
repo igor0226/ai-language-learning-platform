@@ -14,7 +14,7 @@ import {
 
 import { ReactionController } from "./reaction-controller";
 import { createAddVocabularyTool } from "./tools/add-vocabulary";
-import type { TeacherNotebook } from "./tools/teacher-notebook";
+import { createTeacherNotebook } from "./tools/teacher-notebook";
 import { createSetEmotionTool } from "./tools/set-emotion";
 import { parseTeacherJobMetadata } from "./utils/parse-job-metadata";
 import { requireEmotionPublisher } from "./utils/publish-emotion";
@@ -41,10 +41,7 @@ export default defineAgent({
 		const publisher = requireEmotionPublisher(ctx.room.localParticipant);
 		const reactions = new ReactionController(publisher);
 
-		const notebook: TeacherNotebook = {
-			instructionInput,
-			agentRef: { current: null },
-		};
+		const notebook = createTeacherNotebook(instructionInput);
 
 		const setEmotion = createSetEmotionTool(publisher);
 		const addVocabulary = createAddVocabularyTool({
@@ -57,8 +54,6 @@ export default defineAgent({
 			instructions,
 			tools: { set_emotion: setEmotion, add_vocabulary: addVocabulary },
 		});
-		notebook.agentRef.current = agent;
-
 		const vad = buildTeacherVad();
 		const session = new voice.AgentSession({
 			vad,
