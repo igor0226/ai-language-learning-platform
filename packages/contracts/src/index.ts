@@ -43,3 +43,12 @@ export {
 	type TeacherEmotion,
 	type TeacherEmotionMessage,
 } from "./teacher-emotion";
+export {
+	TEACHER_VOCABULARY_TOPIC,
+	agentAddVocabularyBodySchema,
+	agentAddVocabularyResultSchema,
+	teacherVocabularyMessageSchema,
+	type AgentAddVocabularyBody,
+	type AgentAddVocabularyResult,
+	type TeacherVocabularyMessage,
+} from "./teacher-vocabulary";

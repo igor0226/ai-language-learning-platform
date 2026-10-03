@@ -1,4 +1,7 @@
-import type { TeacherEmotionMessage } from "@llp/contracts";
+import type {
+	TeacherEmotionMessage,
+	TeacherVocabularyMessage,
+} from "@llp/contracts";
 import type {
 	ConnectionStep,
 	CreateCallRequest,
@@ -26,6 +29,7 @@ export async function joinLiveCall(input: {
 	onCallId: (callId: string) => void;
 	onTeacherAudio: (stream: MediaStream | null) => void;
 	onTeacherEmotion: (message: TeacherEmotionMessage) => void;
+	onTeacherVocabulary: (message: TeacherVocabularyMessage) => void;
 }): Promise<LiveCallJoinResult> {
 	input.onStep("permissions");
 	const credentials = await loadCredentials(input.attemptKey, input.request);
@@ -36,6 +40,7 @@ export async function joinLiveCall(input: {
 	const unbind = bindRoomEvents(room, {
 		onTeacherAudio: input.onTeacherAudio,
 		onTeacherEmotion: input.onTeacherEmotion,
+		onTeacherVocabulary: input.onTeacherVocabulary,
 	});
 	input.onStep("ice_negotiation");
 	await room.connect(credentials.livekitUrl, credentials.token);

@@ -37,7 +37,7 @@ export function AppShell({ children }: AppShellProps) {
 							<span className="appShellMark">LS</span>
 							<span className="appShellBrandText">
 								<span className="appShellBrandName">Language Studio</span>
-								<span className="appShellBrandMeta">v2.4 · B2 Fluency</span>
+								<span className="appShellBrandMeta">v1 Alpha · B2 Fluency</span>
 							</span>
 						</Link>
 						<AppNavLinks pathname={pathname} className="appShellNav" />

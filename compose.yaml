@@ -130,6 +130,7 @@ services:
         required: false
     environment:
       LIVEKIT_URL: ws://livekit:7880
+      SPEAKING_API_URL: http://backend:3001
       CHOKIDAR_USEPOLLING: "true"
       NODE_ENV: development
     volumes:
@@ -139,6 +140,8 @@ services:
       - backend_pkg_node_modules:/repo/backend/node_modules
       - contracts_node_modules:/repo/packages/contracts/node_modules
     depends_on:
+      backend:
+        condition: service_started
       livekit:
         condition: service_started
     command: sh -c "npm run build -w @llp/contracts --prefix /repo && npm run start:agent:dev"

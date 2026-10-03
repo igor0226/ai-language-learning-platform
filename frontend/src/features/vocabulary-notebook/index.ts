@@ -1,5 +1,6 @@
 export { useCreateVocabularyPhrase } from "./api/useCreateVocabularyPhrase";
 export { useDeleteVocabularyPhrase } from "./api/useDeleteVocabularyPhrase";
+export { useTeacherVocabularyNotification } from "./api/useTeacherVocabularyNotification";
 export { useUpdateVocabularyPhrase } from "./api/useUpdateVocabularyPhrase";
 export { useVocabularyPhrases } from "./api/useVocabularyPhrases";
 export { copyTextToClipboard } from "./lib/copy-text";
