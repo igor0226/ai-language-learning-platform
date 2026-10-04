@@ -10,6 +10,7 @@ export type {
 } from "./type";
 
 export { fetchSpeakingCalls } from "./api/fetchSpeakingCalls";
+export { speakingCallsQueryKey } from "./api/speaking-calls-query-key";
 export { useSpeakingCalls } from "./api/useSpeakingCalls";
 export {
 	CONNECTION_ERRORS,

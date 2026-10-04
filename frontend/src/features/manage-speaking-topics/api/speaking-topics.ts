@@ -8,10 +8,12 @@ import {
 	updateCallTopicBodySchema,
 } from "@llp/contracts";
 
-import { authFetch } from "@/shared/api/auth-fetch";
+import { type AuthFetchFn, authFetch } from "@/shared/api/auth-fetch";
 
-export async function fetchSpeakingTopics(): Promise<CallTopic[]> {
-	const response = await authFetch("/api/speaking/topics");
+export async function fetchSpeakingTopics(
+	fetchImpl: AuthFetchFn = authFetch,
+): Promise<CallTopic[]> {
+	const response = await fetchImpl("/api/speaking/topics");
 	if (!response.ok) {
 		throw new Error(`Failed to load topics (${response.status})`);
 	}

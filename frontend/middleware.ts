@@ -3,20 +3,14 @@ import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 
 import {
+	resolveAuthApiUrl,
+	sessionCookieName,
+} from "@/shared/api/resolve-auth-api-url";
+import {
 	buildUnauthenticatedRedirect,
 	isPublicPath,
 	resolveAuthenticatedPublicRedirect,
 } from "@/shared/lib/middleware-auth";
-
-const sessionCookieName = "llp.sid";
-
-function resolveAuthApiUrl(): string {
-	const base =
-		process.env.AUTH_API_URL ??
-		process.env.NEXT_PUBLIC_API_URL ??
-		"http://localhost:3001";
-	return base.replace(/\/$/, "");
-}
 
 async function hasValidSession(request: NextRequest): Promise<boolean> {
 	const sessionCookie = request.cookies.get(sessionCookieName);

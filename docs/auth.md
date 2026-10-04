@@ -28,6 +28,7 @@ See `backend/.env.example`:
 - `/login` — Google sign-in (the only public UI route)
 - Auth session uses `authFetch()` with `credentials: "include"`
 - Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`)
+- Server Components that prefetch authenticated data (e.g. `/listening`, `/speaking`) forward `llp.sid` to the same `AUTH_API_URL` host via `serverAuthFetch` in `frontend/src/shared/api/server-auth-fetch.ts`
 
 ### Frontend route gate
 

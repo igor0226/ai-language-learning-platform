@@ -48,6 +48,8 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 
 TanStack Query hook placement and Zustand rules: [`frontend/AGENTS.md`](../frontend/AGENTS.md). Examples: `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, `useSpeakingCalls`, `useVocabularyPhrases`, `useRetryVideo`.
 
+**SSR list prefetch:** `/listening` and `/speaking` are async App Router pages that prefetch into a TanStack Query cache on the server (`HydrationBoundary`), then hydrate the existing client hooks. Listening prefetches `GET /api/videos`; speaking prefetches topics and call history (session-scoped keys, same pattern as videos) so the first paint shows table rows instead of skeleton loaders.
+
 **Client errors:** React Query and upload XHR failures surface as Sonner toasts via global `QueryCache` / `MutationCache` handlers in `src/app/providers.tsx` (`notifyClientError`). The login OAuth redirect error stays an in-page `Alert`. Videos and speaking-calls tables show skeleton loading rows and a simple “Couldn’t load data.” placeholder when the first fetch fails; cached rows stay visible if a later poll fails.
 
 ## Tech stack
