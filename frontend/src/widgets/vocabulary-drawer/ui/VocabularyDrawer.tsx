@@ -16,6 +16,8 @@ import {
 	useVocabularyPhrases,
 	VOCABULARY_CEFR_LEVELS,
 } from "@/features/vocabulary-notebook";
+import { cn } from "@/shared/lib";
+import { useMdUp } from "@/shared/lib/use-md-up";
 import { Button } from "@/shared/ui/button";
 import { Input } from "@/shared/ui/input";
 import { ScrollArea } from "@/shared/ui/scroll-area";
@@ -69,6 +71,7 @@ export function VocabularyDrawer() {
 	const [editFormError, setEditFormError] = useState("");
 	const [copiedId, setCopiedId] = useState<string | null>(null);
 	const [deletingId, setDeletingId] = useState<string | null>(null);
+	const isMdUp = useMdUp();
 
 	const filteredPhrases = useMemo(
 		() => filterSavedPhrases(savedPhrases, searchQuery, selectedLevel),
@@ -159,9 +162,20 @@ export function VocabularyDrawer() {
 	return (
 		<Sheet open={isDrawerOpen} onOpenChange={(open) => !open && closeDrawer()}>
 			<SheetContent
-				side="right"
-				className="studioOverlaySurface flex w-full flex-col gap-0 border-l p-0 sm:max-w-lg"
+				side={isMdUp ? "right" : "bottom"}
+				className={cn(
+					"studioOverlaySurface flex flex-col gap-0 p-0",
+					isMdUp
+						? "h-full w-full border-l sm:max-w-lg"
+						: "safe-bottom max-h-[90dvh] w-full rounded-t-2xl border-x-0 border-b-0",
+				)}
 			>
+				{isMdUp ? null : (
+					<div
+						className="mx-auto mt-2 h-1 w-10 shrink-0 rounded-full bg-muted"
+						aria-hidden
+					/>
+				)}
 				<SheetHeader className="space-y-0 border-b border-border px-5 py-4 text-left">
 					<div className="flex items-start justify-between gap-3 pr-8">
 						<div className="flex items-center gap-3">
@@ -255,7 +269,7 @@ export function VocabularyDrawer() {
 					</div>
 				</div>
 
-				<ScrollArea className="flex-1">
+				<ScrollArea className="min-h-0 flex-1">
 					<div className="space-y-3 p-4">
 						{isPhrasesLoading ? (
 							<p className="py-12 text-center text-xs text-muted-foreground">

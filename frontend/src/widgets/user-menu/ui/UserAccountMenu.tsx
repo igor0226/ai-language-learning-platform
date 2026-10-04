@@ -53,7 +53,7 @@ export function UserAccountMenu() {
 					<span className="sr-only">Open account menu</span>
 				</Button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent align="end" className="w-56">
+			<DropdownMenuContent align="end" className="w-56" title="Account">
 				<DropdownMenuLabel className="font-normal">
 					<div className="flex flex-col space-y-1">
 						<p className="text-sm font-medium leading-none">{user.name}</p>

@@ -211,7 +211,7 @@ function renderTasksTableBody(input: RenderTasksTableBodyInput) {
 								<span className="sr-only">Open menu</span>
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
+						<DropdownMenuContent title="Task actions">
 							<DropdownMenuItem
 								onClick={() => input.router.push(`/listening/${video.id}`)}
 							>
