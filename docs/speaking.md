@@ -11,9 +11,8 @@ Live 1-on-1 AI teacher calls via self-hosted LiveKit (`livekit` in Compose) plus
 - `POST /api/speaking/livekit/webhook` — LiveKit `room_finished` / `participant_left` reconciliation.
 - Stale-call cron (`StaleCallWorkerService`) marks leftover `active` calls as `failed` (`endedReason: stale_room_missing`) when they are older than the grace period and the LiveKit room is gone.
 - Agent publishes teacher audio into the room, emotion JSON on data topic `teacher-emotion` (`source: "reply" | "reaction"`), and new vocabulary on `teacher-vocabulary` after a successful deck add. `set_emotion` returns `{ ok: true }` immediately and publishes that emotion in the background. A failed publish is logged and does not change the spoken reply.
-- Spoken turns, including the greeting, are at most 1–2 short sentences (maximum 20–25 spoken words). The teacher does not give grammar lectures or long explanations.
-- Each turn asks at most one question. The teacher does not combine questions with "and", "also", or "or", and waits after asking.
-- When the learner makes a mistake, that turn is only a one-sentence correction plus an immediate repeat prompt. The next conversational question waits until the following turn, after a brief praise once the learner repeats the correction.
+- Spoken turns, including the greeting, are at most 1–2 short sentences (maximum 20–25 spoken words). The teacher asks at most one question, then waits, and does not give grammar lectures or long explanations.
+- When the learner makes one meaningful error, that turn acknowledges it, gives the natural form, and asks for one repetition. It does not open a new topic question. After the learner repeats it, the next turn gives brief praise and one conversational question.
 - The teacher says "I'm adding it to your deck now." only after `add_vocabulary` returns `{ status: "adding" }`. It does not say that line for any other status, and a turn that only calls `set_emotion` does not save a phrase. The tool returns immediately and the worker saves in the background, leaves the session instructions unchanged, updates the in-memory deck, and publishes `teacher-vocabulary` after a successful save.
 
 ### Agent API (teacher worker)
