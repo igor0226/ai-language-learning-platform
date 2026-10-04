@@ -5,7 +5,7 @@ import * as React from "react";
 
 import { useMdUp } from "@/shared/lib/use-md-up";
 import { cn } from "@/shared/lib/utils";
-import { radixSurfaceEnterExit } from "./radix-content-motion";
+import { RADIX_SURFACE_ENTER_EXIT } from "./radix-content-motion";
 import {
 	Sheet,
 	SheetClose,
@@ -113,7 +113,7 @@ const DropdownMenuContent = React.forwardRef<
 					sideOffset={sideOffset}
 					className={cn(
 						"z-50 max-h-[var(--radix-dropdown-menu-content-available-height)] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover p-1 text-popover-foreground shadow-md origin-[--radix-dropdown-menu-content-transform-origin]",
-						radixSurfaceEnterExit,
+						RADIX_SURFACE_ENTER_EXIT,
 						className,
 					)}
 					{...props}

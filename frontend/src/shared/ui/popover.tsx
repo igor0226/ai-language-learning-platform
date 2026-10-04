@@ -4,7 +4,7 @@ import * as PopoverPrimitive from "@radix-ui/react-popover";
 import * as React from "react";
 
 import { cn } from "@/shared/lib/utils";
-import { radixSurfaceEnterExit } from "./radix-content-motion";
+import { RADIX_SURFACE_ENTER_EXIT } from "./radix-content-motion";
 
 const Popover = PopoverPrimitive.Root;
 
@@ -23,7 +23,7 @@ const PopoverContent = React.forwardRef<
 			sideOffset={sideOffset}
 			className={cn(
 				"z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none origin-[--radix-popover-content-transform-origin]",
-				radixSurfaceEnterExit,
+				RADIX_SURFACE_ENTER_EXIT,
 				className,
 			)}
 			{...props}

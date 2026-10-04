@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 import {
 	resolveAuthApiUrl,
-	sessionCookieName,
+	SESSION_COOKIE_NAME,
 } from "@/shared/api/resolve-auth-api-url";
 import {
 	buildUnauthenticatedRedirect,
@@ -13,7 +13,7 @@ import {
 } from "@/shared/lib/middleware-auth";
 
 async function hasValidSession(request: NextRequest): Promise<boolean> {
-	const sessionCookie = request.cookies.get(sessionCookieName);
+	const sessionCookie = request.cookies.get(SESSION_COOKIE_NAME);
 	if (!sessionCookie?.value) {
 		return false;
 	}
@@ -21,7 +21,7 @@ async function hasValidSession(request: NextRequest): Promise<boolean> {
 	try {
 		const response = await fetch(`${resolveAuthApiUrl()}/api/auth/me`, {
 			headers: {
-				Cookie: `${sessionCookieName}=${sessionCookie.value}`,
+				Cookie: `${SESSION_COOKIE_NAME}=${sessionCookie.value}`,
 			},
 			cache: "no-store",
 		});

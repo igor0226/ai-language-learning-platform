@@ -5,7 +5,7 @@ import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/shared/lib/utils";
-import { radixSurfaceEnterExit } from "./radix-content-motion";
+import { RADIX_SURFACE_ENTER_EXIT } from "./radix-content-motion";
 
 const Select = SelectPrimitive.Root;
 
@@ -82,7 +82,7 @@ const SelectContent = React.forwardRef<
 				sideOffset={sideOffset}
 				className={cn(
 					"relative z-50 max-h-[--radix-select-content-available-height] min-w-[8rem] overflow-y-auto overflow-x-hidden rounded-md border bg-popover text-popover-foreground shadow-md origin-[--radix-select-content-transform-origin]",
-					radixSurfaceEnterExit,
+					RADIX_SURFACE_ENTER_EXIT,
 					className,
 				)}
 				position={position}

@@ -7,4 +7,4 @@ export function resolveAuthApiUrl(): string {
 	return base.replace(/\/$/, "");
 }
 
-export const sessionCookieName = "llp.sid";
+export const SESSION_COOKIE_NAME = "llp.sid";
