@@ -1,8 +1,13 @@
 import { apiUrl } from "./api";
 
-export function authFetch(path: string, init?: RequestInit): Promise<Response> {
+export type AuthFetchFn = (
+	path: string,
+	init?: RequestInit,
+) => Promise<Response>;
+
+export const authFetch: AuthFetchFn = (path, init) => {
 	return fetch(apiUrl(path), {
 		...init,
 		credentials: "include",
 	});
-}
+};

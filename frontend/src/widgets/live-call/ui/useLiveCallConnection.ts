@@ -1,6 +1,9 @@
 "use client";
 
-import type { TeacherEmotionMessage } from "@llp/contracts";
+import type {
+	TeacherEmotionMessage,
+	TeacherVocabularyMessage,
+} from "@llp/contracts";
 import type { Room } from "livekit-client";
 import type {
 	ConnectionStep,
@@ -16,6 +19,7 @@ import {
 } from "react";
 
 import { endSpeakingCall } from "@/features/end-speaking-call";
+import { useTeacherVocabularyNotification } from "@/features/vocabulary-notebook";
 import { removeAttachedAudioElements } from "../utils/attach-remote-audio";
 import { isAbortError, isMicDenied } from "../utils/connection-errors";
 import { joinLiveCall } from "../utils/join-live-call";
@@ -30,6 +34,7 @@ const IDLE_TEACHER_EMOTION: TeacherEmotionMessage = {
 };
 
 export function useLiveCallConnection(request: CreateCallRequest) {
+	const notifyTeacherVocabulary = useTeacherVocabularyNotification();
 	const [step, setStep] = useState<ConnectionStep>("permissions");
 	const [phase, setPhase] = useState<LiveCallPhase>("connecting");
 	const [errorType, setErrorType] =
@@ -56,6 +61,7 @@ export function useLiveCallConnection(request: CreateCallRequest) {
 			setRoom,
 			setTeacherEmotion,
 			setTeacherAudioStream,
+			notifyTeacherVocabulary,
 			roomRef,
 			callIdRef,
 			unbindRef,
@@ -66,6 +72,7 @@ export function useLiveCallConnection(request: CreateCallRequest) {
 		request.explanationLanguage,
 		request.languageLevel,
 		request.topic,
+		notifyTeacherVocabulary,
 	]);
 
 	const retry = useCallback(() => {
@@ -105,6 +112,7 @@ function startConnection(input: {
 	setRoom: (room: Room | null) => void;
 	setTeacherEmotion: (message: TeacherEmotionMessage) => void;
 	setTeacherAudioStream: (stream: MediaStream | null) => void;
+	notifyTeacherVocabulary: (message: TeacherVocabularyMessage) => void;
 	roomRef: MutableRefObject<Room | null>;
 	callIdRef: MutableRefObject<string | null>;
 	unbindRef: MutableRefObject<() => void>;
@@ -174,6 +182,7 @@ async function runJoin(
 			},
 			onTeacherAudio,
 			onTeacherEmotion: input.setTeacherEmotion,
+			onTeacherVocabulary: input.notifyTeacherVocabulary,
 		});
 		if (controller.signal.aborted) {
 			joined.unbind();

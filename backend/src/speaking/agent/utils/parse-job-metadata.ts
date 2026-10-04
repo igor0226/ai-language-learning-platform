@@ -17,23 +17,28 @@ export type TeacherJobMetadata = {
 	topic?: string;
 };
 
+export class InvalidTeacherJobMetadataError extends Error {
+	constructor(reason: string) {
+		super(`Invalid teacher job metadata: ${reason}`);
+		this.name = "InvalidTeacherJobMetadataError";
+	}
+}
+
 export function parseTeacherJobMetadata(
 	raw: string | undefined,
 ): TeacherJobMetadata {
 	if (!raw?.trim()) {
-		return fallbackMetadata();
+		throw new InvalidTeacherJobMetadataError("metadata is missing");
 	}
-	const parsed = JobMetadataSchema.safeParse(JSON.parse(raw));
+	let json: unknown;
+	try {
+		json = JSON.parse(raw);
+	} catch {
+		throw new InvalidTeacherJobMetadataError("metadata is not valid JSON");
+	}
+	const parsed = JobMetadataSchema.safeParse(json);
 	if (!parsed.success) {
-		return fallbackMetadata();
+		throw new InvalidTeacherJobMetadataError("metadata failed validation");
 	}
 	return parsed.data;
-}
-
-function fallbackMetadata(): TeacherJobMetadata {
-	return {
-		callId: "unknown",
-		sourceLanguage: "English",
-		languageLevel: "B1",
-	};
 }

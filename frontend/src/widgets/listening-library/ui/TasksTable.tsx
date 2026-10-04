@@ -79,7 +79,7 @@ export function TasksTable({
 
 	return (
 		<div className="tasksTableWrap">
-			<Table>
+			<Table className="tasksTable">
 				<TableHeader>
 					<TableRow>
 						<TableHead className="w-10">
@@ -211,7 +211,7 @@ function renderTasksTableBody(input: RenderTasksTableBodyInput) {
 								<span className="sr-only">Open menu</span>
 							</Button>
 						</DropdownMenuTrigger>
-						<DropdownMenuContent align="end">
+						<DropdownMenuContent title="Task actions">
 							<DropdownMenuItem
 								onClick={() => input.router.push(`/listening/${video.id}`)}
 							>

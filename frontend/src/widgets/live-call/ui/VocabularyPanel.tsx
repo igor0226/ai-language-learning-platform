@@ -14,8 +14,8 @@ export function VocabularyPanel({
 	isLoading = false,
 }: VocabularyPanelProps) {
 	return (
-		<div className="flex flex-1 flex-col">
-			<ScrollArea className="flex-1">
+		<div className="min-h-0 flex-1">
+			<ScrollArea className="h-full">
 				<div className="space-y-3 p-4">
 					{isLoading ? (
 						<p className="text-xs text-muted-foreground">
@@ -23,8 +23,9 @@ export function VocabularyPanel({
 						</p>
 					) : phrases.length === 0 ? (
 						<p className="text-xs text-muted-foreground">
-							No saved phrases in your notebook yet. Add words from the
-							vocabulary sheet on other pages.
+							No saved phrases yet. Your teacher can add words during the call,
+							or you can save them from the vocabulary sheet elsewhere in the
+							app.
 						</p>
 					) : (
 						phrases.map((phrase) => (

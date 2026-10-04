@@ -6,6 +6,8 @@ Google OAuth via Nest with Postgres-backed session cookie `llp.sid`. Next.js mid
 
 **Public Nest routes:** `POST /api/speaking/livekit/webhook` (LiveKit reconciliation); auth OAuth/callback/me/logout as listed below.
 
+**Agent bearer gate (`/api/agent/*`):** routes for the LiveKit teacher worker only. Require `Authorization: Bearer <SPEAKING_INTERNAL_API_SECRET>` (timing-safe compare). Missing, wrong, or empty configured secret → `401`. The call owner is resolved from `teacher_calls` by `callId`; the worker never sends a session cookie. Browser traffic to `/api/agent/*` is blocked at Caddy on the public app origin — see [`local-dev.md`](local-dev.md).
+
 ## Backend routes
 
 - `GET /api/auth/google` — start OAuth flow
@@ -19,12 +21,14 @@ See `backend/.env.example`:
 
 - `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REDIRECT_URI`, `SESSION_SECRET`
 - Optional: `AUTH_SUCCESS_REDIRECT`, `AUTH_FAILURE_REDIRECT`, `SESSION_MAX_AGE_MS`
+- `SPEAKING_INTERNAL_API_SECRET` — bearer secret for `/api/agent/*` (teacher worker); see [`speaking.md`](speaking.md)
 
 ## Frontend
 
 - `/login` — Google sign-in (the only public UI route)
 - Auth session uses `authFetch()` with `credentials: "include"`
 - Next middleware checks `GET /api/auth/me` via `AUTH_API_URL` (Compose: `http://backend:3001`)
+- Server Components that prefetch authenticated data (e.g. `/listening`, `/speaking`) forward `llp.sid` to the same `AUTH_API_URL` host via `serverAuthFetch` in `frontend/src/shared/api/server-auth-fetch.ts`
 
 ### Frontend route gate
 

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { EmotionIntensity } from "@llp/contracts";
 
-import type { EmotionPublisher } from "./emotion";
+import type { EmotionPublisher } from "./utils/publish-emotion";
 import { ReactionController } from "./reaction-controller";
 
 vi.mock("./reaction-classifier", () => ({

@@ -1,3 +1,3 @@
-export function speakingTopicsQueryKey(userId: string | undefined) {
-	return ["speaking-topics", userId] as const;
+export function speakingTopicsQueryKey() {
+	return ["speaking-topics"] as const;
 }

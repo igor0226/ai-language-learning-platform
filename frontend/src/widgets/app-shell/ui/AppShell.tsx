@@ -8,6 +8,7 @@ import {
 	VocabularyDrawer,
 	VocabularyHeaderButton,
 } from "@/widgets/vocabulary-drawer";
+import { AppMobileTabBar } from "./AppMobileTabBar";
 import { AppNavLinks } from "./AppNavLinks";
 import "./AppShell.css";
 
@@ -37,7 +38,7 @@ export function AppShell({ children }: AppShellProps) {
 							<span className="appShellMark">LS</span>
 							<span className="appShellBrandText">
 								<span className="appShellBrandName">Language Studio</span>
-								<span className="appShellBrandMeta">v2.4 · B2 Fluency</span>
+								<span className="appShellBrandMeta">v1 Alpha · B2 Fluency</span>
 							</span>
 						</Link>
 						<AppNavLinks pathname={pathname} className="appShellNav" />
@@ -47,9 +48,9 @@ export function AppShell({ children }: AppShellProps) {
 						<UserAccountMenu />
 					</div>
 				</div>
-				<AppNavLinks pathname={pathname} className="appShellMobileNav" />
 			</header>
 			<div className="appShellMain">{children}</div>
+			<AppMobileTabBar pathname={pathname} />
 			<VocabularyDrawer />
 		</div>
 	);

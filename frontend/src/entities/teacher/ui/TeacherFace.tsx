@@ -35,7 +35,7 @@ type TeacherFaceProps = {
 	className?: string;
 };
 
-const teacherAvatarSrc = resolveImportedAssetSrc(teacherAvatar);
+const TEACHER_AVATAR_SRC = resolveImportedAssetSrc(teacherAvatar);
 
 export function TeacherFace({
 	emotion = DEFAULT_TEACHER_FACE_EMOTION,
@@ -80,7 +80,7 @@ function useTeacherFaceMarkup(
 	useEffect(() => {
 		const controller = new AbortController();
 
-		fetch(teacherAvatarSrc, { signal: controller.signal })
+		fetch(TEACHER_AVATAR_SRC, { signal: controller.signal })
 			.then((response) => response.text())
 			.then((svg) => {
 				const root = rootRef.current;

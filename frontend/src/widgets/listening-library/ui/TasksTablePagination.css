@@ -1,5 +1,5 @@
 .tasksPagination {
-	@apply flex items-center justify-between gap-4 pt-2;
+	@apply flex min-w-0 flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between sm:gap-4;
 }
 
 .tasksPaginationSelection {
@@ -7,7 +7,7 @@
 }
 
 .tasksPaginationControls {
-	@apply flex items-center gap-4;
+	@apply flex min-w-0 flex-wrap items-center gap-2 sm:gap-4;
 }
 
 .tasksPaginationPageSize {

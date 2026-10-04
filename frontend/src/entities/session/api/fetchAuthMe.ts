@@ -1,6 +1,6 @@
 import { type AuthUser, authUserSchema } from "@llp/contracts";
 
-import { authFetch } from "@/shared/api/auth-fetch";
+import { type AuthFetchFn, authFetch } from "@/shared/api/auth-fetch";
 
 export class AuthRequiredError extends Error {
 	constructor() {
@@ -9,8 +9,10 @@ export class AuthRequiredError extends Error {
 	}
 }
 
-export async function fetchAuthMe(): Promise<AuthUser> {
-	const response = await authFetch("/api/auth/me");
+export async function fetchAuthMe(
+	fetchImpl: AuthFetchFn = authFetch,
+): Promise<AuthUser> {
+	const response = await fetchImpl("/api/auth/me");
 	if (response.status === 401) {
 		throw new AuthRequiredError();
 	}

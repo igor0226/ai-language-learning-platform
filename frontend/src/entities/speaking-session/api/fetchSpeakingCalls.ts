@@ -2,12 +2,14 @@ import type { CallHistoryItem, SpeakingCall } from "../type";
 
 import { languageLevelSchema } from "@llp/contracts";
 
-import { authFetch } from "@/shared/api/auth-fetch";
+import { type AuthFetchFn, authFetch } from "@/shared/api/auth-fetch";
 import { isRecord } from "@/shared/lib";
 import { mapCallHistoryItem } from "../utils/map-call-history-item";
 
-export async function fetchSpeakingCalls(): Promise<SpeakingCall[]> {
-	const response = await authFetch("/api/speaking/calls");
+export async function fetchSpeakingCalls(
+	fetchImpl: AuthFetchFn = authFetch,
+): Promise<SpeakingCall[]> {
+	const response = await fetchImpl("/api/speaking/calls");
 	if (!response.ok) {
 		throw new Error("Failed to load speaking sessions");
 	}

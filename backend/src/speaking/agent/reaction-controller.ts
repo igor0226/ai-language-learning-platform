@@ -1,6 +1,5 @@
-import type { EmotionPublisher } from "./emotion";
-import { publishEmotion } from "./emotion";
-import { createDebouncedRunner } from "./debounce";
+import { createDebouncedRunner } from "./utils/debounce";
+import { type EmotionPublisher, publishEmotion } from "./utils/publish-emotion";
 import { ReactionClassifier } from "./reaction-classifier";
 
 export type TranscriptEvent = {

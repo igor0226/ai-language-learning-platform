@@ -1,9 +1,11 @@
 import type { VideoStatusResponse, VideosResponse } from "../type";
 
-import { authFetch } from "@/shared/api/auth-fetch";
+import { type AuthFetchFn, authFetch } from "@/shared/api/auth-fetch";
 
-export async function fetchVideos(): Promise<VideosResponse> {
-	const response = await authFetch("/api/videos");
+export async function fetchVideos(
+	fetchImpl: AuthFetchFn = authFetch,
+): Promise<VideosResponse> {
+	const response = await fetchImpl("/api/videos");
 	if (!response.ok) {
 		throw new Error("Failed to load videos");
 	}

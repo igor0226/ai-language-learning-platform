@@ -4,8 +4,8 @@ import * as React from "react";
 
 import { cn } from "@/shared/lib/utils";
 import {
-	radixOverlayEnterExit,
-	radixSurfaceEnterExit,
+	RADIX_OVERLAY_ENTER_EXIT,
+	RADIX_SURFACE_ENTER_EXIT,
 } from "./radix-content-motion";
 
 const Dialog = DialogPrimitive.Root;
@@ -21,7 +21,7 @@ const DialogOverlay = React.forwardRef<
 		ref={ref}
 		className={cn(
 			"fixed inset-0 z-50 bg-black/80",
-			radixOverlayEnterExit,
+			RADIX_OVERLAY_ENTER_EXIT,
 			className,
 		)}
 		{...props}
@@ -39,7 +39,7 @@ const DialogContent = React.forwardRef<
 			ref={ref}
 			className={cn(
 				"fixed inset-0 z-50 m-auto grid h-fit w-full max-w-lg gap-4 border border-border bg-background p-6 shadow-2xl duration-200 sm:rounded-lg",
-				radixSurfaceEnterExit,
+				RADIX_SURFACE_ENTER_EXIT,
 				className,
 			)}
 			{...props}

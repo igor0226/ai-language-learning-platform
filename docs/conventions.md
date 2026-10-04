@@ -23,6 +23,10 @@ Backend: each Nest module has its own `utils/` and, when types take space, `type
 
 Frontend: entity/slice types that occupy space live in `type/` (e.g. `entities/video/type/`), not in `utils/` or mixed into `model/` type dumps.
 
+## Constants
+
+Module-level immutable values (strings, numbers, arrays, objects, class-name tokens) use `UPPER_SNAKE_CASE`. Functions, hooks, React components/contexts, Next.js `metadata` / `viewport`, and mutable module state keep their usual names.
+
 ## Control flow in UI code
 
 - Do not nest ternary operators (`a ? b : c ? d : e`). Use `if`/`else`, early returns, or a small helper instead.

@@ -38,7 +38,7 @@ Humans running the same commands in a local terminal are unaffected.
 
 ## Local HTTPS (Compose + Caddy)
 
-- App: `https://app.llp-test.com` serves Next.js and proxies `/api/*` to Nest on the same origin (session cookies + SSR auth checks).
+- App: `https://app.llp-test.com` serves Next.js and proxies `/api/*` to Nest on the same origin (session cookies + SSR auth checks). `/api/agent/*` is answered with `404` at Caddy so the browser cannot reach teacher-worker routes; `teacher-agent` calls Nest at `http://backend:3001` on the Docker network instead.
 - Media signaling: `wss://media.llp-test.com`
 - One-time setup: `npm run dev:https-setup` then add `/etc/hosts` entries.
 - Direct ports `localhost:3000` / `:3001` remain for debugging.

@@ -7,7 +7,7 @@ import { fetchVideos } from "./video-api";
 export function useVideos() {
 	const query = useQuery({
 		queryKey: ["videos"],
-		queryFn: fetchVideos,
+		queryFn: () => fetchVideos(),
 		refetchInterval: 5000,
 	});
 

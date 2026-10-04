@@ -1,4 +1,7 @@
-import type { TeacherEmotionMessage } from "@llp/contracts";
+import type {
+	TeacherEmotionMessage,
+	TeacherVocabularyMessage,
+} from "@llp/contracts";
 
 import {
 	type RemoteParticipant,
@@ -14,11 +17,13 @@ import {
 	dispatchTeacherEmotion,
 	resolveDataTopic,
 } from "./dispatch-teacher-emotion";
+import { dispatchTeacherVocabulary } from "./dispatch-teacher-vocabulary";
 import { resolveTeacherAudioStream } from "./resolve-teacher-audio-stream";
 
 export type RoomEventHandlers = {
 	onTeacherAudio: (stream: MediaStream | null) => void;
 	onTeacherEmotion: (message: TeacherEmotionMessage) => void;
+	onTeacherVocabulary: (message: TeacherVocabularyMessage) => void;
 };
 
 export function bindRoomEvents(
@@ -48,10 +53,12 @@ export function bindRoomEvents(
 		kindOrTopic?: unknown,
 		topic?: string,
 	) => {
-		dispatchTeacherEmotion(
+		const resolvedTopic = resolveDataTopic(kindOrTopic, topic);
+		dispatchTeacherEmotion(payload, resolvedTopic, handlers.onTeacherEmotion);
+		dispatchTeacherVocabulary(
 			payload,
-			resolveDataTopic(kindOrTopic, topic),
-			handlers.onTeacherEmotion,
+			resolvedTopic,
+			handlers.onTeacherVocabulary,
 		);
 	};
 	const onPlayback = () => {

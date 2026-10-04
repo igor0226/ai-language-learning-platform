@@ -1,9 +1,16 @@
 .dashboardPage {
-	@apply mx-auto max-w-7xl space-y-8 px-6 py-8;
+	@apply mx-auto min-w-0 max-w-7xl space-y-6 px-4 py-6 sm:space-y-8 sm:px-6 sm:py-8 lg:px-8;
 }
 
 .dashboardTabs {
 	@apply border-b border-border;
+}
+
+@media (max-width: 768px) {
+	.dashboardTabs {
+		max-width: 100%;
+		overflow: auto;
+	}
 }
 
 .dashboardTabsList {
@@ -14,8 +21,12 @@
 	@apply rounded-none border-b-2 border-transparent px-4 py-2.5 text-sm data-[state=active]:border-foreground data-[state=active]:bg-transparent data-[state=active]:shadow-none;
 }
 
+.dashboardHeatmapScroll {
+	@apply w-full min-w-0 max-w-full touch-scroll overflow-x-auto pb-2;
+}
+
 .dashboardHeatmapGrid {
-	@apply grid min-w-[640px] grid-cols-10 gap-2;
+	@apply grid w-full grid-cols-10 gap-1.5 sm:w-max sm:min-w-[640px] sm:gap-2;
 }
 
 .heatmapCell-0 {

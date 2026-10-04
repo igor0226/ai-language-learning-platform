@@ -6,7 +6,7 @@ import { X } from "lucide-react";
 import * as React from "react";
 
 import { cn } from "@/shared/lib/utils";
-import { radixOverlayEnterExit } from "./radix-content-motion";
+import { RADIX_OVERLAY_ENTER_EXIT } from "./radix-content-motion";
 
 const Sheet = SheetPrimitive.Root;
 const SheetTrigger = SheetPrimitive.Trigger;
@@ -20,7 +20,7 @@ const SheetOverlay = React.forwardRef<
 	<SheetPrimitive.Overlay
 		className={cn(
 			"fixed inset-0 z-50 bg-black/80",
-			radixOverlayEnterExit,
+			RADIX_OVERLAY_ENTER_EXIT,
 			className,
 		)}
 		{...props}

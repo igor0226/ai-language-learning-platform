@@ -1,5 +1,9 @@
 .tasksTableWrap {
-	@apply border border-border rounded-sm overflow-hidden;
+	@apply min-w-0 max-w-full touch-scroll overflow-x-auto rounded-sm border border-border;
+}
+
+.tasksTable {
+	@apply min-w-[640px];
 }
 
 .tasksTableRow {

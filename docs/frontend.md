@@ -48,6 +48,8 @@ Client data fetching uses TanStack Query (poll list/status). Nest API base URL c
 
 TanStack Query hook placement and Zustand rules: [`frontend/AGENTS.md`](../frontend/AGENTS.md). Examples: `usePlaybackPhrases`, `useVideos`, `useVideoStatus`, `useSpeakingCalls`, `useVocabularyPhrases`, `useRetryVideo`.
 
+**SSR list prefetch:** `/listening` and `/speaking` are async App Router pages that prefetch into a TanStack Query cache on the server (`HydrationBoundary`), then hydrate the existing client hooks. Listening prefetches `GET /api/videos`; speaking prefetches topics and call history (session-scoped keys, same pattern as videos) so the first paint shows table rows instead of skeleton loaders.
+
 **Client errors:** React Query and upload XHR failures surface as Sonner toasts via global `QueryCache` / `MutationCache` handlers in `src/app/providers.tsx` (`notifyClientError`). The login OAuth redirect error stays an in-page `Alert`. Videos and speaking-calls tables show skeleton loading rows and a simple “Couldn’t load data.” placeholder when the first fetch fails; cached rows stay visible if a later poll fails.
 
 ## Tech stack
@@ -64,6 +66,9 @@ TanStack Query hook placement and Zustand rules: [`frontend/AGENTS.md`](../front
 
 - Do not nest ternary operators in JSX or render helpers; use early returns or a small helper function (see [`conventions.md`](conventions.md)).
 - Prefer ready-made `src/shared/ui/*` before building custom controls.
+- **Menus and drawers:** Below `md`, `DropdownMenu` opens as a bottom sheet; from `md` up it stays a floating dropdown. The vocabulary notebook is a right-side drawer on desktop and a bottom sheet on mobile (`useMdUp` in `src/shared/lib/use-md-up.ts`). Selects and popovers stay their own primitives.
+- **Brand:** Midnight plum is the fixed product palette (no user-facing theme switcher). Tailwind exposes a static `brand` scale (50–950) in `tailwind.config.js`. Light studio pages (`.studioPage` / `.studioOverlaySurface` in `src/widgets/app-shell/ui/studio-page.css`) map shadcn `--primary` and `--ring` to plum 700 / 600 so buttons and focus rings match; use `brand-*` utilities for tints (e.g. active nav `bg-brand-50 text-brand-700`). The immersive live-call shell (`.callPage`) keeps light `--primary` for dock controls; status accents use `brand-*` on the dark stage.
+- **Mobile:** Root layout sets `viewportFit: cover`. A small Tailwind plugin in `tailwind.config.js` registers `safe-top`, `safe-bottom`, and `touch-scroll` (safe-area padding and contained horizontal scrolling). Below `md`, main app routes use a fixed bottom tab bar (main nav + vocabulary) instead of a header nav scroller; page content gets bottom padding so it clears the bar. Tables and toolbars use responsive padding and horizontal scroll on narrow viewports.
 - Theme tokens are defined in `:root` and mapped in `tailwind.config.js` (e.g. `background`, `foreground`, `card`, `border`, `muted-foreground`, `destructive`, `ring`).
 - In TSX, use utilities (`bg-card`, `text-muted-foreground`, `gap-2`, `p-4`).
 - Colocate CSS with components; do not dump styles into a single global file.
