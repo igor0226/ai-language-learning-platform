@@ -79,7 +79,7 @@ export function TasksTable({
 
 	return (
 		<div className="tasksTableWrap">
-			<Table>
+			<Table className="tasksTable">
 				<TableHeader>
 					<TableRow>
 						<TableHead className="w-10">

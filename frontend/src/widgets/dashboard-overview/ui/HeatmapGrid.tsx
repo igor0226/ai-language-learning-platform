@@ -8,7 +8,7 @@ type HeatmapGridProps = {
 
 export function HeatmapGrid({ entries }: HeatmapGridProps) {
 	return (
-		<div className="overflow-x-auto pb-2">
+		<div className="dashboardHeatmapScroll">
 			<div className="dashboardHeatmapGrid">
 				{entries.map((entry) => (
 					<HeatmapCell key={entry.date} entry={entry} />

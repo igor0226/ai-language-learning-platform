@@ -30,8 +30,8 @@ export function CallHistoryTable({
 	emptyLabel = "No speaking sessions recorded yet. Start your first call above.",
 }: CallHistoryTableProps) {
 	return (
-		<div className="overflow-hidden rounded-lg border border-border">
-			<Table>
+		<div className="touch-scroll overflow-x-auto rounded-lg border border-border">
+			<Table className="min-w-[640px]">
 				<TableHeader>
 					<TableRow>
 						<TableHead className="pl-4 text-left">Status</TableHead>

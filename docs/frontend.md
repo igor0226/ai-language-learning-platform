@@ -66,6 +66,8 @@ TanStack Query hook placement and Zustand rules: [`frontend/AGENTS.md`](../front
 
 - Do not nest ternary operators in JSX or render helpers; use early returns or a small helper function (see [`conventions.md`](conventions.md)).
 - Prefer ready-made `src/shared/ui/*` before building custom controls.
+- **Brand:** Midnight plum is the fixed product palette (no user-facing theme switcher). Tailwind exposes a static `brand` scale (50–950) in `tailwind.config.js`. Light studio pages (`.studioPage` / `.studioOverlaySurface` in `src/widgets/app-shell/ui/studio-page.css`) map shadcn `--primary` and `--ring` to plum 700 / 600 so buttons and focus rings match; use `brand-*` utilities for tints (e.g. active nav `bg-brand-50 text-brand-700`). The immersive live-call shell (`.callPage`) keeps light `--primary` for dock controls; status accents use `brand-*` on the dark stage.
+- **Mobile:** Root layout sets `viewportFit: cover`. A small Tailwind plugin in `tailwind.config.js` registers `safe-top`, `safe-bottom`, and `touch-scroll` (safe-area padding and contained horizontal scrolling). Below `md`, main app routes use a fixed bottom tab bar (main nav + vocabulary) instead of a header nav scroller; page content gets bottom padding so it clears the bar. Tables and toolbars use responsive padding and horizontal scroll on narrow viewports.
 - Theme tokens are defined in `:root` and mapped in `tailwind.config.js` (e.g. `background`, `foreground`, `card`, `border`, `muted-foreground`, `destructive`, `ring`).
 - In TSX, use utilities (`bg-card`, `text-muted-foreground`, `gap-2`, `p-4`).
 - Colocate CSS with components; do not dump styles into a single global file.

@@ -7,8 +7,8 @@
 	--card-foreground: 0 0% 9%;
 	--popover: 0 0% 100%;
 	--popover-foreground: 0 0% 9%;
-	--primary: 0 0% 9%;
-	--primary-foreground: 0 0% 98%;
+	--primary: 271 72% 47%;
+	--primary-foreground: 0 0% 100%;
 	--secondary: 0 0% 96%;
 	--secondary-foreground: 0 0% 9%;
 	--muted: 0 0% 96%;
@@ -17,11 +17,11 @@
 	--accent-foreground: 0 0% 9%;
 	--border: 0 0% 90%;
 	--input: 0 0% 90%;
-	--ring: 0 0% 9%;
+	--ring: 272 81% 56%;
 }
 
 .studioPage {
-	@apply min-h-screen bg-background text-foreground;
+	@apply min-h-screen bg-background text-foreground selection:bg-brand-100 selection:text-brand-900;
 }
 
 .studioOverlaySurface {

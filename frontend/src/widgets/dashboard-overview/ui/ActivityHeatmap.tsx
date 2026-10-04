@@ -21,8 +21,8 @@ export function ActivityHeatmap({ entries, streakDays }: ActivityHeatmapProps) {
 	const [dateRange, setDateRange] = useState<ActivityHeatmapDateRange>("30d");
 
 	return (
-		<Card>
-			<CardContent className="space-y-6 p-6">
+		<Card className="min-w-0">
+			<CardContent className="min-w-0 space-y-6 p-4 sm:p-6">
 				<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
 					<div>
 						<div className="flex items-center gap-2 text-muted-foreground">

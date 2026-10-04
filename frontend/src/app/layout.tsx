@@ -1,9 +1,13 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 
 import { AppShell } from "@/widgets/app-shell";
 import { Providers } from "./providers";
 
 import "./styles/globals.css";
+
+export const viewport: Viewport = {
+	viewportFit: "cover",
+};
 
 export const metadata: Metadata = {
 	description:

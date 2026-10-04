@@ -82,7 +82,7 @@ export function TasksToolbar({
 				</Button>
 			</div>
 
-			<Button asChild>
+			<Button asChild className="tasksToolbarAdd">
 				<Link href="/listening/upload">+ Add Task</Link>
 			</Button>
 		</div>

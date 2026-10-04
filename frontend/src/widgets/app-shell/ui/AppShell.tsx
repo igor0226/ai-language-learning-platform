@@ -8,6 +8,7 @@ import {
 	VocabularyDrawer,
 	VocabularyHeaderButton,
 } from "@/widgets/vocabulary-drawer";
+import { AppMobileTabBar } from "./AppMobileTabBar";
 import { AppNavLinks } from "./AppNavLinks";
 import "./AppShell.css";
 
@@ -47,9 +48,9 @@ export function AppShell({ children }: AppShellProps) {
 						<UserAccountMenu />
 					</div>
 				</div>
-				<AppNavLinks pathname={pathname} className="appShellMobileNav" />
 			</header>
 			<div className="appShellMain">{children}</div>
+			<AppMobileTabBar pathname={pathname} />
 			<VocabularyDrawer />
 		</div>
 	);
