@@ -49,3 +49,7 @@ Start it again with `-var instance_state=running`. Compute and the public IPv4 a
 ## Ingress
 
 [`helm/ingress-nginx/values.yaml`](../helm/ingress-nginx/values.yaml) installs the ingress-nginx chart as a DaemonSet on the node network, listening on ports 80 and 443. The Service stays `ClusterIP`, so AWS does not create a load balancer. Helm talks to the cluster through the same SSM tunnel as kubectl. With no Ingress rules yet, the public IP returns 404 from nginx.
+
+## Frontend image
+
+[`frontend/Dockerfile.prod`](../frontend/Dockerfile.prod) builds a Next.js standalone server. Compose keeps using [`frontend/Dockerfile`](../frontend/Dockerfile). `NEXT_PUBLIC_API_URL` is baked in at build time; the practice image points it at a hostname that does not exist yet, so `/login` can render and data calls fail. [`infra/environments/dev/ecr.tf`](../infra/environments/dev/ecr.tf) creates the ECR repository. [`helm/frontend`](../helm/frontend) runs that image behind the ingress. The cluster pulls it with a docker-registry secret named `ecr`. That secret expires after 12 hours. Creating the repository does not replace the EC2 instance.
