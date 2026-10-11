@@ -10,3 +10,11 @@ videos/*
 !backend/src/videos
 frontend/.env.local
 backend/.env
+
+.terraform/
+.kubeconfig
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
