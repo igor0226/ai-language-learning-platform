@@ -1,0 +1,36 @@
+FROM node:24-bookworm-slim AS build
+
+WORKDIR /repo
+
+COPY package.json package-lock.json ./
+COPY packages/contracts packages/contracts
+COPY backend/package.json backend/package.json
+COPY frontend/package.json frontend/package.json
+
+RUN npm ci -w frontend --include-workspace-root
+
+COPY frontend frontend
+
+WORKDIR /repo
+RUN npm run build -w @llp/contracts
+
+WORKDIR /repo/frontend
+ARG NEXT_PUBLIC_API_URL=https://api.llp.invalid
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+FROM node:24-bookworm-slim AS runner
+
+WORKDIR /app
+ENV NODE_ENV=production
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
+
+COPY --from=build /repo/frontend/.next/standalone ./
+COPY --from=build /repo/frontend/.next/static ./frontend/.next/static
+COPY --from=build /repo/frontend/public ./frontend/public
+
+EXPOSE 3000
+
+CMD ["node", "frontend/server.js"]
