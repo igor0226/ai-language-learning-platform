@@ -32,3 +32,8 @@ output "frontend_repository_url" {
   description = "ECR repository for the frontend image."
   value       = aws_ecr_repository.frontend.repository_url
 }
+
+output "backend_repository_url" {
+  description = "ECR repository for the backend and teacher-agent image."
+  value       = aws_ecr_repository.backend.repository_url
+}

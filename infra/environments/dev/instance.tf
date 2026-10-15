@@ -24,6 +24,34 @@ resource "aws_iam_role_policy_attachment" "ssm" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
 }
 
+resource "aws_iam_role_policy" "ecr_pull" {
+  name = "ecr-pull"
+  role = aws_iam_role.node.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["ecr:GetAuthorizationToken"]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer",
+        ]
+        Resource = [
+          aws_ecr_repository.frontend.arn,
+          aws_ecr_repository.backend.arn,
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_role_policy" "kubeconfig" {
   name = "kubeconfig"
   role = aws_iam_role.node.id
@@ -49,7 +77,7 @@ resource "aws_iam_instance_profile" "node" {
 
 resource "aws_instance" "node" {
   ami                         = data.aws_ssm_parameter.al2023_arm.value
-  instance_type               = "t4g.micro"
+  instance_type               = var.instance_type
   subnet_id                   = aws_subnet.public.id
   vpc_security_group_ids      = [aws_security_group.node.id]
   iam_instance_profile        = aws_iam_instance_profile.node.name
@@ -58,11 +86,12 @@ resource "aws_instance" "node" {
   user_data_replace_on_change = true
 
   metadata_options {
-    http_tokens = "required"
+    http_tokens                 = "required"
+    http_put_response_hop_limit = 2
   }
 
   root_block_device {
-    volume_size = 12
+    volume_size = 30
     volume_type = "gp3"
     encrypted   = true
   }

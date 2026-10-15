@@ -14,6 +14,12 @@ variable "environment_label" {
   }
 }
 
+variable "instance_type" {
+  description = "Instance size for k3s and the full app stack."
+  type        = string
+  default     = "t4g.medium"
+}
+
 variable "instance_state" {
   description = "Power state of the practice instance. Set to stopped between sessions."
   type        = string

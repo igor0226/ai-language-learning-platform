@@ -16,5 +16,6 @@ backend/.env
 *.tfstate
 *.tfstate.*
 *.tfplan
+*.auto.tfvars
 crash.log
 crash.*.log

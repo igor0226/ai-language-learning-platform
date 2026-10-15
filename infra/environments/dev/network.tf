@@ -74,6 +74,22 @@ resource "aws_security_group" "node" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
+  ingress {
+    description = "LiveKit RTC TCP"
+    from_port   = 7881
+    to_port     = 7881
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "LiveKit RTC UDP"
+    from_port   = 50000
+    to_port     = 50020
+    protocol    = "udp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   egress {
     description = "Outbound internet for Session Manager and later image pulls"
     from_port   = 0
