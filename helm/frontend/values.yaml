@@ -3,5 +3,3 @@ replicaCount: 1
 image:
   repository: ""
   tag: "latest"
-
-imagePullSecret: ecr

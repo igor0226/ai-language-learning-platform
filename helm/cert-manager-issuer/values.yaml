@@ -1,0 +1,8 @@
+email: ""
+
+issuer:
+  name: letsencrypt-public
+  accountPrivateKeySecretName: letsencrypt-public-account-key
+  server: https://acme-v02.api.letsencrypt.org/directory
+  profile: tlsserver
+  ingressClassName: nginx
