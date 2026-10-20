@@ -4,4 +4,10 @@ export type PostgresConfig = {
 	username: string;
 	password: string;
 	database: string;
+	ssl:
+		| false
+		| {
+				ca: string;
+				rejectUnauthorized: true;
+		  };
 };

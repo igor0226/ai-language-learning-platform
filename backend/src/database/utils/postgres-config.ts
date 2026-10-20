@@ -1,4 +1,5 @@
 import type { PostgresConfig } from "../type/postgres-config";
+import { getPostgresSsl } from "./postgres-ssl";
 
 export function getPostgresConfig(): PostgresConfig {
 	return {
@@ -7,5 +8,6 @@ export function getPostgresConfig(): PostgresConfig {
 		username: process.env.POSTGRES_USER ?? "postgres",
 		password: process.env.POSTGRES_PASSWORD ?? "postgres",
 		database: process.env.POSTGRES_DB ?? "video_streaming",
+		ssl: getPostgresSsl(),
 	};
 }

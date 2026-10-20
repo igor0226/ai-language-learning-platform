@@ -1,0 +1,3 @@
+backend/.env
+infra/environments/dev/terraform.tfvars
+infra/environments/dev/.kubeconfig

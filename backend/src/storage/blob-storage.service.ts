@@ -58,7 +58,11 @@ export class BlobStorageService {
 			await this.s3Client.send(
 				new HeadBucketCommand({ Bucket: this.s3Config.bucket }),
 			);
-		} catch {
+		} catch (error) {
+			// AWS buckets are provisioned by Terraform. Only local endpoints may create one.
+			if (!this.s3Config.endpoint || !isNotFoundError(error)) {
+				throw error;
+			}
 			await this.s3Client.send(
 				new CreateBucketCommand({ Bucket: this.s3Config.bucket }),
 			);
