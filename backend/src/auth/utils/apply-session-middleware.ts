@@ -19,6 +19,7 @@ export function applySessionMiddleware(app: INestApplication): void {
 					user: pg.username,
 					password: pg.password,
 					database: pg.database,
+					ssl: pg.ssl,
 				},
 				tableName: "session",
 				createTableIfMissing: false,

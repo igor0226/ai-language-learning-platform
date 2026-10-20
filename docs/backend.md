@@ -46,6 +46,8 @@ Credentials come from env (see `backend/.env.example`):
 
 In Docker Compose, backend uses `POSTGRES_HOST=postgres`. Host dev defaults to `localhost`.
 
+For RDS, set `POSTGRES_SSL=true` and `POSTGRES_SSL_CA_PATH` to a mounted AWS RDS CA bundle. Certificate verification stays enabled. These settings apply to TypeORM, migrations, and the session store. Local Compose leaves TLS disabled. AWS infrastructure and credential handling: [`deploy.md`](deploy.md#managed-data).
+
 **Tables** (see `src/models/`):
 
 - `videos` — video metadata (`VideoRecord` fields, required `userId` FK to `users`)
@@ -84,6 +86,8 @@ Blob artifacts are stored in an S3-compatible bucket using the same object keys 
 - `S3_REGION`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`
 - `S3_FORCE_PATH_STYLE` — `true` for MinIO (default when `S3_ENDPOINT` is set)
 - `MEDIA_WORKSPACE_ROOT` — local scratch dir for FFmpeg steps (download inputs → process → upload outputs) and temporary HTTP upload files under `http-uploads/`. Pipeline and upload writes stream to S3/MinIO via `BlobStorageService` (no full-file buffering in Node).
+
+When no custom S3 keys or endpoint are set, the AWS SDK uses its default credential chain (including the EC2 instance role). Explicit keys must be supplied as a pair; `S3_SESSION_TOKEN` optionally accompanies temporary credentials. Local endpoints keep MinIO's development defaults. AWS buckets must already exist; startup only checks access and never creates a bucket or conceals an access error as a bucket-creation attempt.
 
 Object keys (unchanged from the former filesystem layout):
 

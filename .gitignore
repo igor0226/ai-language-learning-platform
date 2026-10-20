@@ -19,3 +19,4 @@ backend/.env
 *.auto.tfvars
 crash.log
 crash.*.log
+helm/data/secrets.env

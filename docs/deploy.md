@@ -6,7 +6,7 @@ This document describes the durable AWS and Kubernetes design for the developmen
 
 | Tool | Owns |
 | --- | --- |
-| Terraform | AWS network, EC2, EBS, Elastic IP, Route 53, ECR, IAM, and instance power state |
+| Terraform | AWS network, EC2, EBS, Elastic IP, Route 53, ECR, RDS, S3, IAM, and EC2 power state |
 | Helm | Kubernetes releases and their configuration |
 | k3s | Kubernetes control plane and kubelet on the EC2 instance |
 
@@ -17,6 +17,8 @@ Terraform state is stored in the private, versioned S3 bucket created by [`infra
 The `llp-dev` AWS profile deploys regional resources in `eu-north-1`. [`infra/environments/dev`](../infra/environments/dev) creates one public-subnet VPC and one Amazon Linux 2023 Arm64 instance.
 
 The instance has a 30 GB encrypted gp3 root volume, an SSM instance role, and no SSH ingress. It can be stopped with Terraform without removing the EBS volume, Elastic IP, DNS records, or ECR repositories. A change to [`k3s-user-data.sh`](../infra/environments/dev/k3s-user-data.sh) replaces the instance because `user_data_replace_on_change` is enabled.
+
+The latest Amazon Linux AMI is selected when creating a node. AMI changes are ignored for an existing instance, so routine applies do not rebuild k3s when AWS publishes a new image. OS patching and deliberate image rebuilds are separate maintenance work.
 
 The security group exposes these ports:
 
@@ -57,3 +59,13 @@ When installed, [`helm/ingress-nginx/values.yaml`](../helm/ingress-nginx/values.
 cert-manager is an upstream Helm release. [`helm/cert-manager-issuer`](../helm/cert-manager-issuer) defines the `letsencrypt-public` `ClusterIssuer`, which uses Let's Encrypt's production service to issue browser-trusted certificates. It uses ACME HTTP-01 through the `nginx` ingress class and stores its account key in `letsencrypt-public-account-key`.
 
 A workload becomes public when its Helm chart creates a host-specific Ingress that references `letsencrypt-public` and a TLS secret. cert-manager then requests and renews the certificate.
+
+## Managed data
+
+[`rds.tf`](../infra/environments/dev/rds.tf) provisions Single-AZ RDS PostgreSQL 17 with encrypted storage, automated backups, TLS enforcement, deletion protection, and a final snapshot on deliberate deletion. Two private subnets satisfy the DB subnet-group requirement; there is no standby or NAT gateway. TCP 5432 is allowed only from the k3s node's security group. RDS logs are exported to CloudWatch with seven-day retention.
+
+RDS manages the administrator password in Secrets Manager; Terraform outputs only its ARN. The initial dev backend will use an operator-synchronized Kubernetes Secret and a mounted RDS CA bundle. Re-import the current password before backend deployments and after managed rotation, then restart consumers. This initial setup does not automatically synchronize Secrets Manager rotation into Kubernetes. A separate restricted runtime DB user remains future hardening. Connection settings: [`backend.md`](backend.md#postgresql).
+
+[`storage.tf`](../infra/environments/dev/storage.tf) provisions a private application S3 bucket, separate from Terraform state. It uses SSE-S3, disabled ACLs, Block Public Access, HTTPS-only access, and versioning. Noncurrent versions expire after 30 days; incomplete multipart uploads are aborted after seven days. Current objects have no automatic expiration. Terraform prevents bucket destruction. The node role has only bucket listing and object read/write/delete/multipart-abort access to this bucket; pods able to reach IMDS share that access.
+
+RDS and S3 survive EC2 replacement and stop/start. Stopping EC2 leaves RDS running; stop it separately if desired. RDS automatically starts again after seven stopped days. Storage, backups, S3 requests/transfers, and Secrets Manager can incur charges independently of EC2. Local Compose continues to run Postgres and MinIO; AWS has no `helm/data` release to install. This setup provisions new storage and does not migrate local or previously deployed data.

@@ -37,3 +37,34 @@ output "backend_repository_url" {
   description = "ECR repository for the backend and teacher-agent image."
   value       = aws_ecr_repository.backend.repository_url
 }
+
+output "db_instance_identifier" {
+  description = "RDS identifier for status checks and separate stop/start operations."
+  value       = aws_db_instance.app.identifier
+}
+
+output "db_host" {
+  description = "Private RDS DNS address, without the port."
+  value       = aws_db_instance.app.address
+}
+
+output "db_port" {
+  value = aws_db_instance.app.port
+}
+
+output "db_name" {
+  value = aws_db_instance.app.db_name
+}
+
+output "db_master_secret_arn" {
+  description = "ARN only; the password is managed by RDS in Secrets Manager."
+  value       = aws_db_instance.app.master_user_secret[0].secret_arn
+}
+
+output "media_bucket_name" {
+  value = aws_s3_bucket.media.id
+}
+
+output "media_bucket_region" {
+  value = aws_s3_bucket.media.region
+}

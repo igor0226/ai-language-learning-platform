@@ -85,6 +85,11 @@ resource "aws_instance" "node" {
   user_data                   = file("${path.module}/k3s-user-data.sh")
   user_data_replace_on_change = true
 
+  lifecycle {
+    # Use the latest AMI for new nodes; image updates require a deliberate rebuild.
+    ignore_changes = [ami]
+  }
+
   metadata_options {
     http_tokens                 = "required"
     http_put_response_hop_limit = 2

@@ -30,3 +30,9 @@ variable "instance_state" {
     error_message = "instance_state must be running or stopped."
   }
 }
+
+variable "db_instance_class" {
+  description = "RDS PostgreSQL instance class for the Single-AZ dev database."
+  type        = string
+  default     = "db.t4g.micro"
+}

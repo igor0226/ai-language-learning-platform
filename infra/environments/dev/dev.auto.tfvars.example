@@ -1,3 +1,4 @@
 domain_name = "lang-platform.online"
 
 # environment_label = "dev"
+# db_instance_class = "db.t4g.micro"
