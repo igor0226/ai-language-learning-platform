@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: livekit
+spec:
+  replicas: 1
+  # Only one process can bind the node's media ports.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: livekit
+  template:
+    metadata:
+      labels:
+        app: livekit
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      # Service discovery uses DNS; injected LIVEKIT_PORT clashes with the server's port setting.
+      enableServiceLinks: false
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 60
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      initContainers:
+        - name: render-config
+          image: busybox:1.37
+          command:
+            - sh
+            - /template/render-config.sh
+            - /template/livekit.yaml
+            - /config/livekit.yaml
+          env:
+            {{- range $key := list "LIVEKIT_API_KEY" "LIVEKIT_API_SECRET" }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.existingSecret | quote }}
+                  key: {{ $key }}
+            {{- end }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          volumeMounts:
+            - name: template
+              mountPath: /template
+              readOnly: true
+            - name: config
+              mountPath: /config
+      containers:
+        - name: livekit
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          args: ["--config", "/config/livekit.yaml"]
+          ports:
+            - name: signal
+              containerPort: 7880
+            - name: rtc-tcp
+              containerPort: 7881
+          startupProbe:
+            tcpSocket:
+              port: signal
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            tcpSocket:
+              port: signal
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: template
+          configMap:
+            name: livekit-template
+        - name: config
+          emptyDir:
+            medium: Memory
+            sizeLimit: 1Mi

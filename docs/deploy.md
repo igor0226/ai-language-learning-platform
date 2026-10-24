@@ -60,6 +60,12 @@ cert-manager is an upstream Helm release. [`helm/cert-manager-issuer`](../helm/c
 
 A workload becomes public when its Helm chart creates a host-specific Ingress that references `letsencrypt-public` and a TLS secret. cert-manager then requests and renews the certificate.
 
+## LiveKit
+
+[`helm/livekit`](../helm/livekit) runs one server with host networking and cluster DNS. It advertises Terraform's Elastic IP plus the internal candidate, uses TCP 7881 and UDP 50000–50020 for media, and exposes signaling internally at `livekit:7880`. Public signaling uses the media Ingress added with routing; no public port 7880 or TURN server is configured.
+
+The existing `llp-livekit` Secret holds `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET`, shared with the backend and teacher agent. An init container renders the config into an in-memory volume; credentials never enter Helm values or ConfigMaps. `helm/livekit/secrets.env` is excluded from Git, agent access, and chart packaging. Config changes roll the pod; Secret changes require a pod restart. Development mode is disabled, and webhooks target the backend's internal speaking endpoint. Room state is in memory; replacing the pod interrupts calls. Redis is unnecessary for this single-server setup.
+
 ## Managed data
 
 [`rds.tf`](../infra/environments/dev/rds.tf) provisions Single-AZ RDS PostgreSQL 17 with encrypted storage, automated backups, TLS enforcement, deletion protection, and a final snapshot on deliberate deletion. Two private subnets satisfy the DB subnet-group requirement; there is no standby or NAT gateway. TCP 5432 is allowed only from the k3s node's security group. RDS logs are exported to CloudWatch with seven-day retention.

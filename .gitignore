@@ -20,3 +20,4 @@ backend/.env
 crash.log
 crash.*.log
 helm/data/secrets.env
+helm/livekit/secrets.env
