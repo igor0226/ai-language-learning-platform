@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: media
+  annotations:
+    cert-manager.io/cluster-issuer: {{ .Values.clusterIssuer | quote }}
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: {{ .Values.mediaTimeoutSeconds | quote }}
+    nginx.ingress.kubernetes.io/proxy-send-timeout: {{ .Values.mediaTimeoutSeconds | quote }}
+spec:
+  ingressClassName: {{ .Values.ingressClassName | quote }}
+  tls:
+    - hosts:
+        - {{ required "Set mediaHost to Terraform media_fqdn" .Values.mediaHost | quote }}
+      secretName: {{ .Values.mediaTlsSecret | quote }}
+  rules:
+    - host: {{ .Values.mediaHost | quote }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: livekit
+                port:
+                  number: 7880

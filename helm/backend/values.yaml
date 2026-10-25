@@ -1,0 +1,38 @@
+image:
+  repository: "" # Terraform backend_repository_url
+  tag: "" # Unique tag built and pushed by the operator
+
+appHost: "" # Terraform app_fqdn
+mediaHost: "" # Terraform media_fqdn
+existingSecret: llp-backend
+databaseSecret: llp-database
+livekitSecret: llp-livekit
+rdsCaConfigMap: llp-rds-ca
+
+database:
+  host: "" # Terraform db_host
+  port: 5432
+  name: "" # Terraform db_name
+s3:
+  bucket: "" # Terraform media_bucket_name
+  region: ""
+
+backend:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi
+  workspaceSizeLimit: 4Gi
+
+teacherAgent:
+  enabled: true
+  model: gpt-realtime-1.5
+  voice: coral
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 1Gi

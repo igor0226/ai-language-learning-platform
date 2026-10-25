@@ -1,0 +1,20 @@
+appHost: "" # Terraform app_fqdn
+mediaHost: "" # Terraform media_fqdn
+ingressClassName: nginx
+clusterIssuer: letsencrypt-public
+appTlsSecret: llp-app-tls
+mediaTlsSecret: llp-media-tls
+
+# The API allows 1 GiB files; leave room for multipart framing.
+uploadBodySize: 1025m
+apiTimeoutSeconds: 300
+mediaTimeoutSeconds: 3600
+
+agentBlocker:
+  image: nginx/nginx-unprivileged:1.30.6-alpine
+  resources:
+    requests:
+      cpu: 10m
+      memory: 16Mi
+    limits:
+      memory: 64Mi

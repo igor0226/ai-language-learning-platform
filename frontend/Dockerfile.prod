@@ -7,7 +7,7 @@ COPY packages/contracts packages/contracts
 COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
 
-RUN npm ci -w frontend --include-workspace-root
+RUN HUSKY=0 npm ci -w frontend -w @llp/contracts --include-workspace-root --include=dev
 
 COPY frontend frontend
 
@@ -15,10 +15,10 @@ WORKDIR /repo
 RUN npm run build -w @llp/contracts
 
 WORKDIR /repo/frontend
-ARG NEXT_PUBLIC_API_URL=https://api.llp.invalid
+ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_TELEMETRY_DISABLED=1
-RUN npm run build
+RUN test -n "$NEXT_PUBLIC_API_URL" && npm run build
 
 FROM node:24-bookworm-slim AS runner
 
@@ -27,10 +27,11 @@ ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
 ENV PORT=3000
 
-COPY --from=build /repo/frontend/.next/standalone ./
-COPY --from=build /repo/frontend/.next/static ./frontend/.next/static
-COPY --from=build /repo/frontend/public ./frontend/public
+COPY --from=build --chown=node:node /repo/frontend/.next/standalone ./
+COPY --from=build --chown=node:node /repo/frontend/.next/static ./frontend/.next/static
+COPY --from=build --chown=node:node /repo/frontend/public ./frontend/public
 
+USER node
 EXPOSE 3000
 
 CMD ["node", "frontend/server.js"]

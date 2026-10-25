@@ -1,0 +1,66 @@
+{{- if .Values.teacherAgent.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: teacher-agent
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: teacher-agent
+  template:
+    metadata:
+      labels:
+        app: teacher-agent
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: 120
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+      containers:
+        - name: teacher-agent
+          image: {{ include "backend.image" . | quote }}
+          imagePullPolicy: IfNotPresent
+          # Retain the image entrypoint (tini) to forward signals and reap child processes.
+          args: ["npm", "run", "start:agent:prod"]
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: LIVEKIT_URL
+              value: ws://livekit:7880
+            - name: SPEAKING_API_URL
+              value: http://backend:3001
+            - name: SPEAKING_AGENT_NAME
+              value: teacher-agent
+            - name: SPEAKING_TEACHER_MODEL
+              value: {{ .Values.teacherAgent.model | quote }}
+            - name: SPEAKING_TEACHER_VOICE
+              value: {{ .Values.teacherAgent.voice | quote }}
+            {{- include "backend.livekitCredentials" . | nindent 12 }}
+            {{- include "backend.sharedCredentials" . | nindent 12 }}
+          ports:
+            - name: health
+              containerPort: 8081
+          startupProbe:
+            httpGet:
+              path: /
+              port: health
+            periodSeconds: 5
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /
+              port: health
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.teacherAgent.resources | nindent 12 }}
+{{- end }}

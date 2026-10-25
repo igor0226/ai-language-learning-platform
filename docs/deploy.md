@@ -58,13 +58,29 @@ When installed, [`helm/ingress-nginx/values.yaml`](../helm/ingress-nginx/values.
 
 cert-manager is an upstream Helm release. [`helm/cert-manager-issuer`](../helm/cert-manager-issuer) defines the `letsencrypt-public` `ClusterIssuer`, which uses Let's Encrypt's production service to issue browser-trusted certificates. It uses ACME HTTP-01 through the `nginx` ingress class and stores its account key in `letsencrypt-public-account-key`.
 
-A workload becomes public when its Helm chart creates a host-specific Ingress that references `letsencrypt-public` and a TLS secret. cert-manager then requests and renews the certificate.
+[`helm/routing`](../helm/routing) owns the public Ingresses; the frontend chart creates only its Deployment and Service. The app host sends `/api` to `backend:3001` and `/` to `frontend:3000`. The more specific `/api/agent` prefix goes to a small nginx service that returns 404, keeping internal agent routes off the public origin without nginx configuration snippets. API paths are preserved. Uploads allow a 1 GiB file plus multipart framing and disable ingress request buffering. The media host sends signaling to `livekit:7880` with one-hour proxy timeouts for WebSockets; media itself uses the node's RTC ports.
+
+Both Ingresses reference `letsencrypt-public`; cert-manager requests and renews certificates into `llp-app-tls` and `llp-media-tls`, which ingress-nginx uses for TLS termination. HTTP redirects to HTTPS. Helm release readiness does not establish certificate readiness; issuance also requires working DNS and public port 80.
+
+## Frontend image
+
+[`frontend/Dockerfile.prod`](../frontend/Dockerfile.prod) builds an Arm64 standalone Next.js image. Pass `NEXT_PUBLIC_API_URL=https://<app hostname>` at build time; changing the browser API origin requires rebuilding the image. Workspace tracing includes the repository root so the standalone server includes shared dependencies. [`helm/frontend`](../helm/frontend) sets `AUTH_API_URL=http://backend:3001` at runtime for internal session checks, runs the image as a non-root user, and probes `/login`. Authentication behavior: [`auth.md`](auth.md).
 
 ## LiveKit
 
 [`helm/livekit`](../helm/livekit) runs one server with host networking and cluster DNS. It advertises Terraform's Elastic IP plus the internal candidate, uses TCP 7881 and UDP 50000–50020 for media, and exposes signaling internally at `livekit:7880`. Public signaling uses the media Ingress added with routing; no public port 7880 or TURN server is configured.
 
 The existing `llp-livekit` Secret holds `LIVEKIT_API_KEY` and `LIVEKIT_API_SECRET`, shared with the backend and teacher agent. An init container renders the config into an in-memory volume; credentials never enter Helm values or ConfigMaps. `helm/livekit/secrets.env` is excluded from Git, agent access, and chart packaging. Config changes roll the pod; Secret changes require a pod restart. Development mode is disabled, and webhooks target the backend's internal speaking endpoint. Room state is in memory; replacing the pod interrupts calls. Redis is unnecessary for this single-server setup.
+
+## API and teacher agent
+
+[`backend/Dockerfile.prod`](../backend/Dockerfile.prod) builds the contracts and API for a shared Arm64 image. It includes FFmpeg, fonts, source files, and TypeScript tools for migrations and the agent. The API runs migrations before listening; the agent overrides the default command. Tini forwards shutdown signals and reaps child processes.
+
+[`helm/backend`](../helm/backend) creates separate single-replica API and teacher-agent Deployments. Both use `Recreate`, so upgrades interrupt their work. `teacherAgent.enabled` allows installing the API first. The API Service is internal at `backend:3001`; public routing is separate. API readiness is TCP; agent readiness uses its SDK's HTTP endpoint on 8081. Neither probe verifies an end-to-end user flow.
+
+Operator-owned inputs are `llp-backend` (keys listed in [`secrets.env.example`](../helm/backend/secrets.env.example)), `llp-database` (`POSTGRES_USER`, `POSTGRES_PASSWORD`), the existing `llp-livekit`, and `llp-rds-ca` (ConfigMap key `ca.pem`, the AWS regional RDS CA bundle). Secret values do not enter Helm. The API mounts the CA for verified database TLS and uses the node role for S3; the agent receives only its OpenAI, internal API, and LiveKit credentials. The Google OAuth client must allow the app origin's `/api/auth/google/callback` URL. Secret or CA changes require restarting consumers; Helm does not detect external input changes.
+
+Media processing uses a disk-backed `emptyDir` workspace and one concurrent explanation clip per video on this dev node. The workspace is temporary and disappears with the pod; durable blobs live in S3. Agent runtime behavior: [`speaking.md`](speaking.md).
 
 ## Managed data
 

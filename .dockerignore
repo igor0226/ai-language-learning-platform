@@ -8,3 +8,4 @@ videos
 backend/.env
 frontend/.env.local
 **/*.md
+**/secrets.env

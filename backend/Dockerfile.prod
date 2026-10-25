@@ -1,0 +1,29 @@
+FROM node:24-bookworm-slim AS build
+
+WORKDIR /repo
+COPY package.json package-lock.json ./
+COPY packages/contracts packages/contracts
+COPY backend/package.json backend/package.json
+COPY frontend/package.json frontend/package.json
+
+# Keep build tools: migrations use ts-node and the agent runs its source with tsx.
+RUN HUSKY=0 npm ci -w backend -w @llp/contracts --include-workspace-root --include=dev
+COPY backend backend
+RUN npm run build -w @llp/contracts && npm run build -w backend
+
+FROM node:24-bookworm-slim AS runner
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends ffmpeg fonts-dejavu-core ca-certificates tini \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /repo
+COPY --from=build /repo ./
+WORKDIR /repo/backend
+ENV NODE_ENV=production
+# ts-node must use the backend's TypeScript 5 compiler, not the root's TypeScript 7.
+ENV TS_NODE_COMPILER=/repo/backend/node_modules/typescript/lib/typescript.js
+USER node
+EXPOSE 3001
+ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
+CMD ["sh", "-c", "npm run migration:run && exec node dist/main.js"]

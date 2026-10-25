@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+data:
+  NODE_ENV: production
+  PORT: "3001"
+  LOG_LEVEL: info
+  CORS_ORIGIN: {{ printf "https://%s" (required "Set appHost to Terraform app_fqdn" .Values.appHost) | quote }}
+  GOOGLE_REDIRECT_URI: {{ printf "https://%s/api/auth/google/callback" .Values.appHost | quote }}
+  LIVEKIT_URL: {{ printf "wss://%s" (required "Set mediaHost to Terraform media_fqdn" .Values.mediaHost) | quote }}
+  LIVEKIT_API_URL: http://livekit:7880
+  SPEAKING_AGENT_NAME: teacher-agent
+  POSTGRES_HOST: {{ required "Set database.host to Terraform db_host" .Values.database.host | quote }}
+  POSTGRES_PORT: {{ .Values.database.port | quote }}
+  POSTGRES_DB: {{ required "Set database.name to Terraform db_name" .Values.database.name | quote }}
+  POSTGRES_SSL: "true"
+  POSTGRES_SSL_CA_PATH: /etc/rds/ca.pem
+  S3_BUCKET: {{ required "Set s3.bucket to Terraform media_bucket_name" .Values.s3.bucket | quote }}
+  S3_REGION: {{ .Values.s3.region | quote }}
+  S3_FORCE_PATH_STYLE: "false"
+  MEDIA_WORKSPACE_ROOT: /workspace
+  CLIP_GENERATION_CONCURRENCY: "1"

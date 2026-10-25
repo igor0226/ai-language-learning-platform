@@ -12,17 +12,39 @@ spec:
       labels:
         app: frontend
     spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
       containers:
         - name: frontend
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          image: "{{ required "Set image.repository to the frontend ECR repository" .Values.image.repository }}:{{ required "Set image.tag to the pushed frontend tag" .Values.image.tag }}"
           ports:
-            - containerPort: 3000
+            - name: http
+              containerPort: 3000
           env:
             - name: HOSTNAME
               value: "0.0.0.0"
             - name: PORT
               value: "3000"
-      {{- if .Values.imagePullSecret }}
-      imagePullSecrets:
-        - name: {{ .Values.imagePullSecret }}
-      {{- end }}
+            - name: AUTH_API_URL
+              value: {{ .Values.authApiUrl | quote }}
+          startupProbe:
+            httpGet:
+              path: /login
+              port: http
+            periodSeconds: 5
+            failureThreshold: 60
+          readinessProbe:
+            httpGet:
+              path: /login
+              port: http
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}

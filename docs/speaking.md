@@ -2,6 +2,8 @@
 
 Live 1-on-1 AI teacher calls via self-hosted LiveKit (`livekit` in Compose) plus a Node agent worker (`teacher-agent` in Compose, `npm run start:agent:dev`).
 
+With `NODE_ENV=production`, the agent keeps one idle job process warm to limit baseline memory on the shared dev node. This does not limit the number of active calls. Development retains the SDK default. AWS release design: [`deploy.md`](deploy.md#api-and-teacher-agent).
+
 ## Backend API
 
 - `POST /api/speaking/calls` — session auth; creates a `teacher_calls` row for the logged-in user, LiveKit room, agent dispatch, and participant token. Optional `topic` string is forwarded only in agent dispatch metadata (not stored). Returns `{ callId, roomName, token, livekitUrl }`.

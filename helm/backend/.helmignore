@@ -1,0 +1,3 @@
+*.env
+templates/database-secret.yaml
+templates/database-secret.yaml.example
