@@ -1,0 +1,2 @@
+# Keep credentials out of packaged charts and Helm release history.
+*.env

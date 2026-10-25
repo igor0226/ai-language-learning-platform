@@ -1,0 +1,15 @@
+image:
+  repository: livekit/livekit-server
+  tag: v1.13.6
+
+existingSecret: llp-livekit
+# The Terraform public_ip output, not the node's private IP.
+nodeIp: ""
+webhookUrl: http://backend:3001/api/speaking/livekit/webhook
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 1Gi

@@ -12,6 +12,7 @@ Topic files (same paths as in the root index):
 - [`speaking.md`](speaking.md) — Speaking API, LiveKit, agent worker, frontend call UI
 - [`frontend.md`](frontend.md) — Next.js FSD, routes, Query hooks, UI tokens, tests
 - [`backend.md`](backend.md) — Nest modules, Postgres, S3 keys, logging
+- [`deploy.md`](deploy.md) — AWS practice deploy, profile, remote state
 
 ## Layers (do not collapse)
 
@@ -42,6 +43,7 @@ If you add or change a fact, edit **only** the owning file below. Everywhere els
 | Speaking/LiveKit API, call flow, speaking env | [`speaking.md`](speaking.md) |
 | Next routes, FSD, data-fetching UX (Sonner, skeletons), UI tokens | [`frontend.md`](frontend.md) |
 | Skill implementation status, roadmap, CEFR upload fields | [`product.md`](product.md) skills table + related sections |
+| AWS practice account, region, remote state | [`deploy.md`](deploy.md) |
 
 Allowed in a non-owner file: one short sentence plus a link (e.g. “Session scope: [`auth.md`](auth.md).”). Context next to a route name in the same doc is fine; a second checklist is not.
 

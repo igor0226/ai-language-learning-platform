@@ -1,0 +1,6 @@
+backend/.env
+infra/environments/dev/terraform.tfvars
+infra/environments/dev/.kubeconfig
+helm/livekit/secrets.env
+helm/backend/secrets.env
+helm/backend/templates/database-secret.yaml

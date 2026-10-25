@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: livekit-template
+data:
+  livekit.yaml: |
+    port: 7880
+    bind_addresses:
+      - 0.0.0.0
+    rtc:
+      tcp_port: 7881
+      port_range_start: 50000
+      port_range_end: 50020
+      use_external_ip: false
+      node_ip: {{ required "nodeIp is required: use Terraform's public_ip output" .Values.nodeIp | quote }}
+      advertise_internal_ip: true
+    development: false
+    logging:
+      level: info
+    room:
+      empty_timeout: 60
+    webhook:
+      api_key: "__LIVEKIT_API_KEY__"
+      urls:
+        - {{ .Values.webhookUrl | quote }}
+  render-config.sh: |
+    {{- .Files.Get "files/render-config.sh" | nindent 4 }}

@@ -11,10 +11,7 @@ export function createS3Client(): S3Client {
 		region: config.region,
 		endpoint: config.endpoint,
 		forcePathStyle: config.forcePathStyle,
-		credentials: {
-			accessKeyId: config.accessKeyId,
-			secretAccessKey: config.secretAccessKey,
-		},
+		credentials: config.credentials,
 		requestChecksumCalculation: "WHEN_REQUIRED",
 		responseChecksumValidation: "WHEN_REQUIRED",
 	});

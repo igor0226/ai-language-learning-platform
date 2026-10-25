@@ -10,6 +10,8 @@ import SpeakingLauncherPage from "@/pages/speaking/launcher";
 import { serverAuthFetch } from "@/shared/api/server-auth-fetch";
 import { createQueryClient } from "@/shared/lib/create-query-client";
 
+export const dynamic = "force-dynamic";
+
 export default async function SpeakingPage() {
 	const queryClient = createQueryClient();
 

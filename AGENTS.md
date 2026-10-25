@@ -4,6 +4,7 @@ Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend
 
 ## Hard rules (always)
 
+- Before searching or reading project files, read [`.agentignore`](.agentignore). Patterns use `.gitignore` syntax relative to the repo root; do not read, search within, or modify matching paths unless the user explicitly authorizes it.
 - Ask questions if something from the user's instruction seems not clear enough.
 - Always run `nvm use` before host Node commands (lint, test, commit hooks).
 - In the Cursor agent **Shell**, run backend `npm run test` / `npm run test:e2e` with **`required_permissions: ["all"]`** (Vitest loads `backend/.env`; the default sandbox returns `EPERM`). See [`docs/local-dev.md`](docs/local-dev.md#cursor-agent-shell).
@@ -26,6 +27,7 @@ Shared monorepo index. Package-specific indexes: [`frontend/AGENTS.md`](frontend
 | Speaking / LiveKit | [`docs/speaking.md`](docs/speaking.md) |
 | Next.js UI / FSD / tests | [`docs/frontend.md`](docs/frontend.md) |
 | Nest modules / DB / storage | [`docs/backend.md`](docs/backend.md) |
+| AWS deploy, remote state | [`docs/deploy.md`](docs/deploy.md) |
 | Maintain or add agent docs | [`docs/README.md`](docs/README.md) |
 
 Local dev: [`docs/local-dev.md`](docs/local-dev.md). Doc authoring and maintenance: [`docs/README.md`](docs/README.md).
