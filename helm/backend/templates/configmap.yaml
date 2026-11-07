@@ -14,6 +14,13 @@ data:
   POSTGRES_HOST: {{ required "Set database.host to Terraform db_host" .Values.database.host | quote }}
   POSTGRES_PORT: {{ .Values.database.port | quote }}
   POSTGRES_DB: {{ required "Set database.name to Terraform db_name" .Values.database.name | quote }}
+  POSTGRES_AUTH_MODE: {{ .Values.database.authMode | quote }}
+  AWS_REGION: {{ .Values.s3.region | quote }}
+  VIDEO_PROCESSING_CRON_ENABLED: "false"
+  SPEAKING_STALE_CALL_CRON_ENABLED: "false"
+  VIDEO_PROCESSOR_CRON: {{ .Values.worker.videoCron | quote }}
+  SPEAKING_STALE_CALL_CRON: {{ .Values.worker.staleCallCron | quote }}
+  SPEAKING_STALE_CALL_GRACE_SECONDS: {{ .Values.worker.staleCallGraceSeconds | quote }}
   POSTGRES_SSL: "true"
   POSTGRES_SSL_CA_PATH: /etc/rds/ca.pem
   S3_BUCKET: {{ required "Set s3.bucket to Terraform media_bucket_name" .Values.s3.bucket | quote }}

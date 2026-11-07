@@ -1,0 +1,66 @@
+{{- if .Values.migrations.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: backend-migrations
+  annotations:
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-5"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 600
+  template:
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: migrate
+          image: {{ include "backend.image" . | quote }}
+          args: ["node", "dist/database/migrate.js"]
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: AWS_REGION
+              value: {{ required "Set s3.region for migrations" .Values.s3.region | quote }}
+            - name: DB_MASTER_SECRET_ARN
+              value: {{ required "Set database.masterSecretArn for migrations" .Values.database.masterSecretArn | quote }}
+            - name: PROVISION_RDS_IAM_USER
+              value: {{ eq .Values.database.authMode "iam" | quote }}
+            - name: POSTGRES_AUTH_MODE
+              value: password
+            - name: POSTGRES_HOST
+              value: {{ .Values.database.host | quote }}
+            - name: POSTGRES_PORT
+              value: {{ .Values.database.port | quote }}
+            - name: POSTGRES_DB
+              value: {{ .Values.database.name | quote }}
+            - name: POSTGRES_SSL
+              value: "true"
+            - name: POSTGRES_SSL_CA_PATH
+              value: /etc/rds/ca.pem
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - name: rds-ca
+              mountPath: /etc/rds
+              readOnly: true
+      volumes:
+        - name: rds-ca
+          configMap:
+            name: {{ .Values.rdsCaConfigMap | quote }}
+{{- end }}

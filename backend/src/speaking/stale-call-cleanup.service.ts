@@ -33,7 +33,7 @@ export class StaleCallCleanupService {
 			if (await this.rooms.roomExists(call.roomName)) {
 				return;
 			}
-			await this.calls.markFailed({
+			await this.calls.markFailedIfActive({
 				callId: call.id,
 				reason: STALE_CALL_ENDED_REASON,
 			});

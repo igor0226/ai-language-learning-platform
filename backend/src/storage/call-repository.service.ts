@@ -100,6 +100,20 @@ export class CallRepositoryService {
 		});
 	}
 
+	async markFailedIfActive(input: {
+		callId: string;
+		reason: string;
+	}): Promise<void> {
+		await this.callRepository.update(
+			{ id: input.callId, status: "active" },
+			{
+				status: "failed",
+				endedReason: input.reason,
+				endedAt: new Date().toISOString(),
+			},
+		);
+	}
+
 	async markFailed(input: {
 		callId: string;
 		reason: string;

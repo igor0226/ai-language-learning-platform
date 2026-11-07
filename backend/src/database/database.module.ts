@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { Global, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 
 import {
@@ -10,9 +10,13 @@ import {
 	UserVocabularyPhrase,
 	Video,
 } from "../models";
+import { AdvisoryLockService } from "./advisory-lock.service";
 import { getPostgresConfig } from "./utils/postgres-config";
 
+@Global()
 @Module({
+	providers: [AdvisoryLockService],
+	exports: [AdvisoryLockService],
 	imports: [
 		TypeOrmModule.forRootAsync({
 			useFactory: () => ({
@@ -28,6 +32,7 @@ import { getPostgresConfig } from "./utils/postgres-config";
 					UserVocabularyPhrase,
 				],
 				synchronize: false,
+				extra: { connectionTimeoutMillis: 5000, query_timeout: 30000, max: 10 },
 				autoLoadEntities: false,
 			}),
 		}),

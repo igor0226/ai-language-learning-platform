@@ -23,7 +23,6 @@ Selected per upload:
 - `frontend/` — Next.js UI (workspace package)
 - `backend/` — Nest.js API + processing worker (workspace package)
 - `packages/contracts` — shared Zod schemas/types (`@llp/contracts`)
-- `videos/` — legacy on-disk data (optional one-time migration source into MinIO)
 - `compose.yaml` — Docker Compose dev stack (frontend + backend, hot reload)
 - Root `package.json` — npm workspaces, husky/commitlint, and `npm run dev` (`docker compose up`)
 

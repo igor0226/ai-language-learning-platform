@@ -58,7 +58,7 @@ Owner-scoped phrases for the logged-in user (`user_vocabulary_phrases`). Request
 - `SPEAKING_VAD_MIN_SPEECH_MS` — minimum sustained speech in ms before VAD reports user speech (default `400`).
 - `SPEAKING_INTERRUPT_MIN_WORDS` — minimum transcribed user words before the teacher yields (default `3`).
 - `SPEAKING_INTERRUPT_MIN_DURATION_MS` — minimum user speech duration in ms before mid-reply interruption (default `1500`).
-- `SPEAKING_STALE_CALL_CRON_ENABLED` — set to `false` to skip stale-call cron and the startup tick (used in tests). Default: enabled (`true` in `.env.example`).
+- `SPEAKING_STALE_CALL_CRON_ENABLED` — set to `false` to skip stale-call cron and the startup tick (used in tests). Enabled only by the literal `true` (`true` in `.env.example`).
 - `SPEAKING_STALE_CALL_CRON` — cron expression for the stale-call sweep (default every minute).
 - `SPEAKING_STALE_CALL_GRACE_SECONDS` — ignore `active` calls younger than this (default `120`) so create/setup is not raced.
 
@@ -80,3 +80,5 @@ Call flow:
 - Discussion topics on `/speaking` load and mutate via `GET/POST/PATCH/DELETE /api/speaking/topics` (session cookie). Delete control in the UI is shown only for custom topics; the API also supports hiding catalog presets. The live call page resolves `?topic=` against the same fetched list so edited or custom scenarios reach the agent prompt.
 
 Media signaling uses `wss://media.llp-test.com` in Compose. See [`local-dev.md`](local-dev.md).
+
+Scheduled stale-call cleanup locking and shutdown: [`backend.md`](backend.md#scheduled-work-and-locks).

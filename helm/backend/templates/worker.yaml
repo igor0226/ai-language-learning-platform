@@ -1,0 +1,95 @@
+{{- if .Values.worker.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: processing-worker
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: processing-worker
+  template:
+    metadata:
+      labels:
+        app: processing-worker
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+    spec:
+      enableServiceLinks: false
+      automountServiceAccountToken: false
+      terminationGracePeriodSeconds: {{ .Values.worker.terminationGracePeriodSeconds }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+      containers:
+        - name: backend
+          image: {{ include "backend.image" . | quote }}
+          imagePullPolicy: IfNotPresent
+          # Signal Node only; keep in-flight FFmpeg alive while Node drains.
+          command: ["/usr/bin/tini", "--"]
+          args: ["node", "dist/main.js"]
+          envFrom:
+            - configMapRef:
+                name: backend-config
+          env:
+            - name: VIDEO_PROCESSING_CRON_ENABLED
+              value: "true"
+            - name: SPEAKING_STALE_CALL_CRON_ENABLED
+              value: "true"
+            {{- include "backend.livekitCredentials" . | nindent 12 }}
+            {{- include "backend.sharedCredentials" . | nindent 12 }}
+            {{- range $key := list "GOOGLE_CLIENT_ID" "GOOGLE_CLIENT_SECRET" "SESSION_SECRET" }}
+            - name: {{ $key }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ $.Values.existingSecret | quote }}
+                  key: {{ $key }}
+            {{- end }}
+            {{- include "backend.databaseCredentials" . | nindent 12 }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["node", "-e", "setTimeout(() => {}, 10000)"]
+          ports:
+            - name: http
+              containerPort: 3001
+          startupProbe:
+            timeoutSeconds: 5
+            httpGet:
+              path: /api/health/ready
+              port: http
+            periodSeconds: 5
+            failureThreshold: 120
+          readinessProbe:
+            httpGet:
+              path: /api/health/ready
+              port: http
+            timeoutSeconds: 5
+            periodSeconds: 5
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          volumeMounts:
+            - name: rds-ca
+              mountPath: /etc/rds
+              readOnly: true
+            - name: workspace
+              mountPath: /workspace
+      volumes:
+        - name: rds-ca
+          configMap:
+            name: {{ .Values.rdsCaConfigMap | quote }}
+        - name: workspace
+          emptyDir:
+            sizeLimit: {{ .Values.backend.workspaceSizeLimit }}
+{{- end }}

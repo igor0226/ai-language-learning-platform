@@ -3,7 +3,6 @@ import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
 import {
 	ProcessingHistoryService,
-	ProcessingLockService,
 	type VideoRecord,
 	VideoRepositoryService,
 } from "../storage";
@@ -23,22 +22,12 @@ export class JobsService {
 		private readonly logger: PinoLogger,
 		private readonly processingPipelineService: ProcessingPipelineService,
 		private readonly videoRepository: VideoRepositoryService,
-		private readonly processingLockService: ProcessingLockService,
 		private readonly processingHistory: ProcessingHistoryService,
 	) {}
 
 	async processNextPendingVideo(): Promise<void> {
 		const video = await this.pickNextVideo();
 		if (!video) {
-			return;
-		}
-
-		const acquired = await this.processingLockService.tryAcquire(video.id);
-		if (!acquired) {
-			this.logger.info(
-				{ videoId: video.id, reason: "already-locked" },
-				"lock-skip",
-			);
 			return;
 		}
 
@@ -49,8 +38,6 @@ export class JobsService {
 			await this.finishVideoSuccessfully(video, results);
 		} catch (error) {
 			await this.finishVideoWithFailure(video, error);
-		} finally {
-			await this.processingLockService.release(video.id);
 		}
 	}
 

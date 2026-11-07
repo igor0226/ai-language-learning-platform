@@ -15,9 +15,9 @@ Nest.js app under `src/` with feature modules:
 - `dash/` — manifest rewrite + segment serving
 - `storage/` — `BlobStorageService` (S3/MinIO object keys) + Postgres-backed repositories/services
 - `models/` — TypeORM entity declarations (`Video`, `ProcessingHistory`, `ProcessingLock`, `TeacherCall`, `User`, `UserCallTopic`, `UserVocabularyPhrase`)
-- `database/` — TypeORM wiring, migrations, backfill script
+- `database/` — TypeORM wiring and migrations
 
-`main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`, shutdown hooks, and `forceCloseConnections` so Compose `start:dev` watch restarts can unbind the port. Worker starts on boot via `ProcessingWorkerService` (`OnModuleInit`) and polls about every 15s.
+`main.ts` sets Pino app logger, session middleware, Passport, CORS, global `api` prefix, port `3001`, shutdown hooks, and development-only `forceCloseConnections` so Compose watch restarts can unbind the port. Production HTTP shutdown waits for responses before closing dependencies. `/api/health/ready` checks database access and returns unavailable while draining. Workers start on boot only when their enable flags are true; deployment separation: [`deploy.md`](deploy.md#api-and-teacher-agent).
 
 Module layout (`utils/`, `type/`): [`conventions.md`](conventions.md).
 
@@ -43,6 +43,8 @@ Session-gated routes and owner scope: [`auth.md`](auth.md).
 Credentials come from env (see `backend/.env.example`):
 
 - `POSTGRES_HOST`, `POSTGRES_PORT`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+- `POSTGRES_AUTH_MODE` — `password` (default for local development) or `iam`. IAM mode requires verified TLS and `AWS_REGION`; it provides an async password callback to TypeORM and the session pool, generating a fresh RDS token for each new connection. Password rotation does not affect runtime IAM connections. Each process limits its session pool to five connections, separately from the ten-connection TypeORM pool. The session pool is closed after HTTP draining.
+- `DB_MASTER_SECRET_ARN`, `PROVISION_RDS_IAM_USER` — used only by the separate migration entrypoint (`dist/database/migrate.js`), not runtime API/worker authentication. AWS provisioning and migration ownership: [`deploy.md`](deploy.md#managed-data).
 
 In Docker Compose, backend uses `POSTGRES_HOST=postgres`. Host dev defaults to `localhost`.
 
@@ -55,7 +57,7 @@ For RDS, set `POSTGRES_SSL=true` and `POSTGRES_SSL_CA_PATH` to a mounted AWS RDS
 - `user_call_topics` — sparse per-user speaking topic overlays (`custom` / `override` / `hidden`; composite PK `userId` + `topicId`, cascade delete)
 - `user_vocabulary_phrases` — per-user vocabulary notebook entries (`userId` FK to `users`, cascade delete)
 - `processing_history` — per-video step history (`currentStep`, `events` jsonb)
-- `processing_locks` — worker concurrency guard (row insert = acquire, PK = one lock per video)
+- `processing_locks` — legacy lock table retained for schema compatibility; workers now use session-scoped advisory locks instead of persistent rows
 
 Domain types live in [`src/storage/type/`](../backend/src/storage/type). Entities mirror those types; ISO date/bigint transformers are in `src/models/utils/`.
 
@@ -67,14 +69,6 @@ npm run migration:revert   # revert last migration
 npm run migration:generate # generate from entity diff (rename output file)
 npm run migration:create   # empty migration scaffold
 ```
-
-**Legacy backfill** — one-time import of old JSON metadata into Postgres:
-
-```bash
-npm run db:backfill
-```
-
-Reads legacy `videos/records/*.json` and `videos/history/*.json` from the repo-root `videos/` directory (or `STORAGE_ROOT` if set), applies legacy defaults for missing language fields, and inserts into Postgres. Safe to re-run only if tables are empty/truncated.
 
 **Tests** — unit/e2e suites that boot `AppModule` use `@testcontainers/postgresql` and a MinIO testcontainer (see `test/postgres-test-setup.ts`, `test/minio-test-setup.ts`). E2e global setup runs migrations before the suite. The container image is `alpine/minio` because community `quay.io/minio/minio` no longer allows anonymous pulls, and AIStor refuses S3 calls without a license. Unit-test global setup starts that container before Vitest collects files, so a failed pull shows up as “No test files found” plus a Docker error.
 
@@ -103,6 +97,12 @@ Object keys (unchanged from the former filesystem layout):
 - `enriched/<videoId>/playback-phrases.json` — playback phrase timings for the API
 
 Metadata (`VideoRecord`, processing history, worker locks) is in **PostgreSQL**.
+
+## Scheduled work and locks
+
+`AdvisoryLockService` holds a PostgreSQL session lock on a dedicated connection for the full scheduled operation. Video processing and stale-call cleanup use distinct cluster-wide lock keys, in addition to local overlap guards. Workers stop scheduling on shutdown and await the active operation before database teardown. The video tick holds its lock from job selection through completion. PostgreSQL releases advisory locks when the owning session ends, so crashes do not leave permanent locks. Existing legacy rows no longer block work. A mixed rollout with old row-lock workers must not run those old workers concurrently with new advisory-lock workers.
+
+Loss of an active scheduled-operation lock connection terminates the worker process before it can continue publishing results without the lock. PostgreSQL/transport detection is not instantaneous. These are cooperative locks, not an exactly-once queue: network partitions and external side effects still require idempotent pipeline behavior. Database failover releases session locks; interrupted processing is resumed from durable artifacts. Stale-call cleanup uses an atomic active-status condition so a concurrent terminal update is preserved.
 
 ## Logging
 

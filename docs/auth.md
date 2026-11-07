@@ -4,7 +4,7 @@ Google OAuth via Nest with Postgres-backed session cookie `llp.sid`. Next.js mid
 
 **Nest session gate (`AuthenticatedGuard`):** `/api/videos/*`, `/api/speaking/calls*`, `/api/speaking/topics*`, `/api/vocabulary/*`, and `/api/dash/*` require the session cookie (`401` without it). List, status, retry, playback-phrases, DASH manifest/segments, speaking calls, topics, and vocabulary routes are **owner-scoped** to the logged-in user's `userId` where applicable (`404` when missing or owned by another user). Upload and create endpoints stamp `userId` from the session.
 
-**Public Nest routes:** `POST /api/speaking/livekit/webhook` (LiveKit reconciliation); auth OAuth/callback/me/logout as listed below.
+**Public Nest routes:** `GET /api/health/ready` (readiness; see [`backend.md`](backend.md)); `POST /api/speaking/livekit/webhook` (LiveKit reconciliation); auth OAuth/callback/me/logout as listed below.
 
 **Agent bearer gate (`/api/agent/*`):** routes for the LiveKit teacher worker only. Require `Authorization: Bearer <SPEAKING_INTERNAL_API_SECRET>` (timing-safe compare). Missing, wrong, or empty configured secret → `401`. The call owner is resolved from `teacher_calls` by `callId`; the worker never sends a session cookie. Browser traffic to `/api/agent/*` is blocked at Caddy on the public app origin — see [`local-dev.md`](local-dev.md).
 

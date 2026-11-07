@@ -14,7 +14,7 @@
 
 ## Artifacts (S3/MinIO)
 
-Pipeline stages write under the object-key layout documented in [`backend.md`](backend.md#object-storage-minio--s3) (`uploads/`, `audio/`, `transcripts/`, `explanations/`, `enriched/`, `dash/`, shared `assets/listen-again/`). Video metadata lives in PostgreSQL. Legacy `videos/records/*.json` may still exist locally for one-time backfill only.
+Pipeline stages write under the object-key layout documented in [`backend.md`](backend.md#object-storage-minio--s3) (`uploads/`, `audio/`, `transcripts/`, `explanations/`, `enriched/`, `dash/`, shared `assets/listen-again/`). Video metadata lives in PostgreSQL.
 
 ## Upload language fields
 
@@ -41,13 +41,13 @@ Worker order for each pending video: **audio extract → Whisper transcribe → 
 - `OPENAI_API_KEY` is required when the worker runs transcription, phrase detection, or explanation TTS
 - Any step failure marks the video `failed` and records the failing step in history
 - Completed steps are skipped on resume when their output files already exist
-- Worker locking via `ProcessingLockService` (Postgres `processing_locks` table)
+- Worker locking and shutdown: [`backend.md`](backend.md#scheduled-work-and-locks).
 
 Processing steps tracked in history: `queued`, `audio_extract`, `transcribing`, `detecting_phrases`, `generating_clips`, `composing_video`, `dash_encoding`, `completed`, `failed`.
 
 ### Processing worker env
 
-- `VIDEO_PROCESSING_CRON_ENABLED` — set to `false` to skip cron scheduling and the startup tick (used in tests and local API-only runs). Default: enabled (`true` in `.env.example`).
+- `VIDEO_PROCESSING_CRON_ENABLED` — set to `false` to skip cron scheduling and the startup tick (used in tests and local API-only runs). Enabled only by the literal `true` (`true` in `.env.example`).
 - `VIDEO_PROCESSOR_CRON` — cron expression for the worker loop (default every 15s).
 - `CLIP_GENERATION_CONCURRENCY` — max number of explanation clips rendered in parallel per video (default `3`, minimum `1`).
 

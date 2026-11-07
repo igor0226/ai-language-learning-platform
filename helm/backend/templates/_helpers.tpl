@@ -21,3 +21,15 @@
       key: {{ $key }}
 {{- end }}
 {{- end -}}
+
+{{- define "backend.databaseCredentials" -}}
+{{- if eq .Values.database.authMode "iam" }}
+{{- if ne .Values.database.runtimeUser "llp_app" }}
+{{- fail "database.runtimeUser must be llp_app to match provisioned IAM identity" }}
+{{- end }}
+- name: POSTGRES_USER
+  value: {{ .Values.database.runtimeUser | quote }}
+{{- else }}
+{{- fail "The AWS chart requires database.authMode=iam" }}
+{{- end }}
+{{- end -}}
