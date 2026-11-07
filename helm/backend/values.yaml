@@ -5,7 +5,6 @@ image:
 appHost: "" # Terraform app_fqdn
 mediaHost: "" # Terraform media_fqdn
 existingSecret: llp-backend
-databaseSecret: llp-database
 livekitSecret: llp-livekit
 rdsCaConfigMap: llp-rds-ca
 
@@ -13,11 +12,16 @@ database:
   host: "" # Terraform db_host
   port: 5432
   name: "" # Terraform db_name
+  authMode: iam
+  runtimeUser: llp_app
+  masterSecretArn: "" # Terraform db_master_secret_arn; identifier only
 s3:
   bucket: "" # Terraform media_bucket_name
   region: ""
 
 backend:
+  replicas: 1
+  terminationGracePeriodSeconds: 120
   resources:
     requests:
       cpu: 100m
@@ -36,3 +40,12 @@ teacherAgent:
       memory: 256Mi
     limits:
       memory: 1Gi
+
+migrations:
+  enabled: true
+worker:
+  enabled: true
+  terminationGracePeriodSeconds: 3600
+  videoCron: "*/15 * * * * *"
+  staleCallCron: "0 * * * * *"
+  staleCallGraceSeconds: 120

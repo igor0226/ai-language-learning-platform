@@ -2,7 +2,7 @@ export type PostgresConfig = {
 	host: string;
 	port: number;
 	username: string;
-	password: string;
+	password: string | (() => Promise<string>);
 	database: string;
 	ssl:
 		| false

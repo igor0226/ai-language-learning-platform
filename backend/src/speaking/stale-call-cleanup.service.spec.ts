@@ -27,7 +27,7 @@ describe("StaleCallCleanupService", () => {
 	const logger = { error: vi.fn() };
 	const calls = {
 		listActiveCallsCreatedBefore: vi.fn(async () => [] as TeacherCallRecord[]),
-		markFailed: vi.fn(async () => makeCall({ status: "failed" })),
+		markFailedIfActive: vi.fn(async () => makeCall({ status: "failed" })),
 	};
 	const rooms = {
 		roomExists: vi.fn(async () => false),
@@ -47,7 +47,7 @@ describe("StaleCallCleanupService", () => {
 		calls.listActiveCallsCreatedBefore.mockResolvedValueOnce([]);
 		await service.sweep();
 		expect(rooms.roomExists).not.toHaveBeenCalled();
-		expect(calls.markFailed).not.toHaveBeenCalled();
+		expect(calls.markFailedIfActive).not.toHaveBeenCalled();
 	});
 
 	it("leaves a call active when the LiveKit room still exists", async () => {
@@ -56,7 +56,7 @@ describe("StaleCallCleanupService", () => {
 		rooms.roomExists.mockResolvedValueOnce(true);
 		await service.sweep();
 		expect(rooms.roomExists).toHaveBeenCalledWith(call.roomName);
-		expect(calls.markFailed).not.toHaveBeenCalled();
+		expect(calls.markFailedIfActive).not.toHaveBeenCalled();
 	});
 
 	it("marks a call failed when the LiveKit room is gone", async () => {
@@ -64,7 +64,7 @@ describe("StaleCallCleanupService", () => {
 		calls.listActiveCallsCreatedBefore.mockResolvedValueOnce([call]);
 		rooms.roomExists.mockResolvedValueOnce(false);
 		await service.sweep();
-		expect(calls.markFailed).toHaveBeenCalledWith({
+		expect(calls.markFailedIfActive).toHaveBeenCalledWith({
 			callId: call.id,
 			reason: STALE_CALL_ENDED_REASON,
 		});
@@ -78,8 +78,8 @@ describe("StaleCallCleanupService", () => {
 			.mockRejectedValueOnce(new Error("livekit unavailable"))
 			.mockResolvedValueOnce(false);
 		await service.sweep();
-		expect(calls.markFailed).toHaveBeenCalledTimes(1);
-		expect(calls.markFailed).toHaveBeenCalledWith({
+		expect(calls.markFailedIfActive).toHaveBeenCalledTimes(1);
+		expect(calls.markFailedIfActive).toHaveBeenCalledWith({
 			callId: second.id,
 			reason: STALE_CALL_ENDED_REASON,
 		});

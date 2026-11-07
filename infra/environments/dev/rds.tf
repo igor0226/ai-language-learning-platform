@@ -52,8 +52,9 @@ resource "aws_db_parameter_group" "app" {
   family = "postgres17"
 
   parameter {
-    name  = "rds.force_ssl"
-    value = "1"
+    apply_method = "pending-reboot"
+    name         = "rds.force_ssl"
+    value        = "1"
   }
 }
 
@@ -84,6 +85,8 @@ resource "aws_db_instance" "app" {
   db_name                     = "video_streaming"
   username                    = "llp_admin"
   manage_master_user_password = true
+
+  iam_database_authentication_enabled = true
 
   publicly_accessible    = false
   multi_az               = false

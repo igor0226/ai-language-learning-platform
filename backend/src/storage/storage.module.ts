@@ -14,7 +14,6 @@ import { CallTopicRepositoryService } from "./call-topic-repository.service";
 import { BlobStorageService } from "./blob-storage.service";
 import { CallRepositoryService } from "./call-repository.service";
 import { ProcessingHistoryService } from "./processing-history.service";
-import { ProcessingLockService } from "./processing-lock.service";
 import {
 	createS3Client,
 	createS3ConfigProvider,
@@ -49,7 +48,6 @@ import { VideoRepositoryService } from "./video-repository.service";
 		},
 		BlobStorageService,
 		ProcessingHistoryService,
-		ProcessingLockService,
 		VideoRepositoryService,
 		CallRepositoryService,
 		UserRepositoryService,
@@ -59,7 +57,6 @@ import { VideoRepositoryService } from "./video-repository.service";
 	exports: [
 		BlobStorageService,
 		ProcessingHistoryService,
-		ProcessingLockService,
 		VideoRepositoryService,
 		CallRepositoryService,
 		UserRepositoryService,

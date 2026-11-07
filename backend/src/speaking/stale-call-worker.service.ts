@@ -3,6 +3,8 @@ import {
 	type OnModuleDestroy,
 	type OnModuleInit,
 } from "@nestjs/common";
+import { Inject } from "@nestjs/common";
+import { AdvisoryLockService } from "../database/advisory-lock.service";
 import { CronJob } from "cron";
 import { InjectPinoLogger, type PinoLogger } from "nestjs-pino";
 
@@ -14,8 +16,11 @@ import {
 
 @Injectable()
 export class StaleCallWorkerService implements OnModuleDestroy, OnModuleInit {
+	@Inject(AdvisoryLockService)
+	private readonly locks!: AdvisoryLockService;
+	private active: Promise<void> | undefined;
+	private stopping = false;
 	private started = false;
-	private tickLock = false;
 	private job: CronJob | undefined;
 
 	constructor(
@@ -28,24 +33,30 @@ export class StaleCallWorkerService implements OnModuleDestroy, OnModuleInit {
 		this.ensureStarted();
 	}
 
-	onModuleDestroy(): void {
-		this.job?.stop();
+	async onModuleDestroy(): Promise<void> {
+		this.stopping = true;
+		await this.job?.stop();
+		await this.active;
 	}
 
-	private async runWorkerTick(): Promise<void> {
-		if (this.tickLock) {
-			this.logger.info("tick skipped (previous tick still running)");
-			return;
-		}
+	private runWorkerTick(): Promise<void> {
+		if (this.stopping || this.active) return Promise.resolve();
+		this.active = this.executeTick().finally(() => {
+			this.active = undefined;
+		});
+		return this.active;
+	}
 
-		this.tickLock = true;
+	private async executeTick(): Promise<void> {
 		this.logger.info(
 			{ tickStartedAt: new Date().toISOString() },
 			"tick started",
 		);
 
 		try {
-			await this.cleanup.sweep();
+			await this.locks.runExclusive("stale-call-cleanup", async () => {
+				await this.cleanup.sweep();
+			});
 			this.logger.info(
 				{ completedAt: new Date().toISOString() },
 				"tick completed",
@@ -54,8 +65,6 @@ export class StaleCallWorkerService implements OnModuleDestroy, OnModuleInit {
 			const message =
 				error instanceof Error ? error.message : "Unexpected worker error";
 			this.logger.error({ err: message }, "tick failed");
-		} finally {
-			this.tickLock = false;
 		}
 	}
 

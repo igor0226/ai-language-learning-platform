@@ -3,10 +3,12 @@ kind: Deployment
 metadata:
   name: backend
 spec:
-  replicas: 1
-  # One API process migrates before serving; avoid overlapping processors on this dev node.
+  replicas: {{ .Values.backend.replicas }}
   strategy:
-    type: Recreate
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
   selector:
     matchLabels:
       app: backend
@@ -19,7 +21,7 @@ spec:
     spec:
       enableServiceLinks: false
       automountServiceAccountToken: false
-      terminationGracePeriodSeconds: 60
+      terminationGracePeriodSeconds: {{ .Values.backend.terminationGracePeriodSeconds }}
       securityContext:
         runAsNonRoot: true
         runAsUser: 1000
@@ -42,24 +44,26 @@ spec:
                   name: {{ $.Values.existingSecret | quote }}
                   key: {{ $key }}
             {{- end }}
-            {{- range $key := list "POSTGRES_USER" "POSTGRES_PASSWORD" }}
-            - name: {{ $key }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ $.Values.databaseSecret | quote }}
-                  key: {{ $key }}
-            {{- end }}
+            {{- include "backend.databaseCredentials" . | nindent 12 }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["node", "-e", "setTimeout(() => {}, 10000)"]
           ports:
             - name: http
               containerPort: 3001
           startupProbe:
-            tcpSocket:
+            timeoutSeconds: 5
+            httpGet:
+              path: /api/health/ready
               port: http
             periodSeconds: 5
             failureThreshold: 120
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /api/health/ready
               port: http
+            timeoutSeconds: 5
             periodSeconds: 5
           securityContext:
             allowPrivilegeEscalation: false

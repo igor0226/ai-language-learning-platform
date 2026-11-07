@@ -1,10 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import {
-	ProcessingHistoryService,
-	ProcessingLockService,
-	VideoRepositoryService,
-} from "../storage";
+import { ProcessingHistoryService, VideoRepositoryService } from "../storage";
 import { makeTestVideoRecord } from "../../test/helpers/make-test-video-record";
 import { FfmpegAudioService } from "./audio-extract/ffmpeg-audio.service";
 import { PhraseDetectionService } from "./detecting-phrases/phrase-detection.service";
@@ -20,7 +16,6 @@ describe("JobsService", () => {
 	let service: JobsService;
 	let processingPipelineService: ProcessingPipelineService;
 	let videoRepository: VideoRepositoryService;
-	let processingLockService: ProcessingLockService;
 	let processingHistory: ProcessingHistoryService;
 	const callOrder: string[] = [];
 
@@ -66,16 +61,11 @@ describe("JobsService", () => {
 				callOrder.push("mark-completed");
 			}),
 		} as unknown as ProcessingHistoryService;
-		processingLockService = {
-			tryAcquire: vi.fn(async () => true),
-			release: vi.fn(async () => undefined),
-		} as unknown as ProcessingLockService;
 
 		service = new JobsService(
 			{ info: vi.fn(), error: vi.fn() } as never,
 			processingPipelineService,
 			videoRepository,
-			processingLockService,
 			processingHistory,
 		);
 	});
@@ -99,8 +89,6 @@ describe("JobsService", () => {
 		expect(
 			processingPipelineService.runProcessingPipeline,
 		).toHaveBeenCalledWith(video);
-		expect(processingLockService.tryAcquire).toHaveBeenCalledWith("video-1");
-		expect(processingLockService.release).toHaveBeenCalledWith("video-1");
 	});
 });
 

@@ -26,4 +26,4 @@ ENV TS_NODE_COMPILER=/repo/backend/node_modules/typescript/lib/typescript.js
 USER node
 EXPOSE 3001
 ENTRYPOINT ["/usr/bin/tini", "-g", "--"]
-CMD ["sh", "-c", "npm run migration:run && exec node dist/main.js"]
+CMD ["node", "dist/main.js"]

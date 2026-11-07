@@ -17,9 +17,7 @@ export function sanitizeFileName(value: string): string {
 	return normalized || "upload.mp4";
 }
 
-export function normalizeLegacyVideoRecord(
-	parsed: Partial<VideoRecord>,
-): VideoRecord {
+export function normalizeVideoRecord(parsed: Video): VideoRecord {
 	if (!parsed.userId) {
 		throw new Error(`Video ${String(parsed.id)} is missing userId`);
 	}
@@ -32,8 +30,4 @@ export function normalizeLegacyVideoRecord(
 		explanationLanguage: parsed.explanationLanguage ?? "",
 		languageLevel: parsed.languageLevel ?? "B1",
 	} as VideoRecord;
-}
-
-export function normalizeVideoRecord(record: Video): VideoRecord {
-	return normalizeLegacyVideoRecord(record);
 }
